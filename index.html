@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teoria de Errores - Metodos Matematicos (UPO)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--acc:#e74c3c;--ok:#27ae60;--warn:#f39c12;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--txtl:#7f8c8d;--brd:#dce1e6;--sh:0 2px 8px rgba(0,0,0,.08);--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+.header{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;padding:1.5rem 2rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.header p{font-size:.95rem;opacity:.9}
+.tab-bar{display:flex;background:var(--card);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#eef2f7}
+.tab-btn.active{color:var(--pri);border-bottom-color:var(--pri);background:#eef2f7}
+.tab-content{display:none;padding:1rem;max-width:960px;margin:0 auto}
+.tab-content.active{display:block}
+.topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.topic-selector label{font-weight:600;font-size:1rem;color:var(--pri)}
+.topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri-l);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
+.topic-section{display:none}
+.topic-section.active{display:block}
+.def-box,.prop-box,.example-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
+.def-box{border-color:var(--pri);background:#eaf2f8}
+.prop-box{border-color:var(--ok);background:#eafaf1}
+.example-box{border-color:var(--warn);background:#fef9e7}
+.def-box strong,.prop-box strong,.example-box strong{display:block;margin-bottom:.3rem}
+.interactive-box{background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin:1rem 0}
+.interactive-box h4{color:var(--pri);margin-bottom:.7rem;font-size:.95rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.calc-grid label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-grid input,.calc-grid select{width:100%;padding:.5rem;border:1px solid var(--brd);border-radius:4px;font-size:.95rem}
+.btn{padding:.5rem 1.2rem;border:none;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--pri);color:#fff}
+.btn-primary:hover{background:var(--pri-l)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-accent{background:var(--acc);color:#fff}
+.result-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;min-height:2rem}
+.result-box .val{color:var(--pri);font-weight:700}
+.plot-container{margin:1rem 0;min-height:300px}
+.slider-group{display:flex;align-items:center;gap:1rem;margin:.5rem 0}
+.slider-group label{font-size:.9rem;min-width:80px}
+.slider-group input[type=range]{flex:1}
+.slider-group .sv{background:var(--pri);color:#fff;padding:.2rem .6rem;border-radius:4px;font-size:.85rem;min-width:40px;text-align:center}
+.target-svg{display:block;margin:0 auto}
+.scenario-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin:.8rem 0}
+.scenario-btns .btn{font-size:.8rem;padding:.4rem .8rem}
+.scenario-btns .btn.asc{outline:3px solid var(--warn)}
+.question-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.question-card h3{font-size:1rem;margin-bottom:.8rem;color:var(--pri)}
+.question-card .options label{display:block;padding:.6rem .8rem;margin:.3rem 0;border:1px solid var(--brd);border-radius:4px;cursor:pointer;transition:.2s;font-size:.9rem}
+.question-card .options label:hover{background:#eef2f7}
+.question-card .options input{margin-right:.5rem}
+.question-card .feedback{margin-top:.6rem;padding:.6rem;border-radius:4px;font-size:.9rem;display:none}
+.question-card .feedback.correct{display:block;background:#d5f5e3;color:#1e8449}
+.question-card .feedback.incorrect{display:block;background:#fadbd8;color:#c0392b}
+.problem-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);border-left:4px solid var(--warn)}
+.problem-card h3{font-size:1rem;margin-bottom:.5rem;color:var(--pri)}
+.problem-card .sol{display:none;margin-top:.8rem;padding:.8rem;background:#eafaf1;border-radius:4px;font-size:.9rem}
+.problem-card .sol.show{display:block}
+.score-bar{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);text-align:center}
+.score-bar .score{font-size:2rem;font-weight:700;color:var(--pri)}
+.bits-display{font-family:'Courier New',monospace;font-size:.85rem;margin:.5rem 0;word-break:break-all}
+.bits-display .sign{color:#e74c3c;font-weight:bold}
+.bits-display .exponent{color:#2980b9;font-weight:bold}
+.bits-display .mantissa{color:#27ae60;font-weight:bold}
+.bit-label{font-size:.75rem;color:var(--txtl)}
+table.dt{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.9rem}
+table.dt th,table.dt td{padding:.5rem .8rem;border:1px solid var(--brd);text-align:center}
+table.dt th{background:var(--pri);color:#fff;font-weight:600}
+table.dt tr:nth-child(even){background:#f8f9fb}
+.katex{font-size:1em!important}
+.katex-display{margin:.5em 0!important}
+p{margin:.5rem 0}
+ul,ol{margin:.5rem 0 .5rem 1.5rem}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600;margin-left:.5rem}
+.badge-easy{background:#d5f5e3;color:#1e8449}
+.badge-med{background:#fef9e7;color:#b7950b}
+.badge-hard{background:#fadbd8;color:#c0392b}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Teoria de Errores</h1>
+  <p>Metodos Matematicos para la Ingenieria &mdash; Tema 1 &mdash; UPO</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test de Autoevaluacion</button>
+</div>
+
+<!-- ============ TEORIA ============ -->
+<div id="tab-theory" class="tab-content active">
+
+<div class="topic-selector">
+  <label for="topic-select">Selecciona un tema:</label>
+  <select id="topic-select" onchange="showTopic(this.value)">
+    <option value="" disabled selected>-- Elige un tema --</option>
+    <option value="t1">1. Tipos de Errores</option>
+    <option value="t2">2. Exactitud y Precision</option>
+    <option value="t3">3. Error Absoluto y Relativo</option>
+    <option value="t4">4. Cota Superior del Error</option>
+    <option value="t5">5. Intervalos de Confianza</option>
+    <option value="t6">6. Propagacion del Error</option>
+    <option value="t7">7. Error de Redondeo</option>
+    <option value="t8">8. Representacion en Numero Flotante (IEEE 754)</option>
+    <option value="t9">9. Estabilidad y Condicionamiento</option>
+  </select>
+</div>
+
+<!-- ===== T1: Tipos de Errores ===== -->
+<div class="topic-section" id="t1">
+<h2>1. Tipos de Errores</h2>
+<p>En todo calculo numerico se cometen errores de diversa naturaleza. Se distinguen <strong>cuatro fuentes principales</strong>:</p>
+
+<div class="def-box">
+  <strong>1. Error Experimental</strong>
+  Proviene de los datos de partida, obtenidos por mediciones con instrumentos de precision limitada.<br>
+  <em>Ejemplo:</em> Al medir la longitud de una barra con una regla graduada en milimetros, el valor obtenido siempre tendra una incertidumbre de al menos &plusmn;0.5 mm. La determinacion empirica de constantes como \(\pi\), \(e\) o la constante de Planck tambien conlleva este tipo de error.
+</div>
+<div class="def-box">
+  <strong>2. Error de Modelizacion</strong>
+  Diferencia entre el modelo matematico y la realidad. Ningun modelo captura al 100% la complejidad del fenomeno real.<br>
+  <em>Ejemplo:</em> Al modelar la caida libre de un objeto con \(h = \frac{1}{2}gt^2\), se ignoran factores como la resistencia del aire, la variacion de \(g\) con la altitud, la rotacion terrestre, etc. El modelo de Bohr del atomo de hidrogeno es otro ejemplo clasico: funciona bien para H pero falla para atomos mas complejos.
+</div>
+<div class="def-box">
+  <strong>3. Error de Truncamiento</strong>
+  Se produce al aproximar un proceso infinito (serie, integral, derivada) por uno finito.<br>
+  <em>Ejemplo:</em> Calcular \(\sin(x)\) usando solo los primeros \(n\) terminos de su serie de Taylor: \(\sin(x) \approx x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots\). Cuantos mas terminos, menor error, pero nunca sera cero con un numero finito.
+</div>
+<div class="def-box">
+  <strong>4. Error de Redondeo</strong>
+  Imposibilidad de trabajar con infinitas cifras decimales. Se acumula con las operaciones realizadas.<br>
+  <em>Ejemplo:</em> \(1/3 = 0.333...\) Cualquier representacion finita (0.33, 0.333, 0.3333) introduce un error. Tras miles de operaciones con estos valores, los errores acumulados pueden ser significativos.
+</div>
+
+<div class="prop-box">
+  <strong>Clave</strong>
+  Solo los errores de <strong>truncamiento</strong> y <strong>redondeo</strong> son controlables por el calculista: el primero aumentando iteraciones/terminos, el segundo aumentando el numero de cifras.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo adicional: las 4 fuentes en un mismo problema</strong>
+  <p>Supongamos que queremos calcular la velocidad de un proyectil:</p>
+  <ol>
+    <li><strong>Experimental:</strong> El cronometro tiene precision de 0.01 s y la cinta metrica de 1 mm.</li>
+    <li><strong>Modelizacion:</strong> Usamos \(v = d/t\) asumiendo velocidad constante (modelo simplificado).</li>
+    <li><strong>Truncamiento:</strong> Si usamos un metodo iterativo para resolver la ecuacion diferencial del movimiento, paramos tras \(n\) pasos.</li>
+    <li><strong>Redondeo:</strong> El computador almacena \(d = 15.3\) m y \(t = 2.17\) s con precision finita; \(d/t = 7.050691...\) se almacena truncado.</li>
+  </ol>
+</div>
+
+<div class="interactive-box">
+  <h4>Ejemplo interactivo: Truncamiento de la serie de Taylor de \(e^x\)</h4>
+  <p>\(\displaystyle e^x = \sum_{k=0}^{\infty}\frac{x^k}{k!}\). Al truncar a \(n\) terminos obtenemos una aproximacion con error de truncamiento.</p>
+  <div class="slider-group">
+    <label>Terminos \(n\):</label>
+    <input type="range" id="taylor-n" min="1" max="15" value="3" oninput="updateTaylor()">
+    <span class="sv" id="taylor-n-val">3</span>
+  </div>
+  <div id="taylor-plot" class="plot-container"></div>
+  <div class="result-box" id="taylor-result"></div>
+</div>
+</div>
+
+<!-- ===== T2: Exactitud y Precision ===== -->
+<div class="topic-section" id="t2">
+<h2>2. Exactitud y Precision</h2>
+
+<p>Es fundamental distinguir entre <strong>exactitud</strong> y <strong>precision</strong>. Aunque en lenguaje coloquial parecen sinonimos, en el contexto numerico tienen significados muy distintos:</p>
+
+<div class="def-box">
+  <strong>Exactitud (Accuracy)</strong>
+  Una medida es <em>exacta</em> si esta cercana al <strong>valor verdadero</strong>. Se cuantifica mediante el <strong>error absoluto</strong>.<br>
+  Analogia: un arquero es exacto si sus flechas caen cerca del centro de la diana.
+</div>
+<div class="def-box">
+  <strong>Precision (Precision)</strong>
+  Las medidas son <em>precisas</em> si estan <strong>agrupadas entre si</strong> (baja dispersion), independientemente de si estan cerca del valor verdadero. Se relaciona con el <strong>error relativo</strong> y las cifras significativas.<br>
+  Analogia: un arquero es preciso si sus flechas caen siempre en la misma zona, aunque no sea el centro.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo: Mediciones de la gravedad</strong>
+  <p>Tres laboratorios miden \(g\) (valor real \(\approx 9.80665\) m/s&sup2;):</p>
+  <ul>
+    <li><strong>Lab A:</strong> 9.81, 9.80, 9.81, 9.80 &rarr; <em>Exacto y preciso</em> (cerca del valor real, agrupados)</li>
+    <li><strong>Lab B:</strong> 9.50, 10.10, 9.70, 10.00 &rarr; <em>Exacto pero impreciso</em> (media &asymp; 9.83, pero dispersos)</li>
+    <li><strong>Lab C:</strong> 10.50, 10.51, 10.49, 10.50 &rarr; <em>Inexacto pero preciso</em> (lejos del real, pero agrupados: sesgo sistematico)</li>
+    <li><strong>Lab D:</strong> 8.50, 11.20, 7.90, 12.00 &rarr; <em>Ni exacto ni preciso</em></li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Diagrama de diana: Exactitud vs Precision</h4>
+  <p>Selecciona un escenario y observa la distribucion de "disparos":</p>
+  <div class="scenario-btns" id="target-btns">
+    <button class="btn btn-primary asc" onclick="drawTarget('high','high',this)">Alta Exactitud + Alta Precision</button>
+    <button class="btn btn-primary" onclick="drawTarget('high','low',this)">Alta Exactitud + Baja Precision</button>
+    <button class="btn btn-primary" onclick="drawTarget('low','high',this)">Baja Exactitud + Alta Precision</button>
+    <button class="btn btn-primary" onclick="drawTarget('low','low',this)">Baja Exactitud + Baja Precision</button>
+  </div>
+  <svg id="target-svg" class="target-svg" width="300" height="300" viewBox="0 0 300 300"></svg>
+  <p id="target-desc" style="text-align:center;font-size:.9rem;margin-top:.5rem;"></p>
+</div>
+</div>
+
+<!-- ===== T3: Error Absoluto y Relativo ===== -->
+<div class="topic-section" id="t3">
+<h2>3. Error Absoluto y Relativo (Cifras Exactas y Significativas)</h2>
+
+<div class="def-box">
+  <strong>Definicion 1 &mdash; Error Absoluto</strong>
+  Si \(x^*\) es una aproximacion de \(x\), el error absoluto es:
+  \[E_A(x^*) = |x - x^*|\]
+</div>
+
+<div class="def-box">
+  <strong>Error absoluto con signo y aproximacion por exceso/defecto</strong>
+  El error absoluto <em>con signo</em> se define como \(E'_A(x^*) = x - x^*\):
+  <ul>
+    <li>Si \(E'_A(x^*) < 0\) entonces \(x^* > x\): la aproximacion es <strong>por exceso</strong>.</li>
+    <li>Si \(E'_A(x^*) > 0\) entonces \(x^* < x\): la aproximacion es <strong>por defecto</strong>.</li>
+  </ul>
+</div>
+
+<div class="def-box">
+  <strong>Definicion 4 &mdash; Cifras Decimales Exactas</strong>
+  La aproximacion \(x^*\) tiene \(p\) cifras decimales exactas si:
+  \[E_A(x^*) \leq 10^{-p}\]
+</div>
+<div class="def-box">
+  <strong>Definicion 6 &mdash; Error Relativo</strong>
+  \[E_R(x^*) = \frac{|x - x^*|}{|x|}\]
+</div>
+<div class="def-box">
+  <strong>Definicion 9 &mdash; Cifras Significativas</strong>
+  La aproximacion \(x^*\) tiene \(t\) cifras significativas si \(t\) es el mayor entero no negativo tal que:
+  \[E_R(x^*) < 5 \times 10^{-t}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Error Absoluto y Relativo</h4>
+  <div class="calc-grid">
+    <div><label>Valor exacto \(x\):</label><input type="text" id="ea-x" value="3.14159265" placeholder="Ej: pi, 3.14159265"></div>
+    <div><label>Aproximacion \(x^*\):</label><input type="text" id="ea-xs" value="3.1416" placeholder="Ej: 22/7, 3.1416"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcError()">Calcular</button>
+  <div class="result-box" id="ea-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion: Error Absoluto vs Relativo</h4>
+  <p>Compara dos aproximaciones. Observa que un mismo error absoluto puede significar cosas muy distintas segun la magnitud del numero:</p>
+  <div class="calc-grid">
+    <div><label>Numero 1 (\(x_1\)):</label><input type="text" id="vis-x1" value="3.14159" placeholder="pi"></div>
+    <div><label>Error absoluto 1:</label><input type="number" id="vis-ea1" value="1" step="any"></div>
+    <div><label>Numero 2 (\(x_2\)):</label><input type="text" id="vis-x2" value="6.022e23" placeholder="Avogadro"></div>
+    <div><label>Error absoluto 2:</label><input type="number" id="vis-ea2" value="1" step="any"></div>
+  </div>
+  <button class="btn btn-primary" onclick="visCompare()">Comparar</button>
+  <div id="vis-compare-plot" class="plot-container" style="min-height:250px"></div>
+  <div class="result-box" id="vis-compare-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 5 &mdash; Comparacion de exactitud</strong>
+  <p>\(x^* = 6.2\) aproxima a \(x = 6\) y \(y^* = 6198\) aproxima a \(y = 6000\):</p>
+  <ul>
+    <li>\(E_A(6.2) = |6 - 6.2| = 0.2\) &rarr; Mas exacta (menor EA)</li>
+    <li>\(E_A(6198) = |6000 - 6198| = 198\)</li>
+    <li>Pero \(E_R(6.2) = 0.2/6 \approx 0.033\) y \(E_R(6198) = 198/6000 = 0.033\)</li>
+    <li>Ambas tienen la misma precision relativa (2 cifras significativas).</li>
+  </ul>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 10 &mdash; \(\pi\) vs Avogadro con el mismo EA</strong>
+  <p>Si ambas tienen \(E_A = 1\):</p>
+  <ul>
+    <li>\(E_R(\pi^*) = 1/\pi \approx 0.318\) &rarr; 1 cifra significativa</li>
+    <li>\(E_R(N_A^*) = 1/(6.022\times10^{23}) \approx 1.66\times10^{-24}\) &rarr; 25 cifras significativas</li>
+  </ul>
+  <p><strong>Conclusion:</strong> El error absoluto solo, sin contexto, no dice nada. El error relativo da la medida real de calidad de una aproximacion.</p>
+</div>
+</div>
+
+<!-- ===== T4: Cota Superior del Error ===== -->
+<div class="topic-section" id="t4">
+<h2>4. Cota Superior del Error Absoluto y Relativo</h2>
+
+<div class="def-box">
+  <strong>Definicion 12 &mdash; Cota Superior (Limite superior del error)</strong>
+  Se dice que \(\varepsilon > 0\) es una cota superior del error absoluto si:
+  \[E_A(x^*) \leq \varepsilon\]
+  Analogamente para el error relativo: \(E_R(x^*) \leq \varepsilon\).
+  <p>La cota no es el error exacto, sino un <em>limite superior garantizado</em>. El error real puede ser menor.</p>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 14 &mdash; Cota del Error Relativo a partir de cifras decimales exactas</strong>
+  Si \(x^*\) tiene \(p\) cifras decimales exactas y \(d_1\) es su primera cifra significativa:
+  \[\varepsilon_{rel} = \frac{1}{d_1 \cdot 10^{p-1}}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Cotas</h4>
+  <div class="calc-grid">
+    <div><label>Aproximacion \(x^*\):</label><input type="text" id="cota-xs" value="3.1416" placeholder="Ej: 3.1416"></div>
+    <div><label>Cota del EA (\(\varepsilon\)):</label><input type="text" id="cota-eps" value="0.0001" placeholder="Ej: 0.0001"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcCota()">Calcular Cotas</button>
+  <div class="result-box" id="cota-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion: Concepto de Cota</h4>
+  <p>El error real esta <em>en algun lugar</em> por debajo de la cota. Introduce distintos valores y observa:</p>
+  <div class="calc-grid">
+    <div><label>Valor exacto \(x\):</label><input type="number" id="cota-vis-x" value="3.14159265" step="any"></div>
+    <div><label>Aproximacion \(x^*\):</label><input type="number" id="cota-vis-xs" value="3.1416" step="any"></div>
+    <div><label>Cota \(\varepsilon\):</label><input type="number" id="cota-vis-eps" value="0.001" step="any" min="0"></div>
+  </div>
+  <button class="btn btn-primary" onclick="visCota()">Visualizar</button>
+  <div id="cota-vis-plot" class="plot-container" style="min-height:200px"></div>
+  <div class="result-box" id="cota-vis-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo: Cotas con distintas aproximaciones de \(\pi\)</strong>
+  <table class="dt">
+    <tr><th>Aproximacion \(x^*\)</th><th>\(E_A\)</th><th>Cota \(\varepsilon\) valida</th><th>\(E_A \leq \varepsilon\)?</th></tr>
+    <tr><td>3.14</td><td>0.00159...</td><td>0.005</td><td>Si</td></tr>
+    <tr><td>22/7 &asymp; 3.14286</td><td>0.00127...</td><td>0.002</td><td>Si</td></tr>
+    <tr><td>3.1416</td><td>0.0000073...</td><td>0.0001</td><td>Si</td></tr>
+    <tr><td>355/113 &asymp; 3.14159292</td><td>2.67&times;10<sup>-7</sup></td><td>10<sup>-6</sup></td><td>Si</td></tr>
+  </table>
+</div>
+</div>
+
+<!-- ===== T5: Intervalos de Confianza ===== -->
+<div class="topic-section" id="t5">
+<h2>5. Intervalos de Confianza</h2>
+
+<div class="def-box">
+  <strong>Definicion 15 &mdash; Intervalo de Confianza</strong>
+  Sea \(x^*\) una aproximacion de \(x\) y \(\varepsilon\) una cota superior de \(E_A(x^*)\). El intervalo de confianza para \(x\) es:
+  \[[x^* - \varepsilon,\; x^* + \varepsilon]\]
+  El valor exacto \(x\) esta <strong>garantizado</strong> dentro de este intervalo.
+</div>
+
+<div class="def-box">
+  <strong>Aproximacion por exceso y por defecto</strong>
+  <p>Sea \(E'_A(x^*) = x - x^*\) el error con signo:</p>
+  <ul>
+    <li>Si \(x^* > x\) (es decir \(E'_A < 0\)): aproximacion <strong>por exceso</strong>. El valor real esta a la <em>izquierda</em> de \(x^*\).</li>
+    <li>Si \(x^* < x\) (es decir \(E'_A > 0\)): aproximacion <strong>por defecto</strong>. El valor real esta a la <em>derecha</em> de \(x^*\).</li>
+  </ul>
+  <p>El intervalo de confianza cubre ambos casos: siempre contiene a \(x\), ya sea por exceso o por defecto.</p>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 17</strong>
+  Si \([a, b] \subset \mathbb{R}\) es un intervalo de confianza para \(x\), la mejor aproximacion es:
+  \[x^* = \frac{a+b}{2} \quad \text{con cota} \quad E_A(x^*) \leq \frac{b-a}{2}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion de Intervalo de Confianza (con exceso/defecto)</h4>
+  <div class="calc-grid">
+    <div><label>Aproximacion \(x^*\):</label><input type="number" id="ic-xs" value="3.1416" step="any"></div>
+    <div><label>Cota \(\varepsilon\):</label><input type="number" id="ic-eps" value="0.001" step="any" min="0.00001"></div>
+    <div><label>Valor exacto \(x\) (opcional, para ver exceso/defecto):</label><input type="number" id="ic-real" value="3.14159265" step="any"></div>
+  </div>
+  <button class="btn btn-primary" onclick="drawInterval()">Visualizar</button>
+  <div id="interval-plot" class="plot-container" style="min-height:200px"></div>
+  <div class="result-box" id="ic-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Dado un intervalo [a, b], calcula la mejor aproximacion</h4>
+  <div class="calc-grid">
+    <div><label>Extremo inferior \(a\):</label><input type="number" id="ic-a" value="3.140" step="any"></div>
+    <div><label>Extremo superior \(b\):</label><input type="number" id="ic-b" value="3.143" step="any"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcFromInterval()">Calcular</button>
+  <div class="result-box" id="ic-ab-result"></div>
+</div>
+</div>
+
+<!-- ===== T6: Propagacion del Error ===== -->
+<div class="topic-section" id="t6">
+<h2>6. Propagacion del Error</h2>
+
+<div class="prop-box">
+  <strong>Proposicion 18 &mdash; Propagacion en operaciones basicas</strong>
+  Sean \(x, y\) numeros reales con aproximaciones \(x^*, y^*\):
+  \[E_A(x^* \pm y^*) \leq E_A(x^*) + E_A(y^*)\]
+  \[E_R(x^* \cdot y^*) \leq E_R(x^*) + E_R(y^*)\]
+  \[E_R(x^*/y^*) \leq E_R(x^*) + E_R(y^*)\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Propagacion del Error</h4>
+  <div class="calc-grid">
+    <div><label>Valor exacto \(x\):</label><input type="text" id="prop-x" value="1" placeholder="Ej: 1"></div>
+    <div><label>Aproximacion \(x^*\):</label><input type="text" id="prop-xs" value="1.10" placeholder="Ej: 1.10"></div>
+    <div><label>Valor exacto \(y\):</label><input type="text" id="prop-y" value="1/7" placeholder="Ej: 1/7"></div>
+    <div><label>Aproximacion \(y^*\):</label><input type="text" id="prop-ys" value="0.14" placeholder="Ej: 0.14"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcPropagacion()">Calcular Propagacion</button>
+  <div class="result-box" id="prop-result"></div>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 21 &mdash; Transferencia del error (funciones)</strong>
+  Sea \(f \in C^1(\mathbb{R})\) y \(x^*\) aproximacion de \(x\):
+  \[E_A(f(x^*)) \leq \max_{z \in I} |f'(z)| \cdot E_A(x^*)\]
+  donde \(I\) es el intervalo cerrado con extremos \(x\) y \(x^*\).
+</div>
+
+<div class="interactive-box">
+  <h4>Propagacion del error en funciones</h4>
+  <p style="font-size:.85rem;color:var(--txtl)">Puedes escribir tu propia funcion usando sintaxis matematica: sin(x), cos(x), exp(x), log(x), sqrt(x), x^2, x^3, (x-1)^2, etc.</p>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="prop-func" value="sin(x)" placeholder="Ej: x^3 - 2*x + 1, exp(-x^2)"></div>
+    <div><label>Punto \(x^*\):</label><input type="number" id="prop-func-x" value="1" step="any"></div>
+    <div><label>\(E_A(x^*)\):</label><input type="number" id="prop-func-ea" value="0.1" step="any" min="0"></div>
+  </div>
+  <div style="font-size:.8rem;color:var(--txtl);margin-bottom:.5rem">Funciones disponibles: sin, cos, tan, exp, log (ln), sqrt, abs, asin, acos, atan, sinh, cosh. Operadores: +, -, *, /, ^ (potencia)</div>
+  <button class="btn btn-primary" onclick="calcPropFunc()">Calcular y Graficar</button>
+  <div id="propfunc-plot" class="plot-container"></div>
+  <div class="result-box" id="propfunc-result"></div>
+</div>
+</div>
+
+<!-- ===== T7: Error de Redondeo ===== -->
+<div class="topic-section" id="t7">
+<h2>7. Error de Redondeo</h2>
+
+<div class="prop-box">
+  <strong>Proposicion 27 &mdash; Cotas del error de redondeo</strong>
+  Si \(x_t\) es la aproximacion por truncamiento y \(x_r\) por redondeo con \(k\) cifras decimales:
+  \[E_A(x_t) \leq 10^{-k} \qquad E_A(x_r) \leq \frac{1}{2} \cdot 10^{-k}\]
+  El redondeo siempre produce un error menor o igual que el truncamiento.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 26 &mdash; Aproximaciones del numero \(e = 2.71828182845...\)</strong>
+  <table class="dt">
+    <tr><th>\(k\)</th><th>Redondeo</th><th>Truncamiento</th><th>EA redondeo</th><th>EA truncamiento</th></tr>
+    <tr><td>1</td><td>2.7</td><td>2.7</td><td>0.01828...</td><td>0.01828...</td></tr>
+    <tr><td>2</td><td>2.72</td><td>2.71</td><td>0.00172...</td><td>0.00828...</td></tr>
+    <tr><td>3</td><td>2.718</td><td>2.718</td><td>0.00028...</td><td>0.00028...</td></tr>
+    <tr><td>4</td><td>2.7183</td><td>2.7182</td><td>0.00002...</td><td>0.00008...</td></tr>
+  </table>
+</div>
+
+<div class="interactive-box">
+  <h4>Simulador: Truncamiento vs Redondeo</h4>
+  <div class="calc-grid">
+    <div><label>Numero:</label><input type="text" id="round-num" value="2.71828182845" placeholder="Ej: 2.71828182845"></div>
+    <div><label>Cifras decimales \(k\):</label><input type="number" id="round-k" value="4" min="0" max="15"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcRedondeo()">Calcular</button>
+  <div class="result-box" id="round-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 34 &mdash; Aritmetica de 5 cifras significativas</strong>
+  <p>Calcular \(\sqrt{3} + \frac{1}{6} - \frac{2}{5}\) con aritmetica de 5 cifras significativas:</p>
+  <ul>
+    <li><strong>Redondeo:</strong> \(1.7321 + 0.16667 = 1.8988\); \(1.8988 - 0.40000 = 1.4988\)</li>
+    <li><strong>Truncamiento:</strong> \(1.7320 + 0.16666 = 1.8986\); \(1.8986 - 0.40000 = 1.4986\)</li>
+    <li>Valor real: \(\approx 1.49872...\)</li>
+  </ul>
+</div>
+</div>
+
+<!-- ===== T8: IEEE 754 ===== -->
+<div class="topic-section" id="t8">
+<h2>8. Representacion en Numero Flotante (IEEE 754)</h2>
+
+<p>El estandar IEEE 754 define como los computadores almacenan numeros reales en formato binario.</p>
+
+<div class="def-box">
+  <strong>Precision simple (32 bits)</strong>
+  <p><span class="bits-display"><span class="sign">S (1 bit)</span> | <span class="exponent">Exponente (8 bits)</span> | <span class="mantissa">Mantisa (23 bits)</span></span></p>
+  \[(-1)^s \times 2^{c-128} \times (1 + m)\]
+  <p>Rango: \(\approx \pm 3.4 \times 10^{38}\). Epsilon: \(2^{-23} \approx 1.19 \times 10^{-7}\)</p>
+  <p><em>Nota: el sesgo del exponente en el PDF del curso es 128. El estandar IEEE 754 usa 127, pero seguimos la convencion del material.</em></p>
+</div>
+<div class="def-box">
+  <strong>Precision doble (64 bits)</strong>
+  <p><span class="bits-display"><span class="sign">S (1 bit)</span> | <span class="exponent">Exponente (11 bits)</span> | <span class="mantissa">Mantisa (52 bits)</span></span></p>
+  \[(-1)^s \times 2^{c-1024} \times (1 + m)\]
+  <p>Rango: \(\approx \pm 1.8 \times 10^{308}\). Epsilon: \(2^{-52} \approx 2.22 \times 10^{-16}\)</p>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizador IEEE 754</h4>
+  <div class="calc-grid">
+    <div><label>Numero decimal:</label><input type="number" id="ieee-num" value="5.5" step="any"></div>
+    <div><label>Precision:</label><select id="ieee-prec"><option value="32">Simple (32 bits)</option><option value="64" selected>Doble (64 bits)</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcIEEE()">Representar</button>
+  <div class="result-box" id="ieee-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 31 &mdash; Representacion de 5.5</strong>
+  <p>\(5.5 = (101.1)_2 = (1.011)_2 \times 2^2\)</p>
+  <p>32 bits: <span class="bits-display"><span class="sign">0</span> <span class="exponent">10000001</span> <span class="mantissa">01100000000000000000000</span></span></p>
+</div>
+<div class="example-box">
+  <strong>Ejemplo 32 &mdash; 0.1 no es exacto en binario</strong>
+  <p>\(0.1 = (0.0\overline{0011})_2\) &mdash; periodico. Esto explica por que \(0.1 + 0.2 \neq 0.3\) en los computadores.</p>
+</div>
+<div class="example-box">
+  <strong>Ejemplo 35 &mdash; Cancelacion catastrofica</strong>
+  <p>Resolver \(x^2 - 10^6 x + 1 = 0\): la formula directa da cancelacion. Formula estable: \(x_2 = \frac{2}{10^6 + \sqrt{10^{12}-4}}\).</p>
+</div>
+</div>
+
+<!-- ===== T9: Estabilidad y Condicionamiento ===== -->
+<div class="topic-section" id="t9">
+<h2>9. Estabilidad y Condicionamiento</h2>
+
+<div class="def-box">
+  <strong>Definicion 39 &mdash; Numero de condicion</strong>
+  \[C(x^*) = \left|\frac{x^* \cdot f'(x^*)}{f(x^*)}\right|\]
+</div>
+<ul>
+  <li>\(C < 1\): <strong>bien condicionado</strong> &mdash; errores se reducen.</li>
+  <li>\(C > 1\): <strong>mal condicionado</strong> &mdash; errores se amplifican.</li>
+  <li>\(C \to \infty\): problema <strong>muy inestable</strong> en ese punto.</li>
+</ul>
+
+<div class="interactive-box">
+  <h4>Calculadora y grafica del numero de condicion</h4>
+  <p style="font-size:.85rem;color:var(--txtl)">Escribe cualquier funcion. Se calculara automaticamente \(f'(x)\) y \(C(x) = |x \cdot f'(x)/f(x)|\).</p>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="cond-func" value="sqrt(x)" placeholder="Ej: x^2-1, (x-1)*sqrt(x)"></div>
+    <div><label>Rango de \(x\):</label><div style="display:flex;gap:.3rem"><input type="number" id="cond-a" value="0.1" step="any" style="width:48%"><input type="number" id="cond-b" value="5" step="any" style="width:48%"></div></div>
+  </div>
+  <div style="font-size:.8rem;color:var(--txtl);margin-bottom:.5rem">Ejemplos: sqrt(x), x^2-1, (x-1)^2, sin(x), log(x), exp(x), tan(x), (x-1)*sqrt(x)</div>
+  <button class="btn btn-primary" onclick="calcCondicion()">Graficar</button>
+  <div id="cond-plot" class="plot-container"></div>
+  <div class="result-box" id="cond-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 41: \(f(x)=\sqrt{x}\) &rarr; \(C(x)=1/2\) (siempre bien condicionado)</strong>
+</div>
+<div class="example-box">
+  <strong>Ejemplo 42: \(f(x)=x^2-1\) &rarr; \(C(x)=|2x^2/(x^2-1)|\) (mal condicionado cerca de \(x=\pm 1\))</strong>
+</div>
+</div>
+
+</div>
+
+<!-- ============ TEST ============ -->
+<div id="tab-test" class="tab-content">
+  <div class="score-bar" id="score-bar" style="display:none">
+    <p>Puntuacion (preguntas tipo test):</p>
+    <div class="score" id="score-value">0 / 0</div>
+    <button class="btn btn-accent" onclick="resetTest()" style="margin-top:.5rem">Reiniciar Test</button>
+  </div>
+  <h2 style="margin:1rem 0 .5rem">Preguntas Tipo Test</h2>
+  <div id="test-container"></div>
+  <div style="text-align:center;margin:1rem 0">
+    <button class="btn btn-success" onclick="gradeTest()" style="font-size:1.1rem;padding:.8rem 2rem">Corregir Test</button>
+  </div>
+  <h2 style="margin:2rem 0 .5rem">Problemas Conceptuales</h2>
+  <div id="problems-container"></div>
+</div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+// === TABS ===
+function switchTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  if(t==='theory'){document.querySelectorAll('.tab-btn')[0].classList.add('active');document.getElementById('tab-theory').classList.add('active')}
+  else{document.querySelectorAll('.tab-btn')[1].classList.add('active');document.getElementById('tab-test').classList.add('active')}
+}
+
+// === TOPIC SELECTOR ===
+function showTopic(id){
+  document.querySelectorAll('.topic-section').forEach(s=>s.classList.remove('active'));
+  if(id){
+    const el=document.getElementById(id);
+    el.classList.add('active');
+    renderMathInElement(el,mathOpts);
+    // trigger init if needed
+    if(id==='t1'&&!window._taylorInit){updateTaylor();window._taylorInit=true}
+    if(id==='t2'&&!window._targetInit){drawTarget('high','high',document.querySelector('#target-btns .btn'));window._targetInit=true}
+  }
+}
+
+// === MATH RENDER OPTIONS ===
+const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false};
+
+// === TAYLOR ===
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function taylorExp(x,n){let s=0;for(let k=0;k<n;k++)s+=Math.pow(x,k)/factorial(k);return s}
+function updateTaylor(){
+  const n=+document.getElementById('taylor-n').value;
+  document.getElementById('taylor-n-val').textContent=n;
+  const xs=[],yR=[],yA=[];
+  for(let x=-2;x<=3;x+=.05){xs.push(x);yR.push(Math.exp(x));yA.push(taylorExp(x,n))}
+  const v2=taylorExp(2,n),e2=Math.abs(Math.exp(2)-v2);
+  Plotly.newPlot('taylor-plot',[
+    {x:xs,y:yR,name:'e^x (exacta)',line:{color:'#2980b9',width:3}},
+    {x:xs,y:yA,name:'Taylor (n='+n+')',line:{color:'#e74c3c',width:2,dash:'dash'}}
+  ],{margin:{t:30,r:20,b:40,l:50},xaxis:{title:'x',range:[-2,3]},yaxis:{title:'f(x)',range:[-1,20]},legend:{x:.02,y:.98},height:320},{responsive:true});
+  document.getElementById('taylor-result').innerHTML=
+    'En <span class="val">x=2</span>: e^2 = <span class="val">'+Math.exp(2).toFixed(8)+'</span>, Taylor('+n+') = <span class="val">'+v2.toFixed(8)+'</span>, Error = <span class="val">'+e2.toExponential(4)+'</span>';
+}
+
+// === TARGET ===
+function drawTarget(ex,pr,btn){
+  document.querySelectorAll('#target-btns .btn').forEach(b=>b.classList.remove('asc'));
+  if(btn)btn.classList.add('asc');
+  const svg=document.getElementById('target-svg'),cx=150,cy=150;
+  let h='';
+  for(let r=120;r>0;r-=30){const c=r>90?'#fadbd8':r>60?'#fdebd0':r>30?'#d5f5e3':'#abebc6';h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}" stroke="#bbb" stroke-width="1"/>`}
+  h+=`<line x1="${cx}" y1="${cy-125}" x2="${cx}" y2="${cy+125}" stroke="#ccc" stroke-width=".5"/>`;
+  h+=`<line x1="${cx-125}" y1="${cy}" x2="${cx+125}" y2="${cy}" stroke="#ccc" stroke-width=".5"/>`;
+  const bx=ex==='high'?0:60,by=ex==='high'?0:-50,sp=pr==='high'?12:55;
+  for(let i=0;i<20;i++){const a=Math.random()*2*Math.PI,d=(Math.random()+Math.random())/2*sp;
+    h+=`<circle cx="${(cx+bx+Math.cos(a)*d).toFixed(1)}" cy="${(cy+by+Math.sin(a)*d).toFixed(1)}" r="4" fill="#c0392b" stroke="#922b21" stroke-width="1" opacity=".85"/>`}
+  h+=`<circle cx="${cx}" cy="${cy}" r="3" fill="#2c3e50"/>`;
+  svg.innerHTML=h;
+  const ds={'high-high':'Alta exactitud + Alta precision: agrupados y cerca del centro.',
+    'high-low':'Alta exactitud + Baja precision: dispersos pero centrados en el valor real.',
+    'low-high':'Baja exactitud + Alta precision: agrupados pero lejos del centro (sesgo sistematico).',
+    'low-low':'Baja exactitud + Baja precision: dispersos y lejos del centro.'};
+  document.getElementById('target-desc').textContent=ds[ex+'-'+pr];
+}
+
+// === SAFE EVAL ===
+function sEval(e){try{e=e.replace(/pi/gi,'Math.PI').replace(/(?<![a-zA-Z])e(?![a-zA-Z0-9.+\-])/g,'Math.E');return Function('"use strict";return('+e+')')()}catch(x){try{return math.evaluate(e)}catch(x2){return NaN}}}
+
+// === ERROR CALCULATOR ===
+function calcError(){
+  const x=sEval(document.getElementById('ea-x').value),xs=sEval(document.getElementById('ea-xs').value);
+  if(isNaN(x)||isNaN(xs)){document.getElementById('ea-result').innerHTML='Introduce valores validos.';return}
+  const ea=Math.abs(x-xs),er=x?Math.abs(x-xs)/Math.abs(x):Infinity;
+  let p=0;while(ea<=Math.pow(10,-p)&&p<20)p++;p=Math.max(0,p-1);
+  let t=0;while(er<5*Math.pow(10,-t)&&t<20)t++;t=Math.max(0,t-1);
+  const sign=x-xs;
+  const tipo=sign<0?'por exceso (x* > x)':sign>0?'por defecto (x* < x)':'exacta';
+  document.getElementById('ea-result').innerHTML=
+    '<b>Error Absoluto:</b> <span class="val">'+ea.toExponential(6)+'</span><br>'+
+    '<b>Error Relativo:</b> <span class="val">'+er.toExponential(6)+'</span><br>'+
+    '<b>Tipo:</b> Aproximacion <span class="val">'+tipo+'</span> (E\'_A = '+sign.toExponential(4)+')<br>'+
+    '<b>Cifras decimales exactas:</b> <span class="val">p = '+p+'</span><br>'+
+    '<b>Cifras significativas:</b> <span class="val">t = '+t+'</span>';
+}
+
+// === VISUAL COMPARE EA vs ER ===
+function visCompare(){
+  const x1=sEval(document.getElementById('vis-x1').value),ea1=+document.getElementById('vis-ea1').value;
+  const x2=sEval(document.getElementById('vis-x2').value),ea2=+document.getElementById('vis-ea2').value;
+  if([x1,x2,ea1,ea2].some(isNaN))return;
+  const er1=ea1/Math.abs(x1),er2=ea2/Math.abs(x2);
+  Plotly.newPlot('vis-compare-plot',[
+    {x:['Numero 1','Numero 2'],y:[ea1,ea2],type:'bar',name:'Error Absoluto',marker:{color:'#2980b9'}},
+    {x:['Numero 1','Numero 2'],y:[er1,er2],type:'bar',name:'Error Relativo',marker:{color:'#e74c3c'},yaxis:'y2'}
+  ],{margin:{t:30,r:60,b:40,l:60},height:250,yaxis:{title:'EA',side:'left'},yaxis2:{title:'ER',overlaying:'y',side:'right',showgrid:false},barmode:'group',legend:{orientation:'h',y:1.15}},{responsive:true});
+  let t1=0;while(er1<5*Math.pow(10,-t1)&&t1<30)t1++;t1=Math.max(0,t1-1);
+  let t2=0;while(er2<5*Math.pow(10,-t2)&&t2<30)t2++;t2=Math.max(0,t2-1);
+  document.getElementById('vis-compare-result').innerHTML=
+    '<b>Numero 1:</b> |x| = '+Math.abs(x1).toExponential(3)+', EA = '+ea1+', ER = <span class="val">'+er1.toExponential(4)+'</span>, '+t1+' cifras significativas<br>'+
+    '<b>Numero 2:</b> |x| = '+Math.abs(x2).toExponential(3)+', EA = '+ea2+', ER = <span class="val">'+er2.toExponential(4)+'</span>, '+t2+' cifras significativas<br>'+
+    '<em>Mismo EA, pero el ER (y por tanto la calidad) puede ser radicalmente distinto.</em>';
+}
+
+// === COTAS ===
+function calcCota(){
+  const xs=sEval(document.getElementById('cota-xs').value),eps=sEval(document.getElementById('cota-eps').value);
+  if(isNaN(xs)||isNaN(eps)||eps<=0){document.getElementById('cota-result').innerHTML='Valores no validos.';return}
+  const cotaER=xs?eps/Math.abs(xs):Infinity;
+  let p=0;while(eps<=Math.pow(10,-p)&&p<20)p++;p=Math.max(0,p-1);
+  const d1=parseInt(Math.abs(xs).toExponential().charAt(0));
+  const cotaProp14=d1>0&&p>0?1/(d1*Math.pow(10,p-1)):null;
+  document.getElementById('cota-result').innerHTML=
+    '<b>Intervalo de confianza:</b> <span class="val">['+(xs-eps)+', '+(xs+eps)+']</span><br>'+
+    '<b>Cota ER:</b> <span class="val">&epsilon;/|x*| = '+cotaER.toExponential(6)+'</span><br>'+
+    '<b>Cifras decimales exactas garantizadas:</b> <span class="val">p = '+p+'</span>'+
+    (cotaProp14?'<br><b>Cota ER (Prop 14):</b> <span class="val">1/('+d1+'&middot;10^'+(p-1)+') = '+cotaProp14.toExponential(4)+'</span>':'');
+}
+
+function visCota(){
+  const x=+document.getElementById('cota-vis-x').value,xs=+document.getElementById('cota-vis-xs').value,eps=+document.getElementById('cota-vis-eps').value;
+  if(isNaN(x)||isNaN(xs)||isNaN(eps))return;
+  const ea=Math.abs(x-xs);
+  Plotly.newPlot('cota-vis-plot',[
+    {x:[xs-eps,xs+eps],y:[0,0],mode:'lines',line:{color:'#2980b9',width:10},name:'Intervalo [x*-e, x*+e]',hoverinfo:'x'},
+    {x:[xs],y:[0],mode:'markers',marker:{size:14,color:'#e74c3c',symbol:'diamond'},name:'x* (aprox)',hoverinfo:'x'},
+    {x:[x],y:[0],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:'x (exacto)',hoverinfo:'x'},
+    {x:[xs-eps,xs-eps],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false},
+    {x:[xs+eps,xs+eps],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false}
+  ],{margin:{t:20,b:50,l:40,r:40},yaxis:{visible:false,range:[-.5,.5]},xaxis:{title:'x'},height:180,legend:{orientation:'h',y:1.2}},{responsive:true});
+  const dentro=ea<=eps;
+  document.getElementById('cota-vis-result').innerHTML=
+    'EA real = <span class="val">'+ea.toExponential(4)+'</span>, Cota &epsilon; = <span class="val">'+eps+'</span><br>'+
+    (dentro?'<span style="color:#27ae60"><b>EA &le; &epsilon;</b>: la cota es valida, x esta dentro del intervalo.</span>':
+    '<span style="color:#e74c3c"><b>EA > &epsilon;</b>: la cota NO es valida, x queda fuera del intervalo.</span>');
+}
+
+// === INTERVALOS ===
+function drawInterval(){
+  const xs=+document.getElementById('ic-xs').value,eps=+document.getElementById('ic-eps').value;
+  const xReal=document.getElementById('ic-real').value?+document.getElementById('ic-real').value:null;
+  if(isNaN(xs)||isNaN(eps))return;
+  const a=xs-eps,b=xs+eps;
+  const traces=[
+    {x:[a,b],y:[0,0],mode:'lines',line:{color:'#2980b9',width:8},name:'Intervalo',hoverinfo:'x'},
+    {x:[xs],y:[0],mode:'markers',marker:{size:14,color:'#e74c3c',symbol:'diamond'},name:'x*',hoverinfo:'x'},
+    {x:[a],y:[0],mode:'markers+text',marker:{size:10,color:'#2980b9'},text:[a.toFixed(6)],textposition:'bottom center',showlegend:false,hoverinfo:'x'},
+    {x:[b],y:[0],mode:'markers+text',marker:{size:10,color:'#2980b9'},text:[b.toFixed(6)],textposition:'bottom center',showlegend:false,hoverinfo:'x'}
+  ];
+  if(xReal!==null&&!isNaN(xReal)){
+    traces.push({x:[xReal],y:[0],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:'x (exacto)',hoverinfo:'x'});
+  }
+  Plotly.newPlot('interval-plot',traces,{margin:{t:20,b:50,l:40,r:40},yaxis:{visible:false,range:[-.5,.5]},xaxis:{title:'x',range:[a-eps,b+eps]},height:180,legend:{orientation:'h',y:1.15}},{responsive:true});
+  let html='Intervalo de confianza: <span class="val">['+a.toFixed(6)+', '+b.toFixed(6)+']</span>';
+  if(xReal!==null&&!isNaN(xReal)){
+    const ea=Math.abs(xReal-xs);
+    const tipo=(xReal-xs)<0?'por exceso (x* > x)':(xReal-xs)>0?'por defecto (x* < x)':'exacta';
+    const dentro=ea<=eps+1e-15;
+    html+='<br>x = '+xReal+', EA = <span class="val">'+ea.toExponential(4)+'</span>, Aprox. <span class="val">'+tipo+'</span>';
+    html+='<br>'+(dentro?'<span style="color:#27ae60">x esta dentro del intervalo.</span>':'<span style="color:#e74c3c">x NO esta dentro (la cota epsilon es insuficiente).</span>');
+  }
+  document.getElementById('ic-result').innerHTML=html;
+}
+
+function calcFromInterval(){
+  const a=+document.getElementById('ic-a').value,b=+document.getElementById('ic-b').value;
+  if(isNaN(a)||isNaN(b)||a>=b){document.getElementById('ic-ab-result').innerHTML='Introduce a < b.';return}
+  const xs=(a+b)/2,eps=(b-a)/2;
+  document.getElementById('ic-ab-result').innerHTML=
+    'Mejor aproximacion: <span class="val">x* = ('+a+'+'+b+')/2 = '+xs+'</span><br>'+
+    'Cota del error: <span class="val">&epsilon; = ('+b+'-'+a+')/2 = '+eps+'</span><br>'+
+    'Intervalo: <span class="val">['+a+', '+b+']</span>';
+}
+
+// === PROPAGACION ===
+function calcPropagacion(){
+  const x=sEval(document.getElementById('prop-x').value),xs=sEval(document.getElementById('prop-xs').value);
+  const y=sEval(document.getElementById('prop-y').value),ys=sEval(document.getElementById('prop-ys').value);
+  if([x,xs,y,ys].some(isNaN)){document.getElementById('prop-result').innerHTML='Valores no validos.';return}
+  const eax=Math.abs(x-xs),eay=Math.abs(y-ys);
+  const erx=x?eax/Math.abs(x):Infinity,ery=y?eay/Math.abs(y):Infinity;
+  const eaSum=Math.abs((x+y)-(xs+ys)),erProd=x*y?Math.abs(x*y-xs*ys)/Math.abs(x*y):Infinity;
+  const erDiv=y&&x/y?Math.abs(x/y-xs/ys)/Math.abs(x/y):Infinity;
+  document.getElementById('prop-result').innerHTML=
+    '<b>Errores individuales:</b><br>EA(x*)=<span class="val">'+eax.toExponential(4)+'</span>, EA(y*)=<span class="val">'+eay.toExponential(4)+'</span><br>'+
+    'ER(x*)=<span class="val">'+erx.toExponential(4)+'</span>, ER(y*)=<span class="val">'+ery.toExponential(4)+'</span><br><br>'+
+    '<b>Suma:</b> EA(x*+y*) = <span class="val">'+eaSum.toExponential(4)+'</span> &le; '+(eax+eay).toExponential(4)+' = EA(x*)+EA(y*) &#10003;<br>'+
+    '<b>Producto:</b> ER(x*&middot;y*) = <span class="val">'+erProd.toExponential(4)+'</span> &le; '+(erx+ery).toExponential(4)+' = ER(x*)+ER(y*) &#10003;<br>'+
+    '<b>Cociente:</b> ER(x*/y*) = <span class="val">'+erDiv.toExponential(4)+'</span> &le; '+(erx+ery).toExponential(4)+' = ER(x*)+ER(y*) &#10003;';
+}
+
+// === PARSE USER FORMULA WITH MATH.JS ===
+function parseFunc(expr){
+  try{
+    const node=math.parse(expr);
+    const compiled=node.compile();
+    const f=x=>{try{return compiled.evaluate({x:x})}catch(e){return NaN}};
+    // Compute derivative symbolically
+    const dnode=math.derivative(node,'x');
+    const dcompiled=dnode.compile();
+    const df=x=>{try{return dcompiled.evaluate({x:x})}catch(e){return NaN}};
+    return {f,df,expr:node.toString(),dexpr:dnode.toString()};
+  }catch(e){return null}
+}
+
+// === PROPAGACION FUNCIONES ===
+function calcPropFunc(){
+  const exprStr=document.getElementById('prop-func').value.trim();
+  const fd=parseFunc(exprStr);
+  if(!fd){document.getElementById('propfunc-result').innerHTML='<span style="color:#e74c3c">Error al interpretar la funcion. Revisa la sintaxis.</span>';return}
+  const xS=+document.getElementById('prop-func-x').value,eaX=+document.getElementById('prop-func-ea').value;
+  if(isNaN(xS)||isNaN(eaX))return;
+  const fxs=fd.f(xS),dfxs=fd.df(xS);
+  if(isNaN(fxs)||isNaN(dfxs)){document.getElementById('propfunc-result').innerHTML='<span style="color:#e74c3c">La funcion o su derivada no estan definidas en x* = '+xS+'.</span>';return}
+  const cota=Math.abs(dfxs)*eaX;
+  const xs=[],yf=[],ydf=[],lo=xS-3,hi=xS+3;
+  for(let x=lo;x<=hi;x+=.02){xs.push(x);yf.push(fd.f(x));ydf.push(Math.abs(fd.df(x)))}
+  Plotly.newPlot('propfunc-plot',[
+    {x:xs,y:yf,name:'f(x) = '+exprStr,line:{color:'#2980b9',width:2}},
+    {x:xs,y:ydf,name:"|f'(x)| = |"+fd.dexpr+"|",line:{color:'#e74c3c',width:2,dash:'dash'},yaxis:'y2'},
+    {x:[xS],y:[fxs],mode:'markers',marker:{size:10,color:'#e74c3c'},name:'x*',showlegend:false}
+  ],{margin:{t:30,r:60,b:40,l:50},height:320,xaxis:{title:'x'},yaxis:{title:'f(x)'},yaxis2:{title:"|f'(x)|",overlaying:'y',side:'right',showgrid:false},
+    shapes:[{type:'rect',x0:xS-eaX,x1:xS+eaX,y0:fxs-cota,y1:fxs+cota,fillcolor:'rgba(231,76,60,.15)',line:{color:'#e74c3c',dash:'dot'}}]},{responsive:true});
+  document.getElementById('propfunc-result').innerHTML=
+    '<b>f(x) =</b> '+exprStr+'<br><b>f\'(x) =</b> '+fd.dexpr+'<br>'+
+    'f(x*) = <span class="val">'+fxs.toFixed(8)+'</span><br>'+
+    "|f'(x*)| = <span class=\"val\">"+Math.abs(dfxs).toFixed(8)+'</span><br>'+
+    "Cota EA(f(x*)) &le; |f'(x*)| &middot; EA(x*) = <span class=\"val\">"+cota.toExponential(6)+'</span>';
+}
+
+// === REDONDEO ===
+function calcRedondeo(){
+  const num=parseFloat(document.getElementById('round-num').value),k=+document.getElementById('round-k').value;
+  if(isNaN(num)||isNaN(k)||k<0){document.getElementById('round-result').innerHTML='Valores no validos.';return}
+  const f=Math.pow(10,k),tr=Math.trunc(num*f)/f,rd=Math.round(num*f)/f;
+  const eat=Math.abs(num-tr),ear=Math.abs(num-rd);
+  document.getElementById('round-result').innerHTML=
+    '<b>Original:</b> '+num+'<br>'+
+    '<b>Truncamiento ('+k+' cifras):</b> <span class="val">'+tr.toFixed(k)+'</span> &nbsp; EA = '+eat.toExponential(4)+' &le; '+Math.pow(10,-k).toExponential(1)+'<br>'+
+    '<b>Redondeo ('+k+' cifras):</b> <span class="val">'+rd.toFixed(k)+'</span> &nbsp; EA = '+ear.toExponential(4)+' &le; '+(0.5*Math.pow(10,-k)).toExponential(1);
+}
+
+// === IEEE 754 ===
+function calcIEEE(){
+  const num=+document.getElementById('ieee-num').value,bits=+document.getElementById('ieee-prec').value;
+  if(isNaN(num)){document.getElementById('ieee-result').innerHTML='Numero no valido.';return}
+  let r='';
+  if(bits===32){const buf=new ArrayBuffer(4);new Float32Array(buf)[0]=num;const iv=new Uint32Array(buf)[0];
+    const s=(iv>>>31)&1,e=(iv>>>23)&0xFF,m=iv&0x7FFFFF;
+    r='<b>Simple (32 bits):</b><br><span class="bits-display"><span class="sign">'+s+'</span> <span class="exponent">'+e.toString(2).padStart(8,'0')+'</span> <span class="mantissa">'+m.toString(2).padStart(23,'0')+'</span></span><br>'+
+      '<span class="bit-label"><span class="sign">Signo</span> <span class="exponent">Exp (c='+e+', e='+(e-127)+')</span> <span class="mantissa">Mantisa</span></span><br>Valor: <span class="val">'+new Float32Array(buf)[0]+'</span>'}
+  else{const buf=new ArrayBuffer(8);new Float64Array(buf)[0]=num;const ia=new Uint32Array(buf),hi=ia[1],lo=ia[0];
+    const s=(hi>>>31)&1,e=(hi>>>20)&0x7FF,mh=hi&0xFFFFF;
+    r='<b>Doble (64 bits):</b><br><span class="bits-display"><span class="sign">'+s+'</span> <span class="exponent">'+e.toString(2).padStart(11,'0')+'</span> <span class="mantissa">'+mh.toString(2).padStart(20,'0')+lo.toString(2).padStart(32,'0')+'</span></span><br>'+
+      '<span class="bit-label"><span class="sign">Signo</span> <span class="exponent">Exp (c='+e+', e='+(e-1023)+')</span> <span class="mantissa">Mantisa (52 bits)</span></span><br>Valor: <span class="val">'+new Float64Array(buf)[0]+'</span>'}
+  document.getElementById('ieee-result').innerHTML=r;
+}
+
+// === CONDICIONAMIENTO ===
+function calcCondicion(){
+  const exprStr=document.getElementById('cond-func').value.trim();
+  const fd=parseFunc(exprStr);
+  if(!fd){document.getElementById('cond-result').innerHTML='<span style="color:#e74c3c">Error al interpretar la funcion. Revisa la sintaxis.</span>';return}
+  const a=+document.getElementById('cond-a').value,b=+document.getElementById('cond-b').value;
+  if(isNaN(a)||isNaN(b)||a>=b)return;
+  const xs=[],yC=[],yF=[],st=(b-a)/500;
+  for(let x=a;x<=b;x+=st){const fv=fd.f(x),dv=fd.df(x),c=fv?Math.abs(x*dv/fv):NaN;
+    if(isFinite(c)&&c<100){xs.push(x);yC.push(c);yF.push(fv)}}
+  Plotly.newPlot('cond-plot',[
+    {x:xs,y:yF,name:'f(x) = '+exprStr,line:{color:'#2980b9',width:2}},
+    {x:xs,y:yC,name:'C(x)',line:{color:'#e74c3c',width:2,dash:'dash'},yaxis:'y2'},
+    {x:[a,b],y:[1,1],mode:'lines',line:{color:'#7f8c8d',width:1,dash:'dot'},name:'C=1',yaxis:'y2',showlegend:false}
+  ],{margin:{t:30,r:60,b:40,l:50},height:350,xaxis:{title:'x'},yaxis:{title:'f(x)'},yaxis2:{title:'C(x)',overlaying:'y',side:'right',showgrid:false,rangemode:'tozero'}},{responsive:true});
+  const mid=(a+b)/2,fmid=fd.f(mid),dfmid=fd.df(mid),cm=fmid?Math.abs(mid*dfmid/fmid):NaN;
+  document.getElementById('cond-result').innerHTML=
+    '<b>f(x) =</b> '+exprStr+' &nbsp; <b>f\'(x) =</b> '+fd.dexpr+'<br>'+
+    'En x='+(mid.toFixed(2))+': C(x) = <span class="val">'+(cm.toFixed(4))+'</span> &rarr; <b>'+(cm<1?'Bien condicionado':'Mal condicionado')+'</b><br>'+
+    '<em>Zonas donde la linea roja C(x) > 1 indican mal condicionamiento.</em>';
+}
+
+// === TEST ===
+const questions=[
+{q:'Segun el material, los unicos tipos de error controlables en el analisis numerico son:',
+ opts:['Experimental y de modelizacion','De truncamiento y de redondeo','Experimental y de redondeo','De modelizacion y de truncamiento'],ans:1,d:'bajo',
+ expl:'El material indica que los errores que "podemos analizar y controlar" son truncamiento (aumentando iteraciones) y redondeo (aumentando cifras).',
+ why:['<b>A) Incorrecta.</b> Los errores experimental y de modelizacion son inherentes al problema fisico y a las simplificaciones del modelo. No los controla el calculista.','<b>B) Correcta.</b> El truncamiento se controla aumentando el numero de terminos/iteraciones; el redondeo se controla aumentando las cifras decimales. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t1\');document.getElementById(\'topic-select\').value=\'t1\';return false">Ver Tema 1: Tipos de Errores</a>','<b>C) Incorrecta.</b> El error experimental no es controlable por el calculista (depende de los instrumentos de medida).','<b>D) Incorrecta.</b> El error de modelizacion depende de la eleccion del modelo matematico, no del calculo numerico.']},
+{q:'La asociacion mas coherente con la distincion "exactitud vs precision" es:',
+ opts:['Exactitud = dispersion entre aproximaciones; Precision = distancia al valor exacto',
+       'Exactitud = distancia al valor exacto; Precision = dispersion/consistencia entre aproximaciones',
+       'Exactitud = numero de iteraciones; Precision = coste computacional',
+       'Exactitud = error relativo; Precision = error absoluto'],ans:1,d:'medio',
+ expl:'Exactitud = cercania al valor exacto (error absoluto). Precision = baja dispersion entre aproximaciones (error relativo/cifras significativas).',
+ why:['<b>A) Incorrecta.</b> Esta al reves: la dispersion mide precision, no exactitud.','<b>B) Correcta.</b> Exactitud = cercanía al valor real (EA bajo). Precision = reproducibilidad/agrupacion (ER bajo). <a href="#" onclick="switchTab(\'theory\');showTopic(\'t2\');document.getElementById(\'topic-select\').value=\'t2\';return false">Ver Tema 2: Exactitud y Precision</a>','<b>C) Incorrecta.</b> Iteraciones y coste no definen estos conceptos.','<b>D) Incorrecta.</b> Esta invertido: exactitud se relaciona con EA, precision con ER.']},
+{q:'Si el error absoluto con signo es \\(E\'_A(x^*) = x - x^*\\), y \\(E\'_A(x^*) < 0\\), entonces:',
+ opts:['La aproximacion es por defecto','La aproximacion es por exceso y por defecto simultaneamente',
+       'La aproximacion es por exceso','El signo no aporta informacion'],ans:2,d:'medio',
+ expl:'Si E\'_A = x - x* < 0, entonces x* > x, es decir, la aproximacion supera al valor real: es por exceso.',
+ why:['<b>A) Incorrecta.</b> Por defecto seria x* < x, es decir E\'_A > 0.','<b>B) Incorrecta.</b> No puede ser ambas a la vez.','<b>C) Correcta.</b> Si x - x* < 0, entonces x* > x: la aproximacion "se pasa" del valor real, es por exceso. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t5\');document.getElementById(\'topic-select\').value=\'t5\';return false">Ver Tema 5: Intervalos (exceso/defecto)</a>','<b>D) Incorrecta.</b> El signo si aporta informacion: indica si nos pasamos o nos quedamos cortos.']},
+{q:'La definicion correcta de error relativo para una aproximacion \\(x^*\\) de \\(x\\) es:',
+ opts:['\\(E_R(x^*) = |x-x^*|\\)','\\(E_R(x^*) = \\frac{|x-x^*|}{|x|}\\)',
+       '\\(E_R(x^*) = \\frac{|x|}{|x-x^*|}\\)','\\(E_R(x^*) = |x|\\cdot|x-x^*|\\)'],ans:1,d:'bajo',
+ expl:'El error relativo es el cociente entre el error absoluto y la magnitud del valor exacto.',
+ why:['<b>A) Incorrecta.</b> Eso es el error absoluto EA, no el relativo.','<b>B) Correcta.</b> ER = EA/|x| = |x-x*|/|x|. Definicion 6 del material. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t3\');document.getElementById(\'topic-select\').value=\'t3\';return false">Ver Tema 3: Calculadora de errores</a>','<b>C) Incorrecta.</b> La fraccion esta invertida.','<b>D) Incorrecta.</b> Es un producto, no un cociente; dimensionalmente no tiene sentido como error "relativo".']},
+{q:'Una aproximacion \\(x^*\\) tiene \\(p\\) cifras decimales exactas si:',
+ opts:['\\(E_A(x^*) \\le 5\\times 10^{-p}\\)','\\(E_A(x^*) \\le 10^{-p}\\)',
+       '\\(E_R(x^*) \\le 10^{-p}\\)','\\(E_R(x^*) \\le 5\\times 10^{-p}\\)'],ans:1,d:'medio',
+ expl:'El criterio de cifras decimales exactas usa una cota del error absoluto de la forma 10^(-p).',
+ why:['<b>A) Incorrecta.</b> El factor 5 aparece en cifras significativas, no decimales exactas.','<b>B) Correcta.</b> Definicion 4: p cifras decimales exactas si EA(x*) &le; 10^(-p). <a href="#" onclick="switchTab(\'theory\');showTopic(\'t3\');document.getElementById(\'topic-select\').value=\'t3\';return false">Probarlo en la calculadora</a>','<b>C) Incorrecta.</b> Cifras decimales exactas usan EA, no ER.','<b>D) Incorrecta.</b> Esta formula (con ER y factor 5) corresponde a cifras significativas (Def. 9).']},
+{q:'\\(x^*\\) tiene \\(t\\) cifras significativas si \\(t\\) es el mayor entero no negativo tal que:',
+ opts:['\\(E_A(x^*) < 5\\times 10^{-t}\\)','\\(E_R(x^*) < 10^{-t}\\)',
+       '\\(E_R(x^*) < 5\\times 10^{-t}\\)','\\(E_A(x^*) < 10^{-t}\\)'],ans:2,d:'alto',
+ expl:'Las cifras significativas se formulan con el error relativo y cota 5 * 10^(-t).',
+ why:['<b>A) Incorrecta.</b> Usa EA en vez de ER. Cifras significativas son un concepto relativo.','<b>B) Incorrecta.</b> Falta el factor 5. Sin el, seria una definicion demasiado estricta.','<b>C) Correcta.</b> Definicion 9: t es el mayor entero con ER(x*) < 5&times;10^(-t). Combina ER (relativo) con el factor 5.','<b>D) Incorrecta.</b> Usa EA y sin factor 5: eso son cifras decimales exactas (Def. 4).']},
+{q:'Para aproximar con \\(k\\) cifras decimales, las cotas del error absoluto son:',
+ opts:['Truncamiento: EA &le; 1/2 &middot; 10^(-k); Redondeo: EA &le; 10^(-k)',
+       'Truncamiento: EA &le; 10^(-k); Redondeo: EA &le; 1/2 &middot; 10^(-k)',
+       'Ambos cumplen la misma cota EA &le; 10^(-k)',
+       'Truncamiento: EA &le; 5 &middot; 10^(-k); Redondeo: EA &le; 10^(-k)'],ans:1,d:'medio',
+ expl:'Truncamiento: cota 10^(-k). Redondeo: cota (1/2)*10^(-k). El redondeo siempre es mejor o igual.',
+ why:['<b>A) Incorrecta.</b> Las cotas estan intercambiadas: truncamiento tiene la cota mayor, no menor.','<b>B) Correcta.</b> Proposicion 27: truncamiento &le; 10^(-k), redondeo &le; (1/2)&middot;10^(-k). El redondeo es siempre mejor. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t7\');document.getElementById(\'topic-select\').value=\'t7\';return false">Probarlo en el simulador</a>','<b>C) Incorrecta.</b> Las cotas son distintas; el redondeo tiene cota mas ajustada.','<b>D) Incorrecta.</b> El factor 5 no aparece en estas cotas.']},
+{q:'El intervalo de confianza para \\(x\\) con aproximacion \\(x^*\\) y cota \\(\\varepsilon\\) es:',
+ opts:['[x*, x*+&epsilon;]','[x*-&epsilon;, x*+&epsilon;]','[x-&epsilon;, x+&epsilon;]','[x*-&epsilon;/2, x*+&epsilon;/2]'],ans:1,d:'medio',
+ expl:'Definicion 15: el intervalo de confianza es [x*-epsilon, x*+epsilon], centrado en la aproximacion.',
+ why:['<b>A) Incorrecta.</b> Solo cubre un lado; x podria estar por debajo de x*.','<b>B) Correcta.</b> El intervalo se centra en x* con radio epsilon. x puede estar tanto por exceso como por defecto. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t5\');document.getElementById(\'topic-select\').value=\'t5\';return false">Ver visualizacion interactiva</a>','<b>C) Incorrecta.</b> No conocemos x (es lo que buscamos), asi que no podemos centrar en x.','<b>D) Incorrecta.</b> El radio es epsilon completo, no epsilon/2.']},
+{q:'La cota de propagacion del error para la suma/resta es:',
+ opts:['\\(E_A(x^*\\pm y^*) \\le E_A(x^*) + E_A(y^*)\\)',
+       '\\(E_A(x^*\\cdot y^*) \\le E_A(x^*) + E_A(y^*)\\)',
+       '\\(E_R(x^*\\pm y^*) \\le E_R(x^*) + E_R(y^*)\\)',
+       '\\(E_R(x^*/y^*) \\le E_R(x^*) - E_R(y^*)\\)'],ans:0,d:'alto',
+ expl:'Para suma/resta se acota el error absoluto por suma de errores absolutos. Para producto/cociente se usan errores relativos.',
+ why:['<b>A) Correcta.</b> Proposicion 18: para suma/resta, la cota es en error absoluto. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t6\');document.getElementById(\'topic-select\').value=\'t6\';return false">Ver calculadora de propagacion</a>','<b>B) Incorrecta.</b> Para el producto se usa error relativo, no absoluto.','<b>C) Incorrecta.</b> Para suma/resta la cota natural es en EA, no en ER.','<b>D) Incorrecta.</b> Para cociente es suma de ER, no diferencia.']},
+{q:'En Mathematica, N[numero, cifras] devuelve:',
+ opts:['El numero exacto con "cifras" decimales',
+       'Una aproximacion numerica con tantas cifras significativas como se indique',
+       'Una simplificacion simbolica','Un redondeo a "cifras" decimales (no significativas)'],ans:1,d:'bajo',
+ expl:'N convierte a aproximacion numerica con control de cifras significativas; si se omite el segundo argumento, usa un valor por defecto.',
+ why:['<b>A) Incorrecta.</b> N produce una aproximacion, no el valor exacto; ademas controla cifras significativas, no decimales.','<b>B) Correcta.</b> N[expr, p] da una aproximacion con p cifras significativas. Sin segundo argumento usa MachinePrecision.','<b>C) Incorrecta.</b> N es para evaluacion numerica, no simplificacion simbolica (eso seria Simplify).','<b>D) Incorrecta.</b> Controla cifras significativas, no decimales.']},
+{q:'Sobre Precision[x] en Mathematica:',
+ opts:['Todo entero tiene precision MachinePrecision',
+       'Los numeros exactos tienen precision Infinity; los numeros maquina usan $MachinePrecision',
+       'Precision[x] devuelve siempre el numero de decimales exactos',
+       'Un numero con coma decimal es siempre exacto'],ans:1,d:'medio',
+ expl:'Los numeros exactos (enteros, fracciones) tienen precision Infinity. Los numeros maquina se asocian a MachinePrecision.',
+ why:['<b>A) Incorrecta.</b> Los enteros son exactos y tienen precision Infinity, no MachinePrecision.','<b>B) Correcta.</b> Numeros exactos (1, 1/3, Pi) tienen Precision = Infinity. Los de maquina (1.0, 3.14) usan $MachinePrecision.','<b>C) Incorrecta.</b> Precision mide cifras significativas, no decimales exactos (eso seria Accuracy).','<b>D) Incorrecta.</b> Un numero con punto decimal (ej: 1.5) es inexacto en Mathematica.']},
+{q:'La relacion entre Accuracy y Precision en Mathematica para un numero no exacto \\(x\\) es:',
+ opts:['Accuracy[x] = Precision[x] + Log[10, Abs[x]]',
+       'Accuracy[x] = Precision[x] - Log[10, Abs[x]]',
+       'Accuracy[x] = Precision[x] &middot; Log[10, Abs[x]]',
+       'Accuracy[x] no depende del tamano de x'],ans:1,d:'alto',
+ expl:'El material establece: Accuracy[x] = Precision[x] - log10(|x|) para numeros de precision finita.',
+ why:['<b>A) Incorrecta.</b> El signo es menos, no mas.','<b>B) Correcta.</b> Accuracy = Precision - log10(|x|). Esto refleja que para numeros grandes, la misma precision da menos cifras decimales exactas.','<b>C) Incorrecta.</b> Es una resta, no un producto.','<b>D) Incorrecta.</b> Si depende: la magnitud del numero afecta a cuantas cifras decimales exactas tiene.']},
+{q:'Sobre la notacion con backticks en Mathematica:',
+ opts:['numero`p fija la exactitud a p; numero``s fija la precision a s',
+       'numero`p fija la precision a p; numero``s introduce exactitud s',
+       'numero``s fuerza que el numero sea exacto (Infinity)',
+       'numero``p y numero`s son equivalentes siempre'],ans:1,d:'medio',
+ expl:'Se distingue: `p fija precision, ``s fija exactitud, y ` solo da precision de maquina.',
+ why:['<b>A) Incorrecta.</b> Esta al reves: ` fija precision, `` fija exactitud.','<b>B) Correcta.</b> Un backtick (`) fija precision (cifras significativas), dos (``) fijan exactitud (cifras decimales exactas). Solo ` sin numero da precision de maquina.','<b>C) Incorrecta.</b> `` fija exactitud a un valor finito, no infinito.','<b>D) Incorrecta.</b> Son conceptos diferentes: precision &ne; exactitud.']},
+{q:'Sobre representacion en base en Mathematica:',
+ opts:['IntegerDigits[n,b] devuelve los digitos de n en base b, y FromDigits[lista,b] reconstruye el numero',
+       'IntegerDigits solo funciona en base 10',
+       'FromDigits solo reconstruye en base 2',
+       'BaseForm[0.1,2] siempre produce expansion finita'],ans:0,d:'medio',
+ expl:'IntegerDigits con base opcional y FromDigits como inverso. 0.1 en base 2 NO es finito.',
+ why:['<b>A) Correcta.</b> IntegerDigits[n,b] da lista de digitos en base b; FromDigits[lista,b] es la operacion inversa.','<b>B) Incorrecta.</b> IntegerDigits acepta cualquier base como segundo argumento.','<b>C) Incorrecta.</b> FromDigits funciona con cualquier base.','<b>D) Incorrecta.</b> 0.1 en base 2 es periodico (0.000110011...), NO finito. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Ejemplo 32</a>']},
+{q:'Sobre limites numericos y epsilon de maquina en Mathematica:',
+ opts:['$MaxMachineNumber y $MaxNumber son el mismo limite',
+       '$MachineEpsilon es la diferencia entre 1.0 y el siguiente numero maquina mayor que 1.0',
+       '$MinNumber es siempre 0',
+       'Overflow y underflow solo ocurren en enteros exactos'],ans:1,d:'alto',
+ expl:'$MachineEpsilon es el incremento minimo a partir de 1.0 en precision de maquina. $MaxNumber y $MaxMachineNumber son limites diferentes.',
+ why:['<b>A) Incorrecta.</b> Son limites distintos: $MaxMachineNumber es para precision de maquina, $MaxNumber para precision arbitraria (mucho mayor).','<b>B) Correcta.</b> $MachineEpsilon es el menor e tal que 1.0 + e &ne; 1.0 en aritmetica de maquina. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Tema 8: IEEE 754</a>','<b>C) Incorrecta.</b> $MinNumber es un valor positivo muy pequeno, no cero.','<b>D) Incorrecta.</b> Overflow/underflow ocurren en numeros de punto flotante, no en enteros exactos.']},
+{q:'El numero de condicion \\(C(x)\\) de \\(f(x) = \\sqrt{x}\\) es:',
+ opts:['1','2','1/2','x'],ans:2,d:'medio',
+ expl:'C(x) = |x * (1/(2sqrt(x))) / sqrt(x)| = 1/2. Siempre bien condicionado.',
+ why:['<b>A) Incorrecta.</b> El resultado del calculo es 1/2, no 1.','<b>B) Incorrecta.</b> Es 1/2, no 2.','<b>C) Correcta.</b> C(x) = |x &middot; f\'(x)/f(x)| = |x/(2x)| = 1/2. Como C < 1, sqrt es siempre bien condicionada. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t9\');document.getElementById(\'topic-select\').value=\'t9\';return false">Graficarlo</a>','<b>D) Incorrecta.</b> C es constante para sqrt, no depende de x.']},
+{q:'Un problema esta mal condicionado cuando:',
+ opts:['C(x) = 0','C(x) < 1','C(x) > 1','C(x) = 1/2'],ans:2,d:'bajo',
+ expl:'C(x) > 1 significa que los errores relativos se amplifican.',
+ why:['<b>A) Incorrecta.</b> C = 0 significaria que f es localmente constante; no es "mal condicionado".','<b>B) Incorrecta.</b> C < 1 es bien condicionado (los errores se reducen).','<b>C) Correcta.</b> Cuando C > 1, un error relativo en x se amplifica al calcular f(x). Cuanto mayor C, peor. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t9\');document.getElementById(\'topic-select\').value=\'t9\';return false">Ver graficas de condicion</a>','<b>D) Incorrecta.</b> C = 1/2 < 1, seria bien condicionado.']},
+{q:'Para \\(x^2 - 10^6x + 1 = 0\\), la raiz pequena se calcula establemente usando:',
+ opts:['La formula cuadratica directa','Racionalizacion: 2/(10^6 + sqrt(10^12 - 4))',
+       'Iteracion de Newton','Division sintetica'],ans:1,d:'medio',
+ expl:'La formula directa produce cancelacion catastrofica. Racionalizando se evita la resta de numeros casi iguales.',
+ why:['<b>A) Incorrecta.</b> La formula directa hace 10^6 - sqrt(10^12-4), restando numeros casi iguales &rarr; cancelacion catastrofica.','<b>B) Correcta.</b> Racionalizando: x = 2/(10^6 + sqrt(10^12-4)). Al sumar en el denominador se evita la cancelacion. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Ejemplo 35</a>','<b>C) Incorrecta.</b> Newton podria funcionar, pero no es la solucion directa al problema de cancelacion.','<b>D) Incorrecta.</b> La division sintetica no resuelve el problema de la cancelacion numerica.']},
+{q:'El epsilon de maquina en precision doble (64 bits) es aproximadamente:',
+ opts:['1.19 &times; 10^(-7)','2.22 &times; 10^(-16)','1.11 &times; 10^(-16)','5.0 &times; 10^(-8)'],ans:1,d:'medio',
+ expl:'El epsilon de maquina en doble precision es 2^(-52) ≈ 2.22 * 10^(-16).',
+ why:['<b>A) Incorrecta.</b> Eso es el epsilon de precision simple (32 bits, 2^(-23)).','<b>B) Correcta.</b> Doble precision tiene 52 bits de mantisa: epsilon = 2^(-52) &asymp; 2.22&times;10^(-16). <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Tema 8</a>','<b>C) Incorrecta.</b> Es 2.22, no 1.11. La diferencia es un factor 2.','<b>D) Incorrecta.</b> Eso corresponderia a una mantisa de ~27 bits, que no es ningun estandar.']},
+{q:'El metodo de Horner para evaluar polinomios reduce principalmente:',
+ opts:['El numero de sumas','El numero de multiplicaciones','El grado del polinomio','El error de redondeo a cero'],ans:1,d:'bajo',
+ expl:'Horner reduce multiplicaciones de O(n^2) a n, minimizando la propagacion de errores.',
+ why:['<b>A) Incorrecta.</b> El numero de sumas es n en ambos metodos.','<b>B) Correcta.</b> Horner reescribe P(x) = a0 + x(a1 + x(a2 + ...)) reduciendo multiplicaciones de O(n^2) a n. Menos operaciones = menos propagacion de error.','<b>C) Incorrecta.</b> El grado del polinomio no cambia, solo la forma de evaluarlo.','<b>D) Incorrecta.</b> No elimina el error de redondeo, solo lo reduce al hacer menos operaciones.']}
+];
+
+// PROBLEMS
+const problems=[
+{title:'Problema 16: Exactitud vs Precision con dos aproximaciones',d:'medio',
+ text:'Tienes \\(x^*=6.2\\) como aproximacion de \\(x=6\\), e \\(y^*=6198\\) como aproximacion de \\(y=6000\\). Explica por que una puede ser "mas exacta" y la otra "mas precisa".',
+ sol:'La <b>exactitud</b> se evalua con el <b>error absoluto</b> EA = |x - x*|: EA(6.2) = 0.2 y EA(6198) = 198, por lo que 6.2 es mas exacta. La <b>precision</b> se evalua con el <b>error relativo</b> ER: ER(6.2) = 0.2/6 ≈ 0.033 y ER(6198) = 198/6000 = 0.033. Ambas tienen precision similar (~2 cifras significativas). La clave es que el error absoluto mide distancia al valor real, mientras que el relativo mide la calidad proporcional al tamano del numero.'},
+{title:'Problema 17: Estabilidad de expresiones equivalentes',d:'alto',
+ text:'Para aproximar \\(a = (\\sqrt{3}-2)^6\\) con \\(z^* \\approx \\sqrt{3}\\), compara la estabilidad de: (1) \\(a = (7-4\\sqrt{3})^3\\) y (2) \\(a = \\frac{1}{1351+780\\sqrt{3}}\\).',
+ sol:'La estabilidad depende de la sensibilidad de cada expresion respecto a z, proporcional a max|f\'(z)| * EA(z*). La forma cubica (7-4z)^3 tiene derivada de magnitud grande cerca de z = sqrt(3) (porque 7-4*1.732 ≈ 0.072 es pequeno y se eleva al cubo, amplificando errores). La forma racional 1/(1351+780z) tiene derivada mucho menor en magnitud (el denominador es grande: ~2702), por lo que el error se amplifica mucho menos. La forma (2) es significativamente mas estable.'},
+{title:'Problema 18: Estrategia de precision en Mathematica',d:'alto',
+ text:'Disena una estrategia para evaluar una expresion numerica con precision objetivo \\(p\\), evitando "contaminar" con precision de maquina.',
+ sol:'(1) Introducir datos con precision declarada usando backtick (ej: 0.1`15 en vez de 0.1), para evitar precision de maquina. (2) Evaluar con N[expr, p] para forzar p cifras significativas. (3) Vigilar que no aparezcan numeros MachinePrecision, porque la precision de maquina "contagia" al mezclarse con otras precisiones. (4) Ajustar con SetPrecision/SetAccuracy si es necesario, entendiendo que Accuracy = Precision - log10(|x|). Esta estrategia evita perdidas accidentales de control.'},
+{title:'Problema 19: Chop y umbral de ceros numericos',d:'medio',
+ text:'Explica: (a) que hace Chop[expr] por defecto, (b) como cambia Chop[expr, dx], y (c) el riesgo de elegir dx demasiado grande.',
+ sol:'(a) Chop[expr] reemplaza por 0 los valores con magnitud < 10^(-10) (umbral por defecto). (b) Chop[expr, dx] usa dx como umbral personalizado. (c) Si dx es demasiado grande, se eliminan terminos que si son significativos: contribuciones pequenas pero acumulativas, cancelaciones reales, o propiedades estructurales del modelo. El umbral debe justificarse en funcion de la precision/exactitud perseguida.'},
+{title:'Problema 20: Intervalo de confianza y aproximacion optima',d:'medio',
+ text:'Dado un intervalo \\([a,b]\\) que contiene el valor real \\(x\\): (a) proponer una aproximacion, (b) dar su cota de EA, (c) explicar por que es util.',
+ sol:'(a) La mejor aproximacion es el punto medio: x* = (a+b)/2. (b) La cota del error absoluto es EA(x*) ≤ (b-a)/2 (el "radio" del intervalo). (c) Es util porque normalmente no conocemos el error exacto ni el valor exacto, pero si podemos estimar una cota superior. Con ella construimos un intervalo de confianza que <em>garantiza</em> donde esta el valor real, permitiendo decisiones seguras sobre precision y tolerancias.'}
+];
+
+function buildTest(){
+  let h='';
+  questions.forEach((q,i)=>{
+    const badge=q.d==='bajo'?'badge-easy':q.d==='alto'?'badge-hard':'badge-med';
+    h+='<div class="question-card" id="q'+i+'"><h3>Pregunta '+(i+1)+' <span class="badge '+badge+'">'+q.d+'</span></h3><p>'+q.q+'</p><div class="options">';
+    q.opts.forEach((o,j)=>{h+='<label><input type="radio" name="q'+i+'" value="'+j+'"> '+o+'</label>'});
+    h+='</div><div class="feedback" id="fb'+i+'"></div></div>';
+  });
+  document.getElementById('test-container').innerHTML=h;
+  // Problems
+  let ph='';
+  problems.forEach((p,i)=>{
+    const badge=p.d==='bajo'?'badge-easy':p.d==='alto'?'badge-hard':'badge-med';
+    ph+='<div class="problem-card" id="p'+i+'"><h3>'+p.title+' <span class="badge '+badge+'">'+p.d+'</span></h3><p>'+p.text+'</p>'+
+      '<button class="btn btn-primary" onclick="toggleSol('+i+')" style="margin-top:.5rem">Mostrar/Ocultar Solucion</button>'+
+      '<div class="sol" id="sol'+i+'">'+p.sol+'</div></div>';
+  });
+  document.getElementById('problems-container').innerHTML=ph;
+}
+
+function toggleSol(i){document.getElementById('sol'+i).classList.toggle('show')}
+
+function gradeTest(){
+  let c=0,t=questions.length;
+  questions.forEach((q,i)=>{
+    const s=document.querySelector('input[name="q'+i+'"]:checked');
+    const fb=document.getElementById('fb'+i);
+    let html='';
+    if(!s){fb.className='feedback incorrect';fb.style.display='block';fb.innerHTML='No seleccionaste respuesta.';return}
+    const chosen=+s.value;
+    if(chosen===q.ans){c++;fb.className='feedback correct';html='<b>&#10004; Correcto.</b> '+q.expl}
+    else{fb.className='feedback incorrect';html='<b>&#10008; Incorrecto.</b> '+q.expl}
+    if(q.why){
+      html+='<div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid rgba(0,0,0,.1)">';
+      html+='<b>Analisis de cada opcion:</b><ul style="margin:.3rem 0 0 1rem">';
+      q.why.forEach((w,j)=>{
+        const icon=j===q.ans?'&#10004;':'&#10008;';
+        const style=j===chosen&&j!==q.ans?'color:#c0392b;font-weight:600':'';
+        html+='<li style="margin:.3rem 0;'+style+'">'+icon+' '+w+'</li>'});
+      html+='</ul></div>';
+    }
+    fb.innerHTML=html;
+    fb.style.display='block';
+    renderMathInElement(fb,mathOpts);
+  });
+  document.getElementById('score-bar').style.display='block';
+  document.getElementById('score-value').textContent=c+' / '+t;
+  window.scrollTo({top:document.getElementById('tab-test').offsetTop,behavior:'smooth'});
+}
+
+function resetTest(){
+  questions.forEach((q,i)=>{
+    document.querySelectorAll('input[name="q'+i+'"]').forEach(r=>r.checked=false);
+    const fb=document.getElementById('fb'+i);fb.style.display='none';fb.className='feedback';
+  });
+  document.getElementById('score-bar').style.display='none';
+}
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded',function(){
+  renderMathInElement(document.body,mathOpts);
+  buildTest();
+  renderMathInElement(document.getElementById('test-container'),mathOpts);
+  renderMathInElement(document.getElementById('problems-container'),mathOpts);
+});
+</script>
+</body>
+</html>
