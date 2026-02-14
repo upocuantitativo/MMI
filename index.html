@@ -116,6 +116,9 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 .st-val{gap:1px}.sv-in{width:100%;padding:.15rem .2rem;border:1px solid var(--brd);border-radius:3px;font-size:.78rem;min-width:0}
 .sv-in:disabled{background:#f5f5f5;color:#bbb;border-color:#eee}
 .sv-in.computed{background:#d5f5e3!important;color:#1e8449!important;border-color:#a3d9b1}
+.sv-in.computed.cv-x{background:#d4e6f1!important;color:#1a5276!important;border-color:#85c1e9}
+.sv-in.computed.cv-y{background:#fdebd0!important;color:#935116!important;border-color:#f0b27a}
+.sv-in.computed.cv-z{background:#e8daef!important;color:#6c3483!important;border-color:#bb8fce}
 .drag-h{cursor:ns-resize;color:var(--pri);font-size:.65rem;user-select:none;padding:0 1px;flex-shrink:0;opacity:.5;transition:.2s}
 .drag-h::after{content:'\u21D5'}.drag-h:hover,.drag-h.dragging{opacity:1;color:var(--acc)}
 @media(max-width:900px){.solver-grid{grid-template-columns:1fr}.solver-right{position:static}.solver-tbl{grid-template-columns:24px 1fr repeat(4,1fr)}}
@@ -1165,7 +1168,7 @@ function buildSolverTable(){
     h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span></div>';
     _cv.forEach(v=>{
       const iid='val-'+p.id+'-'+v;
-      h+='<div class="st-val"><input type="text" id="'+iid+'" disabled class="sv-in"'+(p.isInt?' inputmode="numeric"':'')+' placeholder="'+(v==='f'?'f':v)+'">';
+      h+='<div class="st-val"><input type="text" id="'+iid+'" disabled class="sv-in cv-'+v+'"'+(p.isInt?' inputmode="numeric"':'')+' placeholder="'+(v==='f'?'f':v)+'">';
       h+='<span class="drag-h" data-id="'+iid+'"></span></div>';
     });
   });
@@ -1313,11 +1316,11 @@ function solveProblema(){
         if(gv('tr',V)===undefined){const f=Math.pow(10,gv('k',V)),tr=Math.trunc(numR*f)/f;
           sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+gv('k',V)+')='+tr.toFixed(gv('k',V))+'\\)');}}
       if(fd&&gv('cond',V)===undefined){
-        const xv=gv('real','x')||gv('aprox','x')||0,yv=gv('real','y')||gv('aprox','y')||0,zv=gv('real','z')||gv('aprox','z')||0;
+        const xv=gv('real','x')??gv('aprox','x')??0,yv=gv('real','y')??gv('aprox','y')??0,zv=gv('real','z')??gv('aprox','z')??0;
         const vv=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
         if(vv!==undefined){const fv=fd.f(xv,yv,zv),dfv=fd.df(V,xv,yv,zv);
           if(fv!==0&&!isNaN(fv)&&!isNaN(dfv)&&isFinite(fv)&&isFinite(dfv)){const c=Math.abs(vv*dfv/fv);
-            sv('cond',V,c,'<b>C('+V+'):</b> \\(\\left|\\frac{'+V+'\\cdot\\partial f/\\partial '+V+'}{f}\\right|='+fmt(c)+'\\) '+(c>1?'<span style="color:#e74c3c">Mal cond.</span>':'<span style="color:#27ae60">Bien cond.</span>'));}}}
+            sv('cond',V,c,'<b>C('+V+'):</b> \\(\\left|\\frac{'+V+'\\cdot\\partial f/\\partial '+V+'}{f}\\right|=\\left|\\frac{'+fmt(vv)+'\\cdot'+fmt(dfv)+'}{'+fmt(fv)+'}\\right|='+fmt(c)+'\\) '+(c>1?'<span style="color:#e74c3c">Mal cond.</span>':'<span style="color:#27ae60">Bien cond.</span>'));}}}
       if(gv('eps',V)!==undefined&&gv('aprox',V)!==undefined&&!comp['_cotaER-'+V]){
         const c=gv('eps',V)/Math.abs(gv('aprox',V));
         steps.push('<b>Cota ER('+V+'):</b> \\(\\varepsilon/|'+V+'^*|='+fmt(c)+'\\)');comp['_cotaER-'+V]=true;}
@@ -1327,22 +1330,25 @@ function solveProblema(){
       const rx=gv('real','x'),ry=gv('real','y'),rz=gv('real','z');
       const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
       if((rx!==undefined||ax!==undefined)&&gv('real','f')===undefined){
-        const fv=fd.f(rx!==undefined?rx:(ax||0),ry!==undefined?ry:(ay||0),rz!==undefined?rz:(az||0));
+        const fv=fd.f(rx??ax??0,ry??ay??0,rz??az??0);
         if(rx!==undefined)sv('real','f',fv,'<b>f(real):</b> \\(f('+[rx,ry,rz].filter(v=>v!==undefined).map(fmt).join(',')+')='+fmt(fv)+'\\)');}
       if(ax!==undefined&&gv('aprox','f')===undefined){
-        const fv=fd.f(ax,ay||0,az||0);
+        const fv=fd.f(ax,ay??0,az??0);
         sv('aprox','f',fv,'<b>f(aprox):</b> \\(f('+[ax,ay,az].filter(v=>v!==undefined).map(fmt).join(',')+')='+fmt(fv)+'\\)');}
       if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
         const ea=Math.abs(gv('real','f')-gv('aprox','f'));
         sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
       if(gv('ea','f')===undefined){
         let eaf=0,ok=false;
-        ['x','y','z'].forEach(V=>{const eaV=gv('eps',V)||gv('ea',V);
-          if(eaV!==undefined){const xv=ax||rx||0,yv=ay||ry||0,zv=az||rz||0;
+        ['x','y','z'].forEach(V=>{const eaV=gv('eps',V)??gv('ea',V);
+          if(eaV!==undefined){const xv=ax??rx??0,yv=ay??ry??0,zv=az??rz??0;
             const dfv=fd.df(V,xv,yv,zv);if(!isNaN(dfv)){eaf+=Math.abs(dfv)*eaV;ok=true}}});
         if(ok)sv('ea','f',eaf,'<b>EA(f) propag.:</b> \\(\\sum|\\partial f/\\partial v_i|\\cdot EA(v_i)='+fmt(eaf)+'\\)');}
-      if(gv('ea','f')!==undefined&&gv('real','f')!==undefined&&gv('real','f')!==0&&gv('er','f')===undefined){
-        const er=gv('ea','f')/Math.abs(gv('real','f'));sv('er','f',er,'<b>ER(f):</b> \\(EA(f)/|f|='+fmt(er)+'\\)');}
+      if(gv('ea','f')!==undefined&&gv('er','f')===undefined){
+        const denom=gv('real','f')??gv('aprox','f');
+        if(denom!==undefined&&denom!==0){const er=gv('ea','f')/Math.abs(denom);
+          sv('er','f',er,'<b>ER(f):</b> \\(\\frac{|f_{real}-f_{aprox}|}{|f_{real}|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');
+        }}
       if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
         let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);sv('p','f',p,'<b>p(f)='+p+'</b>');}
       if(gv('er','f')!==undefined&&gv('t','f')===undefined){
@@ -1366,9 +1372,10 @@ function solveProblema(){
     if(fd.dexpr.z!=='0')ds+=', \\(\\partial f/\\partial z='+fd.dexpr.z+'\\)';
     steps.unshift(ds);}
   // Fill computed
-  _pd.forEach(p=>_cv.forEach(v=>{if(comp[p.id+'-'+v]){
+  _pd.forEach(p=>{let anyComp=false;_cv.forEach(v=>{if(comp[p.id+'-'+v]){
     const el=document.getElementById('val-'+p.id+'-'+v);
-    el.value=p.isInt?d[p.id][v]:fmt(d[p.id][v]);el.classList.add('computed');el.disabled=false;}}));
+    el.value=p.isInt?d[p.id][v]:fmt(d[p.id][v]);el.classList.add('computed');el.disabled=false;anyComp=true;}});
+    if(anyComp){const chk=document.getElementById('chk-'+p.id);if(chk&&!chk.checked)chk.checked=true;}});
   // Reasoning
   const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
   if(steps.length>0){rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.4rem">Razonamiento paso a paso</h4>'+
@@ -1384,7 +1391,7 @@ function drawSolverAxis(d){
   if(toPlot.length===0)return;
   container.style.display='block';
   toPlot.forEach(({V,nums})=>{
-    const pid='sp-'+V;const div=document.createElement('div');div.id=pid;div.style.marginBottom='.3rem';container.appendChild(div);
+    const pid='sp-'+V;const div=document.createElement('div');div.id=pid;div.style.marginBottom='0';container.appendChild(div);
     const traces=[],ann=[],mn=Math.min(...nums),mx=Math.max(...nums),pad=Math.max((mx-mn)*.2,.001);
     if(d.linf?.[V]!==undefined&&d.lsup?.[V]!==undefined){
       traces.push({x:[d.linf[V],d.lsup[V]],y:[0,0],mode:'lines',line:{color:'rgba(41,128,185,.3)',width:16},name:'Intervalo',hoverinfo:'x'});
@@ -1400,8 +1407,8 @@ function drawSolverAxis(d){
       const r=d.real[V],a=d.aprox[V];
       traces.push({x:[Math.min(r,a),Math.max(r,a)],y:[.33,.33],mode:'lines',line:{color:'#e74c3c',width:2.5},showlegend:false,hoverinfo:'skip'});
       ann.push({x:(r+a)/2,y:.43,text:'<b>EA='+fmt(Math.abs(r-a))+'</b>',showarrow:false,font:{size:9,color:'#e74c3c'}});}
-    Plotly.newPlot(pid,traces,{margin:{t:22,b:35,l:30,r:20},yaxis:{visible:false,range:[-.6,.55]},
-      xaxis:{title:V==='f'?'f(x,y,z)':V,range:[mn-pad,mx+pad],zeroline:false},height:150,
+    Plotly.newPlot(pid,traces,{margin:{t:18,b:28,l:30,r:15},yaxis:{visible:false,range:[-.6,.55]},
+      xaxis:{title:V==='f'?'f(x,y,z)':V,range:[mn-pad,mx+pad],zeroline:false},height:115,
       legend:{orientation:'h',y:1.15,font:{size:9}},annotations:ann,plot_bgcolor:'#fafbfc',
       title:{text:'Variable '+(V==='f'?'f(x,y,z)':V),font:{size:10},x:.01,xanchor:'left'}},{responsive:true});
   });
