@@ -84,7 +84,25 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 .badge-easy{background:#d5f5e3;color:#1e8449}
 .badge-med{background:#fef9e7;color:#b7950b}
 .badge-hard{background:#fadbd8;color:#c0392b}
-@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}}
+/* Solver */
+.solver-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.solver-card h3{color:var(--pri);margin-bottom:.8rem}
+.param-row{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap}
+.param-row:last-child{border-bottom:none}
+.param-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;flex-shrink:0}
+.param-row .param-label{min-width:200px;font-size:.9rem;font-weight:600}
+.param-row .param-sub{font-size:.75rem;color:var(--txtl);display:block}
+.param-row input[type=text],.param-row input[type=number]{width:140px;padding:.35rem .5rem;border:1px solid var(--brd);border-radius:4px;font-size:.9rem}
+.param-row input:disabled{background:#f0f0f0;color:#aaa}
+.spin-btn{width:28px;height:28px;border:1px solid var(--brd);border-radius:4px;background:var(--card);cursor:pointer;font-size:1rem;font-weight:700;color:var(--pri);display:flex;align-items:center;justify-content:center}
+.spin-btn:hover{background:#eef2f7}
+.eq-editor{margin-top:.5rem;padding:.8rem;background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r)}
+.eq-editor input{width:100%;padding:.5rem;font-size:1rem;border:1px solid var(--brd);border-radius:4px;font-family:'Courier New',monospace}
+.eq-preview{margin-top:.3rem;min-height:1.5rem;font-size:1.1rem}
+.reasoning-box{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin-top:1rem;font-size:.9rem;line-height:1.7}
+.reasoning-box .step{margin:.5rem 0;padding:.4rem .6rem;border-left:3px solid var(--pri-l);background:#f8f9fb;border-radius:0 4px 4px 0}
+.reasoning-box .step b{color:var(--pri)}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}.param-row{flex-direction:column;align-items:flex-start}.param-row .param-label{min-width:auto}}
 </style>
 </head>
 <body>
@@ -97,6 +115,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
   <button class="tab-btn" onclick="switchTab('test')">Test de Autoevaluacion</button>
+  <button class="tab-btn" onclick="switchTab('problems')">Problemas</button>
 </div>
 
 <!-- ============ TEORIA ============ -->
@@ -585,14 +604,153 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   <div id="problems-container"></div>
 </div>
 
+<!-- ============ PROBLEMAS ============ -->
+<div id="tab-problems" class="tab-content">
+  <div class="solver-card">
+    <h3>Resolutor Interactivo de Problemas</h3>
+    <p style="margin-bottom:1rem">Marca los conceptos relevantes e introduce los valores conocidos. Deja en blanco lo que quieras calcular. Pulsa <b>Resolver</b> para obtener resultados con razonamiento paso a paso.</p>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-x" onchange="toggleParam('x')">
+      <div class="param-label">Valor real (x)<span class="param-sub">Valor exacto</span></div>
+      <input type="text" id="val-x" disabled placeholder="ej: pi, sqrt(2), 3.14159">
+      <button class="spin-btn" disabled id="up-x" onclick="spin('x',0.01)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-x" onclick="spin('x',-0.01)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-xs" onchange="toggleParam('xs')">
+      <div class="param-label">Aproximacion (x*)<span class="param-sub">Valor aproximado</span></div>
+      <input type="text" id="val-xs" disabled placeholder="ej: 3.14, 22/7">
+      <button class="spin-btn" disabled id="up-xs" onclick="spin('xs',0.01)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-xs" onclick="spin('xs',-0.01)">&#9660;</button>
+      <select id="val-tipo" disabled style="margin-left:.3rem;padding:.3rem;border-radius:4px;border:1px solid var(--brd);font-size:.82rem">
+        <option value="">Tipo...</option>
+        <option value="redondeo">Por redondeo</option>
+        <option value="truncamiento">Por truncamiento</option>
+      </select>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-ea" onchange="toggleParam('ea')">
+      <div class="param-label">Error absoluto (EA)<span class="param-sub">|x - x*|</span></div>
+      <input type="text" id="val-ea" disabled placeholder="ej: 0.001">
+      <button class="spin-btn" disabled id="up-ea" onclick="spin('ea',0.001)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-ea" onclick="spin('ea',-0.001)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-er" onchange="toggleParam('er')">
+      <div class="param-label">Error relativo (ER)<span class="param-sub">EA / |x|</span></div>
+      <input type="text" id="val-er" disabled placeholder="ej: 0.01">
+      <button class="spin-btn" disabled id="up-er" onclick="spin('er',0.0001)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-er" onclick="spin('er',-0.0001)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-p" onchange="toggleParam('p')">
+      <div class="param-label">Cifras decimales exactas (p)<span class="param-sub">Exactitud: EA &le; 10<sup>-p</sup></span></div>
+      <input type="number" id="val-p" disabled min="0" max="20" placeholder="ej: 3">
+      <button class="spin-btn" disabled id="up-p" onclick="spin('p',1)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-p" onclick="spin('p',-1)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-t" onchange="toggleParam('t')">
+      <div class="param-label">Cifras significativas (t)<span class="param-sub">Precision: ER &lt; 5&middot;10<sup>-t</sup></span></div>
+      <input type="number" id="val-t" disabled min="0" max="20" placeholder="ej: 4">
+      <button class="spin-btn" disabled id="up-t" onclick="spin('t',1)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-t" onclick="spin('t',-1)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-eps" onchange="toggleParam('eps')">
+      <div class="param-label">Cota del error (&epsilon;)<span class="param-sub">Limite superior de EA</span></div>
+      <input type="text" id="val-eps" disabled placeholder="ej: 0.005">
+      <button class="spin-btn" disabled id="up-eps" onclick="spin('eps',0.001)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-eps" onclick="spin('eps',-0.001)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-k" onchange="toggleParam('k')">
+      <div class="param-label">Cifras decimales (k)<span class="param-sub">Para redondeo/truncamiento</span></div>
+      <input type="number" id="val-k" disabled min="0" max="20" placeholder="ej: 4">
+      <button class="spin-btn" disabled id="up-k" onclick="spin('k',1)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-k" onclick="spin('k',-1)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-rd" onchange="toggleParam('rd')">
+      <div class="param-label">Redondeo<span class="param-sub">Resultado de redondear a k cifras</span></div>
+      <input type="text" id="val-rd" disabled placeholder="(se calcula)">
+      <button class="spin-btn" disabled id="up-rd" onclick="spin('rd',0.01)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-rd" onclick="spin('rd',-0.01)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-tr" onchange="toggleParam('tr')">
+      <div class="param-label">Truncamiento<span class="param-sub">Resultado de truncar a k cifras</span></div>
+      <input type="text" id="val-tr" disabled placeholder="(se calcula)">
+      <button class="spin-btn" disabled id="up-tr" onclick="spin('tr',0.01)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-tr" onclick="spin('tr',-0.01)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-linf" onchange="toggleParam('linf')">
+      <div class="param-label">Limite inferior del intervalo<span class="param-sub">Por defecto</span></div>
+      <input type="text" id="val-linf" disabled placeholder="ej: 3.13">
+      <button class="spin-btn" disabled id="up-linf" onclick="spin('linf',0.01)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-linf" onclick="spin('linf',-0.01)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-lsup" onchange="toggleParam('lsup')">
+      <div class="param-label">Limite superior del intervalo<span class="param-sub">Por exceso</span></div>
+      <input type="text" id="val-lsup" disabled placeholder="ej: 3.15">
+      <button class="spin-btn" disabled id="up-lsup" onclick="spin('lsup',0.01)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-lsup" onclick="spin('lsup',-0.01)">&#9660;</button>
+    </div>
+
+    <div class="param-row">
+      <input type="checkbox" id="chk-cond" onchange="toggleParam('cond')">
+      <div class="param-label">Condicion C(x)<span class="param-sub">|x &middot; f'(x) / f(x)|</span></div>
+      <input type="text" id="val-cond" disabled placeholder="(se calcula)">
+      <button class="spin-btn" disabled id="up-cond" onclick="spin('cond',0.1)">&#9650;</button>
+      <button class="spin-btn" disabled id="dn-cond" onclick="spin('cond',-0.1)">&#9660;</button>
+    </div>
+
+    <div style="margin-top:.8rem;padding:.8rem;background:#f0f4f8;border-radius:var(--r)">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-weight:600">
+        <input type="checkbox" id="chk-func" onchange="toggleEq()"> Ecuacion f(x)
+      </label>
+      <div id="eq-editor-box" style="display:none;margin-top:.5rem">
+        <p style="font-size:.82rem;color:var(--txtl);margin-bottom:.3rem">
+          Sintaxis: <code>sqrt(x)</code>, <code>x^2</code>, <code>ln(x)</code>, <code>log(x,10)</code>, <code>exp(x)</code>, <code>e^x</code>, <code>1/x</code>, <code>sin(x)</code>, <code>abs(x)</code>, <code>x^(1/3)</code>
+        </p>
+        <input type="text" id="val-func" placeholder="ej: (x-1)*sqrt(x), ln(x), exp(x), x^2-1" style="width:100%;padding:.5rem;font-size:1rem;font-family:'Courier New',monospace;border:1px solid var(--brd);border-radius:4px" oninput="previewEq()">
+        <div id="eq-preview" style="margin-top:.4rem;min-height:1.5rem;font-size:1.1rem"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin:1.2rem 0">
+      <button class="btn btn-primary" onclick="solveProblema()" style="font-size:1.1rem;padding:.8rem 2.5rem">Resolver</button>
+      <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.5rem">Limpiar</button>
+    </div>
+
+    <div class="reasoning-box" id="solver-reasoning" style="display:none"></div>
+    <div id="solver-plot" class="plot-container" style="display:none"></div>
+  </div>
+</div>
+
 <!-- ============ JAVASCRIPT ============ -->
 <script>
 // === TABS ===
 function switchTab(t){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-  if(t==='theory'){document.querySelectorAll('.tab-btn')[0].classList.add('active');document.getElementById('tab-theory').classList.add('active')}
-  else{document.querySelectorAll('.tab-btn')[1].classList.add('active');document.getElementById('tab-test').classList.add('active')}
+  const idx={theory:0,test:1,problems:2};
+  document.querySelectorAll('.tab-btn')[idx[t]||0].classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
 }
 
 // === TOPIC SELECTOR ===
@@ -865,7 +1023,7 @@ function calcCondicion(){
 
 // === TEST ===
 const questions=[
-{q:'Segun el material, los unicos tipos de error controlables en el analisis numerico son:',
+{q:'Los unicos tipos de error controlables en el analisis numerico son:',
  opts:['Experimental y de modelizacion','De truncamiento y de redondeo','Experimental y de redondeo','De modelizacion y de truncamiento'],ans:1,d:'bajo',
  expl:'El material indica que los errores que "podemos analizar y controlar" son truncamiento (aumentando iteraciones) y redondeo (aumentando cifras).',
  why:['<b>A) Incorrecta.</b> Los errores experimental y de modelizacion son inherentes al problema fisico y a las simplificaciones del modelo. No los controla el calculista.','<b>B) Correcta.</b> El truncamiento se controla aumentando el numero de terminos/iteraciones; el redondeo se controla aumentando las cifras decimales. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t1\');document.getElementById(\'topic-select\').value=\'t1\';return false">Ver Tema 1: Tipos de Errores</a>','<b>C) Incorrecta.</b> El error experimental no es controlable por el calculista (depende de los instrumentos de medida).','<b>D) Incorrecta.</b> El error de modelizacion depende de la eleccion del modelo matematico, no del calculo numerico.']},
@@ -1053,6 +1211,166 @@ function resetTest(){
     const fb=document.getElementById('fb'+i);fb.style.display='none';fb.className='feedback';
   });
   document.getElementById('score-bar').style.display='none';
+}
+
+// === SOLVER ===
+const _sp=['x','xs','ea','er','p','t','eps','k','rd','tr','linf','lsup','cond'];
+function toggleParam(id){
+  const c=document.getElementById('chk-'+id).checked;
+  const v=document.getElementById('val-'+id);
+  v.disabled=!c;
+  const u=document.getElementById('up-'+id),d=document.getElementById('dn-'+id);
+  if(u)u.disabled=!c;if(d)d.disabled=!c;
+  if(!c){v.value='';v.style.background='';v.style.color=''}
+  if(id==='xs')document.getElementById('val-tipo').disabled=!c;
+}
+function toggleEq(){document.getElementById('eq-editor-box').style.display=document.getElementById('chk-func').checked?'block':'none'}
+function prepExpr(e){return e.replace(/\bln\b/g,'log')}
+function previewEq(){
+  const e=document.getElementById('val-func').value.trim(),p=document.getElementById('eq-preview');
+  if(!e){p.innerHTML='';return}
+  try{const n=math.parse(prepExpr(e)),tx=n.toTex({parenthesis:'keep',implicit:'show'});
+    katex.render('f(x) = '+tx,p,{throwOnError:false})}
+  catch(err){p.innerHTML='<span style="color:#e74c3c;font-size:.85rem">'+err.message+'</span>'}
+}
+function spin(id,step){
+  const el=document.getElementById('val-'+id);
+  let v=parseFloat(el.value);if(isNaN(v))v=0;v+=step;
+  el.value=(id==='p'||id==='t'||id==='k')?Math.max(0,Math.round(v)):parseFloat(v.toPrecision(10));
+}
+function resetSolver(){
+  _sp.forEach(id=>{document.getElementById('chk-'+id).checked=false;toggleParam(id)});
+  document.getElementById('chk-func').checked=false;toggleEq();
+  document.getElementById('val-func').value='';document.getElementById('eq-preview').innerHTML='';
+  document.getElementById('solver-reasoning').style.display='none';
+  document.getElementById('solver-plot').style.display='none';
+}
+function fmt(n){
+  if(n===undefined||isNaN(n))return'?';
+  if(Number.isInteger(n)&&Math.abs(n)<1e12)return n.toString();
+  const s=parseFloat(n.toPrecision(10)).toString();
+  return s.length>14?n.toExponential(6):s;
+}
+function solveProblema(){
+  const v={},given={},chk={};
+  _sp.forEach(id=>{
+    chk[id]=document.getElementById('chk-'+id).checked;
+    const el=document.getElementById('val-'+id),raw=el.value.trim();
+    el.style.background='';el.style.color='';
+    if(chk[id]&&raw!==''){v[id]=sEval(raw);given[id]=true}
+  });
+  const tipo=document.getElementById('val-tipo').value;
+  const hasFn=document.getElementById('chk-func').checked;
+  const fnExpr=document.getElementById('val-func').value.trim();
+  let fd=null;
+  if(hasFn&&fnExpr)fd=parseFunc(prepExpr(fnExpr));
+  const steps=[],comp={};
+  function set(id,val,reason){
+    if(v[id]===undefined&&val!==undefined&&!isNaN(val)&&isFinite(val)){v[id]=val;comp[id]=true;steps.push(reason)}
+  }
+  for(let pass=0;pass<6;pass++){
+    // EA from x,xs
+    if(v.x!==undefined&&v.xs!==undefined&&v.ea===undefined){
+      const ea=Math.abs(v.x-v.xs);
+      set('ea',ea,'<b>Error Absoluto:</b> \\(E_A = |x - x^*| = |'+fmt(v.x)+' - '+fmt(v.xs)+'| = '+fmt(ea)+'\\)');}
+    // ER from EA,x
+    if(v.ea!==undefined&&v.x!==undefined&&v.x!==0&&v.er===undefined){
+      const er=v.ea/Math.abs(v.x);
+      set('er',er,'<b>Error Relativo:</b> \\(E_R = \\frac{E_A}{|x|} = \\frac{'+fmt(v.ea)+'}{'+fmt(Math.abs(v.x))+'} = '+fmt(er)+'\\)');}
+    // EA from ER,x
+    if(v.er!==undefined&&v.x!==undefined&&v.ea===undefined){
+      const ea=v.er*Math.abs(v.x);
+      set('ea',ea,'<b>Error Absoluto:</b> \\(E_A = E_R \\cdot |x| = '+fmt(v.er)+' \\cdot '+fmt(Math.abs(v.x))+' = '+fmt(ea)+'\\)');}
+    // p from ea
+    if(v.ea!==undefined&&v.p===undefined){
+      let p=0;while(v.ea<=Math.pow(10,-p)&&p<20)p++;p=Math.max(0,p-1);
+      set('p',p,'<b>Cifras decimales exactas:</b> Mayor \\(p\\) con \\(E_A \\leq 10^{-p}\\): \\('+fmt(v.ea)+' \\leq 10^{-'+p+'} = '+fmt(Math.pow(10,-p))+'\\) \\(\\Rightarrow p = '+p+'\\)');}
+    // t from er
+    if(v.er!==undefined&&v.t===undefined){
+      let t=0;while(v.er<5*Math.pow(10,-t)&&t<20)t++;t=Math.max(0,t-1);
+      set('t',t,'<b>Cifras significativas:</b> Mayor \\(t\\) con \\(E_R < 5\\cdot10^{-t}\\): \\('+fmt(v.er)+' < '+fmt(5*Math.pow(10,-t))+'\\) \\(\\Rightarrow t = '+t+'\\)');}
+    // eps from tipo+k
+    if(v.k!==undefined&&v.eps===undefined){
+      if(tipo==='redondeo'){const eps=0.5*Math.pow(10,-v.k);
+        set('eps',eps,'<b>Cota del error (Prop. 27):</b> Redondeo a \\(k='+v.k+'\\) cifras: \\(\\varepsilon \\leq \\tfrac{1}{2}\\cdot10^{-'+v.k+'} = '+fmt(eps)+'\\)');}
+      else if(tipo==='truncamiento'){const eps=Math.pow(10,-v.k);
+        set('eps',eps,'<b>Cota del error (Prop. 27):</b> Truncamiento a \\(k='+v.k+'\\) cifras: \\(\\varepsilon \\leq 10^{-'+v.k+'} = '+fmt(eps)+'\\)');}}
+    // Interval from xs,eps
+    if(v.xs!==undefined&&v.eps!==undefined){
+      if(v.linf===undefined)set('linf',v.xs-v.eps,'<b>Limite inferior (por defecto):</b> \\(x^* - \\varepsilon = '+fmt(v.xs)+' - '+fmt(v.eps)+' = '+fmt(v.xs-v.eps)+'\\)');
+      if(v.lsup===undefined)set('lsup',v.xs+v.eps,'<b>Limite superior (por exceso):</b> \\(x^* + \\varepsilon = '+fmt(v.xs)+' + '+fmt(v.eps)+' = '+fmt(v.xs+v.eps)+'\\)');}
+    // xs,eps from interval
+    if(v.linf!==undefined&&v.lsup!==undefined){
+      if(v.xs===undefined){const xs=(v.linf+v.lsup)/2;
+        set('xs',xs,'<b>Aproximacion optima (Prop. 17):</b> \\(x^* = \\frac{a+b}{2} = \\frac{'+fmt(v.linf)+'+'+fmt(v.lsup)+'}{2} = '+fmt(xs)+'\\)');}
+      if(v.eps===undefined){const eps=(v.lsup-v.linf)/2;
+        set('eps',eps,'<b>Cota del error:</b> \\(\\varepsilon = \\frac{b-a}{2} = \\frac{'+fmt(v.lsup)+'-'+fmt(v.linf)+'}{2} = '+fmt(eps)+'\\)');}}
+    // Redondeo/truncamiento
+    const numR=v.x!==undefined?v.x:v.xs;const srcR=v.x!==undefined?'x':'x^*';
+    if(numR!==undefined&&v.k!==undefined){
+      if(v.rd===undefined){const f=Math.pow(10,v.k),rd=Math.round(numR*f)/f;
+        set('rd',rd,'<b>Redondeo:</b> \\(\\mathrm{Rd}('+srcR+', '+v.k+') = \\mathrm{Rd}('+fmt(numR)+', '+v.k+') = '+rd.toFixed(v.k)+'\\)');}
+      if(v.tr===undefined){const f=Math.pow(10,v.k),tr=Math.trunc(numR*f)/f;
+        set('tr',tr,'<b>Truncamiento:</b> \\(\\mathrm{Tr}('+srcR+', '+v.k+') = \\mathrm{Tr}('+fmt(numR)+', '+v.k+') = '+tr.toFixed(v.k)+'\\)');}}
+    // EA of rd/tr
+    if(v.rd!==undefined&&numR!==undefined&&!comp._eaRd){const eaRd=Math.abs(numR-v.rd);
+      steps.push('<b>EA del redondeo:</b> \\(|'+srcR+' - \\mathrm{Rd}| = |'+fmt(numR)+' - '+fmt(v.rd)+'| = '+fmt(eaRd)+'\\)');comp._eaRd=true;}
+    if(v.tr!==undefined&&numR!==undefined&&!comp._eaTr){const eaTr=Math.abs(numR-v.tr);
+      steps.push('<b>EA del truncamiento:</b> \\(|'+srcR+' - \\mathrm{Tr}| = |'+fmt(numR)+' - '+fmt(v.tr)+'| = '+fmt(eaTr)+'\\)');comp._eaTr=true;}
+    // Condicion
+    if(fd&&v.cond===undefined){
+      const xv=v.x!==undefined?v.x:v.xs;
+      if(xv!==undefined){const fv=fd.f(xv),dfv=fd.df(xv);
+        if(fv!==0&&!isNaN(fv)&&!isNaN(dfv)&&isFinite(fv)&&isFinite(dfv)){const c=Math.abs(xv*dfv/fv);
+          const src=v.x!==undefined?'x':'x^*';
+          set('cond',c,'<b>Condicion:</b> \\(C('+src+') = \\left|\\frac{'+src+'\\cdot f\'('+src+')}{f('+src+')}\\right| = \\left|\\frac{'+fmt(xv)+'\\cdot'+fmt(dfv)+'}{'+fmt(fv)+'}\\right| = '+fmt(c)+'\\) &rarr; '+(c>1?'<span style="color:#e74c3c">Mal condicionado</span>':'<span style="color:#27ae60">Bien condicionado</span>'));}}}
+    // Cota ER
+    if(v.eps!==undefined&&v.xs!==undefined&&!comp._cotaER){const cotaER=v.eps/Math.abs(v.xs);
+      steps.push('<b>Cota del Error Relativo:</b> \\(\\frac{\\varepsilon}{|x^*|} = \\frac{'+fmt(v.eps)+'}{'+fmt(Math.abs(v.xs))+'} = '+fmt(cotaER)+'\\)');comp._cotaER=true;}
+  }
+  // Exceso/defecto
+  if(v.x!==undefined&&v.xs!==undefined){const sign=v.x-v.xs;
+    if(sign<0)steps.unshift('<b>Tipo de aproximacion:</b> \\(E\'_A = x - x^* = '+fmt(sign)+' < 0\\) &rarr; Aproximacion <b>por exceso</b> (\\(x^* > x\\))');
+    else if(sign>0)steps.unshift('<b>Tipo de aproximacion:</b> \\(E\'_A = x - x^* = '+fmt(sign)+' > 0\\) &rarr; Aproximacion <b>por defecto</b> (\\(x^* < x\\))');
+    else steps.unshift('<b>Tipo de aproximacion:</b> \\(x^* = x\\) &rarr; Aproximacion exacta');}
+  if(fd)steps.unshift('<b>Funcion:</b> \\(f(x) = '+fnExpr+'\\), \\(f\'(x) = '+fd.dexpr+'\\)');
+  // Fill computed values
+  _sp.forEach(id=>{if(comp[id]){
+    const el=document.getElementById('val-'+id);
+    el.value=(id==='p'||id==='t'||id==='k')?v[id]:fmt(v[id]);
+    el.style.background='#d5f5e3';el.style.color='#1e8449';el.disabled=false;}});
+  // Reasoning
+  const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
+  if(steps.length>0){
+    rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.5rem">Razonamiento paso a paso</h4>'+steps.map(s=>'<div class="step">'+s+'</div>').join('');
+    renderMathInElement(rBox,mathOpts);
+  }else{rBox.innerHTML='<p style="color:var(--txtl)">No se pudieron derivar nuevos valores. Introduce mas datos conocidos.</p>';}
+  drawSolverAxis(v);
+}
+function drawSolverAxis(v){
+  const pl=document.getElementById('solver-plot');
+  const nums=[v.x,v.xs,v.linf,v.lsup,v.rd,v.tr].filter(n=>n!==undefined&&!isNaN(n)&&isFinite(n));
+  if(nums.length===0){pl.style.display='none';return}
+  pl.style.display='block';
+  const mn=Math.min(...nums),mx=Math.max(...nums);
+  const pad=Math.max((mx-mn)*.2,Math.abs(mx||1)*.005,.001);
+  const traces=[],ann=[];
+  if(v.linf!==undefined&&v.lsup!==undefined){
+    traces.push({x:[v.linf,v.lsup],y:[0,0],mode:'lines',line:{color:'rgba(41,128,185,.3)',width:20},name:'Intervalo [x*-\u03b5, x*+\u03b5]',hoverinfo:'x'});
+    traces.push({x:[v.linf,v.linf],y:[-.35,.35],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+    traces.push({x:[v.lsup,v.lsup],y:[-.35,.35],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+    ann.push({x:v.linf,y:-.55,text:fmt(v.linf)+'<br><i>(por defecto)</i>',showarrow:false,font:{size:9,color:'#2980b9'}});
+    ann.push({x:v.lsup,y:-.55,text:fmt(v.lsup)+'<br><i>(por exceso)</i>',showarrow:false,font:{size:9,color:'#2980b9'}});}
+  if(v.x!==undefined)traces.push({x:[v.x],y:[0],mode:'markers',marker:{size:15,color:'#27ae60',symbol:'star',line:{width:1,color:'#1a7a3e'}},name:'x = '+fmt(v.x),hoverinfo:'x+name'});
+  if(v.xs!==undefined)traces.push({x:[v.xs],y:[0],mode:'markers',marker:{size:14,color:'#e74c3c',symbol:'diamond',line:{width:1,color:'#922b21'}},name:'x* = '+fmt(v.xs),hoverinfo:'x+name'});
+  if(v.rd!==undefined)traces.push({x:[v.rd],y:[.18],mode:'markers',marker:{size:10,color:'#8e44ad',symbol:'circle'},name:'Rd = '+fmt(v.rd),hoverinfo:'x+name'});
+  if(v.tr!==undefined)traces.push({x:[v.tr],y:[-.18],mode:'markers',marker:{size:10,color:'#f39c12',symbol:'triangle-up'},name:'Tr = '+fmt(v.tr),hoverinfo:'x+name'});
+  if(v.x!==undefined&&v.xs!==undefined){
+    traces.push({x:[Math.min(v.x,v.xs),Math.max(v.x,v.xs)],y:[.4,.4],mode:'lines',line:{color:'#e74c3c',width:3},showlegend:false,hoverinfo:'skip'});
+    ann.push({x:(v.x+v.xs)/2,y:.52,text:'<b>EA = '+fmt(Math.abs(v.x-v.xs))+'</b>',showarrow:false,font:{size:10,color:'#e74c3c'}});}
+  Plotly.newPlot(pl,traces,{margin:{t:10,b:70,l:40,r:40},yaxis:{visible:false,range:[-.8,.7]},
+    xaxis:{title:'Eje numerico',range:[mn-pad,mx+pad],zeroline:false},height:240,
+    legend:{orientation:'h',y:1.15,font:{size:11}},annotations:ann,plot_bgcolor:'#fafbfc'},{responsive:true});
 }
 
 // === INIT ===
