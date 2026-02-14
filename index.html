@@ -102,6 +102,11 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 .reasoning-box{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin-top:1rem;font-size:.9rem;line-height:1.7}
 .reasoning-box .step{margin:.5rem 0;padding:.4rem .6rem;border-left:3px solid var(--pri-l);background:#f8f9fb;border-radius:0 4px 4px 0}
 .reasoning-box .step b{color:var(--pri)}
+#tab-problems{max-width:1200px}
+.solver-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start}
+.solver-left,.solver-right{min-width:0}
+.solver-right{position:sticky;top:60px}
+@media(max-width:900px){.solver-grid{grid-template-columns:1fr}.solver-right{position:static}}
 @media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}.param-row{flex-direction:column;align-items:flex-start}.param-row .param-label{min-width:auto}}
 </style>
 </head>
@@ -610,6 +615,9 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
     <h3>Resolutor Interactivo de Problemas</h3>
     <p style="margin-bottom:1rem">Marca los conceptos relevantes e introduce los valores conocidos. Deja en blanco lo que quieras calcular. Pulsa <b>Resolver</b> para obtener resultados con razonamiento paso a paso.</p>
 
+    <div class="solver-grid">
+    <div class="solver-left">
+
     <div class="param-row">
       <input type="checkbox" id="chk-x" onchange="toggleParam('x')">
       <div class="param-label">Valor real (x)<span class="param-sub">Valor exacto</span></div>
@@ -738,8 +746,12 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
       <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.5rem">Resetear todo</button>
     </div>
 
+    </div><!-- /solver-left -->
+    <div class="solver-right">
     <div class="reasoning-box" id="solver-reasoning" style="display:none"></div>
     <div id="solver-plot" class="plot-container" style="display:none"></div>
+    </div><!-- /solver-right -->
+    </div><!-- /solver-grid -->
   </div>
 </div>
 
