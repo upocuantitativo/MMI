@@ -821,7 +821,7 @@ function drawTarget(ex,pr,btn){
 }
 
 // === SAFE EVAL ===
-function sEval(e){try{e=e.replace(/pi/gi,'Math.PI').replace(/(?<![a-zA-Z])e(?![a-zA-Z0-9.+\-])/g,'Math.E');return Function('"use strict";return('+e+')')()}catch(x){try{return math.evaluate(e)}catch(x2){return NaN}}}
+function sEval(e){try{return math.evaluate(e)}catch(x){try{return Function('"use strict";return('+e+')')()}catch(x2){return NaN}}}
 
 // === ERROR CALCULATOR ===
 function calcError(){
