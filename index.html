@@ -102,12 +102,24 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 .reasoning-box{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin-top:1rem;font-size:.9rem;line-height:1.7}
 .reasoning-box .step{margin:.5rem 0;padding:.4rem .6rem;border-left:3px solid var(--pri-l);background:#f8f9fb;border-radius:0 4px 4px 0}
 .reasoning-box .step b{color:var(--pri)}
-#tab-problems{max-width:1200px}
-.solver-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start}
+#tab-problems{max-width:1400px}
+.solver-grid{display:grid;grid-template-columns:3fr 2fr;gap:1.2rem;align-items:start}
 .solver-left,.solver-right{min-width:0}
 .solver-right{position:sticky;top:60px}
-@media(max-width:900px){.solver-grid{grid-template-columns:1fr}.solver-right{position:static}}
-@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}.param-row{flex-direction:column;align-items:flex-start}.param-row .param-label{min-width:auto}}
+.solver-tbl{display:grid;grid-template-columns:26px minmax(100px,160px) repeat(4,1fr);gap:1px;background:var(--brd);border-radius:var(--r);overflow:hidden}
+.solver-tbl>div{background:var(--card);padding:.2rem .3rem;display:flex;align-items:center;min-height:30px}
+.st-hdr{background:var(--pri)!important;color:#fff;font-weight:600;justify-content:center;font-size:.75rem;padding:.3rem .2rem}
+.st-hl{justify-content:flex-start!important;padding-left:.3rem}
+.st-h0{background:var(--pri)!important}
+.st-chk{justify-content:center}.st-chk input{width:15px;height:15px;cursor:pointer}
+.st-lbl{font-weight:600;font-size:.75rem;flex-direction:column;align-items:flex-start!important;line-height:1.15}
+.st-val{gap:1px}.sv-in{width:100%;padding:.15rem .2rem;border:1px solid var(--brd);border-radius:3px;font-size:.78rem;min-width:0}
+.sv-in:disabled{background:#f5f5f5;color:#bbb;border-color:#eee}
+.sv-in.computed{background:#d5f5e3!important;color:#1e8449!important;border-color:#a3d9b1}
+.drag-h{cursor:ns-resize;color:var(--pri);font-size:.65rem;user-select:none;padding:0 1px;flex-shrink:0;opacity:.5;transition:.2s}
+.drag-h::after{content:'\u21D5'}.drag-h:hover,.drag-h.dragging{opacity:1;color:var(--acc)}
+@media(max-width:900px){.solver-grid{grid-template-columns:1fr}.solver-right{position:static}.solver-tbl{grid-template-columns:24px 1fr repeat(4,1fr)}}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}.solver-tbl{font-size:.7rem;grid-template-columns:22px 80px repeat(4,1fr)}}
 </style>
 </head>
 <body>
@@ -613,137 +625,39 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div id="tab-problems" class="tab-content">
   <div class="solver-card">
     <h3>Resolutor Interactivo de Problemas</h3>
-    <p style="margin-bottom:1rem">Marca los conceptos relevantes e introduce los valores conocidos. Deja en blanco lo que quieras calcular. Pulsa <b>Resolver</b> para obtener resultados con razonamiento paso a paso.</p>
+    <p style="margin-bottom:.6rem;font-size:.88rem">Marca los conceptos, introduce valores conocidos (deja en blanco para calcular). Arrastra <b>&hArr;</b> para ajustar valores en tiempo real.</p>
 
     <div class="solver-grid">
     <div class="solver-left">
 
-    <div class="param-row">
-      <input type="checkbox" id="chk-x" onchange="toggleParam('x')">
-      <div class="param-label">Valor real (x)<span class="param-sub">Valor exacto</span></div>
-      <input type="text" id="val-x" disabled placeholder="ej: pi, sqrt(2), 3.14159">
-      <button class="spin-btn" disabled id="up-x" onclick="spin('x',0.01)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-x" onclick="spin('x',-0.01)">&#9660;</button>
-    </div>
+    <div class="solver-tbl" id="solver-tbl"></div>
 
-    <div class="param-row">
-      <input type="checkbox" id="chk-xs" onchange="toggleParam('xs')">
-      <div class="param-label">Aproximacion (x*)<span class="param-sub">Valor aproximado</span></div>
-      <input type="text" id="val-xs" disabled placeholder="ej: 3.14, 22/7">
-      <button class="spin-btn" disabled id="up-xs" onclick="spin('xs',0.01)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-xs" onclick="spin('xs',-0.01)">&#9660;</button>
-      <select id="val-tipo" disabled style="margin-left:.3rem;padding:.3rem;border-radius:4px;border:1px solid var(--brd);font-size:.82rem">
-        <option value="">Tipo...</option>
+    <div style="display:flex;align-items:center;gap:.6rem;margin:.5rem 0;flex-wrap:wrap">
+      <label style="font-size:.82rem;font-weight:600">Tipo aprox.:</label>
+      <select id="val-tipo" style="padding:.25rem;border-radius:4px;border:1px solid var(--brd);font-size:.8rem">
+        <option value="">Sin especificar</option>
         <option value="redondeo">Por redondeo</option>
         <option value="truncamiento">Por truncamiento</option>
       </select>
     </div>
 
-    <div class="param-row">
-      <input type="checkbox" id="chk-ea" onchange="toggleParam('ea')">
-      <div class="param-label">Error absoluto (EA)<span class="param-sub">|x - x*|</span></div>
-      <input type="text" id="val-ea" disabled placeholder="ej: 0.001">
-      <button class="spin-btn" disabled id="up-ea" onclick="spin('ea',0.001)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-ea" onclick="spin('ea',-0.001)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-er" onchange="toggleParam('er')">
-      <div class="param-label">Error relativo (ER)<span class="param-sub">EA / |x|</span></div>
-      <input type="text" id="val-er" disabled placeholder="ej: 0.01">
-      <button class="spin-btn" disabled id="up-er" onclick="spin('er',0.0001)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-er" onclick="spin('er',-0.0001)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-p" onchange="toggleParam('p')">
-      <div class="param-label">Cifras decimales exactas (p)<span class="param-sub">Exactitud: EA &le; 10<sup>-p</sup></span></div>
-      <input type="number" id="val-p" disabled min="0" max="20" placeholder="ej: 3">
-      <button class="spin-btn" disabled id="up-p" onclick="spin('p',1)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-p" onclick="spin('p',-1)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-t" onchange="toggleParam('t')">
-      <div class="param-label">Cifras significativas (t)<span class="param-sub">Precision: ER &lt; 5&middot;10<sup>-t</sup></span></div>
-      <input type="number" id="val-t" disabled min="0" max="20" placeholder="ej: 4">
-      <button class="spin-btn" disabled id="up-t" onclick="spin('t',1)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-t" onclick="spin('t',-1)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-eps" onchange="toggleParam('eps')">
-      <div class="param-label">Cota del error (&epsilon;)<span class="param-sub">Limite superior de EA</span></div>
-      <input type="text" id="val-eps" disabled placeholder="ej: 0.005">
-      <button class="spin-btn" disabled id="up-eps" onclick="spin('eps',0.001)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-eps" onclick="spin('eps',-0.001)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-k" onchange="toggleParam('k')">
-      <div class="param-label">Cifras decimales (k)<span class="param-sub">Para redondeo/truncamiento</span></div>
-      <input type="number" id="val-k" disabled min="0" max="20" placeholder="ej: 4">
-      <button class="spin-btn" disabled id="up-k" onclick="spin('k',1)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-k" onclick="spin('k',-1)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-rd" onchange="toggleParam('rd')">
-      <div class="param-label">Redondeo<span class="param-sub">Resultado de redondear a k cifras</span></div>
-      <input type="text" id="val-rd" disabled placeholder="(se calcula)">
-      <button class="spin-btn" disabled id="up-rd" onclick="spin('rd',0.01)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-rd" onclick="spin('rd',-0.01)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-tr" onchange="toggleParam('tr')">
-      <div class="param-label">Truncamiento<span class="param-sub">Resultado de truncar a k cifras</span></div>
-      <input type="text" id="val-tr" disabled placeholder="(se calcula)">
-      <button class="spin-btn" disabled id="up-tr" onclick="spin('tr',0.01)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-tr" onclick="spin('tr',-0.01)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-linf" onchange="toggleParam('linf')">
-      <div class="param-label">Limite inferior del intervalo<span class="param-sub">Por defecto</span></div>
-      <input type="text" id="val-linf" disabled placeholder="ej: 3.13">
-      <button class="spin-btn" disabled id="up-linf" onclick="spin('linf',0.01)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-linf" onclick="spin('linf',-0.01)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-lsup" onchange="toggleParam('lsup')">
-      <div class="param-label">Limite superior del intervalo<span class="param-sub">Por exceso</span></div>
-      <input type="text" id="val-lsup" disabled placeholder="ej: 3.15">
-      <button class="spin-btn" disabled id="up-lsup" onclick="spin('lsup',0.01)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-lsup" onclick="spin('lsup',-0.01)">&#9660;</button>
-    </div>
-
-    <div class="param-row">
-      <input type="checkbox" id="chk-cond" onchange="toggleParam('cond')">
-      <div class="param-label">Condicion C(x)<span class="param-sub">|x &middot; f'(x) / f(x)|</span></div>
-      <input type="text" id="val-cond" disabled placeholder="(se calcula)">
-      <button class="spin-btn" disabled id="up-cond" onclick="spin('cond',0.1)">&#9650;</button>
-      <button class="spin-btn" disabled id="dn-cond" onclick="spin('cond',-0.1)">&#9660;</button>
-    </div>
-
-    <div style="margin-top:.8rem;padding:.8rem;background:#f0f4f8;border-radius:var(--r)">
-      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-weight:600">
-        <input type="checkbox" id="chk-func" onchange="toggleEq()"> Ecuacion f(x)
+    <div style="padding:.5rem;background:#f0f4f8;border-radius:var(--r);margin:.4rem 0">
+      <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-weight:600;font-size:.88rem">
+        <input type="checkbox" id="chk-func" onchange="toggleEq()"> Ecuacion f(x,y,z)
       </label>
-      <div id="eq-editor-box" style="display:none;margin-top:.5rem">
-        <p style="font-size:.82rem;color:var(--txtl);margin-bottom:.3rem">
-          Sintaxis: <code>sqrt(x)</code>, <code>x^2</code>, <code>ln(x)</code>, <code>log(x,10)</code>, <code>exp(x)</code>, <code>e^x</code>, <code>1/x</code>, <code>sin(x)</code>, <code>abs(x)</code>, <code>x^(1/3)</code>
+      <div id="eq-editor-box" style="display:none;margin-top:.3rem">
+        <p style="font-size:.75rem;color:var(--txtl);margin-bottom:.2rem">
+          sqrt(x), x^2, ln(x), exp(x), x*y, x+y+z, sin(x), 1/x, x^(1/3)...
         </p>
-        <input type="text" id="val-func" placeholder="ej: (x-1)*sqrt(x), ln(x), exp(x), x^2-1" style="width:100%;padding:.5rem;font-size:1rem;font-family:'Courier New',monospace;border:1px solid var(--brd);border-radius:4px" oninput="previewEq()">
-        <div id="eq-preview" style="margin-top:.4rem;min-height:1.5rem;font-size:1.1rem"></div>
+        <input type="text" id="val-func" placeholder="ej: x*y, sqrt(x)+ln(y), x^2+y^2+z^2" style="width:100%;padding:.4rem;font-size:.95rem;font-family:'Courier New',monospace;border:1px solid var(--brd);border-radius:4px" oninput="previewEq()">
+        <div id="eq-preview" style="margin-top:.3rem;min-height:1.3rem;font-size:1rem"></div>
       </div>
     </div>
 
-    <div style="text-align:center;margin:1.2rem 0">
-      <button class="btn btn-primary" onclick="solveProblema()" style="font-size:1.1rem;padding:.8rem 2.5rem">Resolver</button>
-      <button class="btn btn-primary" onclick="resetCalc()" style="margin-left:.5rem;background:var(--warn)">Limpiar calculos</button>
-      <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.5rem">Resetear todo</button>
+    <div style="text-align:center;margin:.8rem 0">
+      <button class="btn btn-primary" onclick="solveProblema()" style="font-size:1rem;padding:.6rem 2rem">Resolver</button>
+      <button class="btn btn-primary" onclick="resetCalc()" style="margin-left:.4rem;background:var(--warn);font-size:.82rem">Limpiar calculos</button>
+      <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.4rem;font-size:.82rem">Resetear todo</button>
     </div>
 
     </div><!-- /solver-left -->
@@ -1227,15 +1141,39 @@ function resetTest(){
 }
 
 // === SOLVER ===
-const _sp=['x','xs','ea','er','p','t','eps','k','rd','tr','linf','lsup','cond'];
-function toggleParam(id){
+const _pd=[
+  {id:'real',label:'Valor real',sub:'Valor exacto'},
+  {id:'aprox',label:'Aproximacion (x*)',sub:'Valor aproximado'},
+  {id:'ea',label:'Error absoluto (EA)',sub:'|x - x*|'},
+  {id:'er',label:'Error relativo (ER)',sub:'EA / |x|'},
+  {id:'p',label:'Cifras dec. exactas',sub:'Exactitud',isInt:1},
+  {id:'t',label:'Cifras significativas',sub:'Precision',isInt:1},
+  {id:'eps',label:'Cota del error (\u03b5)',sub:'Limite sup. EA'},
+  {id:'k',label:'Cifras decimales (k)',sub:'Redondeo/trunc.',isInt:1},
+  {id:'rd',label:'Redondeo',sub:'A k cifras'},
+  {id:'tr',label:'Truncamiento',sub:'A k cifras'},
+  {id:'linf',label:'Lim. inferior',sub:'Por defecto'},
+  {id:'lsup',label:'Lim. superior',sub:'Por exceso'},
+  {id:'cond',label:'Condicion C',sub:'|v\u00b7\u2202f/\u2202v / f|'}
+];
+const _cv=['x','y','z','f'];
+function buildSolverTable(){
+  let h='<div class="st-h0"></div><div class="st-hdr st-hl">Parametro</div>';
+  _cv.forEach(v=>h+='<div class="st-hdr">'+(v==='f'?'f(x,y,z)':v)+'</div>');
+  _pd.forEach(p=>{
+    h+='<div class="st-chk"><input type="checkbox" id="chk-'+p.id+'" onchange="toggleRow(\''+p.id+'\')"></div>';
+    h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span></div>';
+    _cv.forEach(v=>{
+      const iid='val-'+p.id+'-'+v;
+      h+='<div class="st-val"><input type="text" id="'+iid+'" disabled class="sv-in"'+(p.isInt?' inputmode="numeric"':'')+' placeholder="'+(v==='f'?'f':v)+'">';
+      h+='<span class="drag-h" data-id="'+iid+'"></span></div>';
+    });
+  });
+  document.getElementById('solver-tbl').innerHTML=h;
+}
+function toggleRow(id){
   const c=document.getElementById('chk-'+id).checked;
-  const v=document.getElementById('val-'+id);
-  v.disabled=!c;
-  const u=document.getElementById('up-'+id),d=document.getElementById('dn-'+id);
-  if(u)u.disabled=!c;if(d)d.disabled=!c;
-  if(!c){v.value='';v.style.background='';v.style.color=''}
-  if(id==='xs')document.getElementById('val-tipo').disabled=!c;
+  _cv.forEach(v=>{const el=document.getElementById('val-'+id+'-'+v);el.disabled=!c;if(!c){el.value='';el.classList.remove('computed')}});
 }
 function toggleEq(){document.getElementById('eq-editor-box').style.display=document.getElementById('chk-func').checked?'block':'none'}
 function prepExpr(e){return e.replace(/\bln\b/g,'log')}
@@ -1243,24 +1181,57 @@ function previewEq(){
   const e=document.getElementById('val-func').value.trim(),p=document.getElementById('eq-preview');
   if(!e){p.innerHTML='';return}
   try{const n=math.parse(prepExpr(e)),tx=n.toTex({parenthesis:'keep',implicit:'show'});
-    katex.render('f(x) = '+tx,p,{throwOnError:false})}
-  catch(err){p.innerHTML='<span style="color:#e74c3c;font-size:.85rem">'+err.message+'</span>'}
+    katex.render('f(x,y,z) = '+tx,p,{throwOnError:false})}
+  catch(err){p.innerHTML='<span style="color:#e74c3c;font-size:.8rem">'+err.message+'</span>'}
 }
-function spin(id,step){
-  const el=document.getElementById('val-'+id);
-  let v=parseFloat(el.value);if(isNaN(v))v=0;v+=step;
-  el.value=(id==='p'||id==='t'||id==='k')?Math.max(0,Math.round(v)):parseFloat(v.toPrecision(10));
-}
+// Drag behavior
+let _drag=null;
+document.addEventListener('mousedown',function(e){
+  const dh=e.target.closest('.drag-h');if(!dh)return;e.preventDefault();
+  const inp=document.getElementById(dh.dataset.id);if(!inp||inp.disabled)return;
+  dh.classList.add('dragging');
+  const cv=parseFloat(inp.value)||0;const isI=inp.inputMode==='numeric';
+  const step=isI?1:(cv===0?0.01:Math.pow(10,Math.floor(Math.log10(Math.abs(cv)))-2));
+  _drag={inp,startY:e.clientY,startVal:cv,step,dh,isI};
+});
+document.addEventListener('mousemove',function(e){
+  if(!_drag)return;e.preventDefault();
+  const dy=_drag.startY-e.clientY;
+  let nv=_drag.startVal+dy*_drag.step;
+  if(_drag.isI)nv=Math.max(0,Math.round(nv));
+  _drag.inp.value=_drag.isI?nv:fmt(nv);
+  solveProblema();
+});
+document.addEventListener('mouseup',function(){if(_drag){_drag.dh.classList.remove('dragging');_drag=null}});
+document.addEventListener('touchstart',function(e){
+  const dh=e.target.closest('.drag-h');if(!dh)return;
+  const inp=document.getElementById(dh.dataset.id);if(!inp||inp.disabled)return;
+  dh.classList.add('dragging');
+  const cv=parseFloat(inp.value)||0;const isI=inp.inputMode==='numeric';
+  const step=isI?1:(cv===0?0.01:Math.pow(10,Math.floor(Math.log10(Math.abs(cv)))-2));
+  _drag={inp,startY:e.touches[0].clientY,startVal:cv,step,dh,isI};
+},{passive:true});
+document.addEventListener('touchmove',function(e){
+  if(!_drag)return;
+  const dy=_drag.startY-e.touches[0].clientY;
+  let nv=_drag.startVal+dy*_drag.step;
+  if(_drag.isI)nv=Math.max(0,Math.round(nv));
+  _drag.inp.value=_drag.isI?nv:fmt(nv);
+  solveProblema();
+},{passive:true});
+document.addEventListener('touchend',function(){if(_drag){_drag.dh.classList.remove('dragging');_drag=null}});
+
 function resetCalc(){
-  _sp.forEach(id=>{const el=document.getElementById('val-'+id);
-    if(el.style.background==='rgb(213, 245, 227)'){el.value='';el.style.background='';el.style.color='';el.disabled=true}});
+  _pd.forEach(p=>_cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
+    if(el&&el.classList.contains('computed')){el.value='';el.classList.remove('computed')}}));
   document.getElementById('solver-reasoning').style.display='none';
   document.getElementById('solver-plot').style.display='none';
 }
 function resetSolver(){
-  _sp.forEach(id=>{document.getElementById('chk-'+id).checked=false;toggleParam(id)});
+  _pd.forEach(p=>{document.getElementById('chk-'+p.id).checked=false;toggleRow(p.id)});
   document.getElementById('chk-func').checked=false;toggleEq();
   document.getElementById('val-func').value='';document.getElementById('eq-preview').innerHTML='';
+  document.getElementById('val-tipo').value='';
   document.getElementById('solver-reasoning').style.display='none';
   document.getElementById('solver-plot').style.display='none';
 }
@@ -1270,131 +1241,176 @@ function fmt(n){
   const s=parseFloat(n.toPrecision(10)).toString();
   return s.length>14?n.toExponential(6):s;
 }
+function parseFuncMV(expr){
+  try{
+    const node=math.parse(expr),compiled=node.compile();
+    const f=(x,y,z)=>{try{return compiled.evaluate({x:x||0,y:y||0,z:z||0})}catch(e){return NaN}};
+    let dxC,dyC,dzC,dxS='0',dyS='0',dzS='0';
+    try{const d=math.derivative(node,'x');dxC=d.compile();dxS=d.toString()}catch(e){}
+    try{const d=math.derivative(node,'y');dyC=d.compile();dyS=d.toString()}catch(e){}
+    try{const d=math.derivative(node,'z');dzC=d.compile();dzS=d.toString()}catch(e){}
+    const df=(vr,x,y,z)=>{const sc={x:x||0,y:y||0,z:z||0};
+      if(vr==='x'&&dxC)try{return dxC.evaluate(sc)}catch(e){return 0}
+      if(vr==='y'&&dyC)try{return dyC.evaluate(sc)}catch(e){return 0}
+      if(vr==='z'&&dzC)try{return dzC.evaluate(sc)}catch(e){return 0}
+      return 0;};
+    return {f,df,dexpr:{x:dxS,y:dyS,z:dzS}};
+  }catch(e){return null}
+}
 function solveProblema(){
-  const v={},given={},chk={};
-  _sp.forEach(id=>{
-    chk[id]=document.getElementById('chk-'+id).checked;
-    const el=document.getElementById('val-'+id),raw=el.value.trim();
-    el.style.background='';el.style.color='';
-    if(chk[id]&&raw!==''){v[id]=sEval(raw);given[id]=true}
+  const d={},giv={};
+  _pd.forEach(p=>{d[p.id]={};giv[p.id]={};
+    const chk=document.getElementById('chk-'+p.id).checked;
+    _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);el.classList.remove('computed');
+      const raw=el.value.trim();
+      if(chk&&raw!==''){d[p.id][v]=sEval(raw);giv[p.id][v]=true}});
   });
   const tipo=document.getElementById('val-tipo').value;
   const hasFn=document.getElementById('chk-func').checked;
   const fnExpr=document.getElementById('val-func').value.trim();
-  let fd=null;
-  if(hasFn&&fnExpr)fd=parseFunc(prepExpr(fnExpr));
+  let fd=null;if(hasFn&&fnExpr)fd=parseFuncMV(prepExpr(fnExpr));
   const steps=[],comp={};
-  function set(id,val,reason){
-    if(v[id]===undefined&&val!==undefined&&!isNaN(val)&&isFinite(val)){v[id]=val;comp[id]=true;steps.push(reason)}
+  function gv(p,v){return d[p]?d[p][v]:undefined}
+  function sv(p,v,val,reason){
+    if(gv(p,v)===undefined&&val!==undefined&&!isNaN(val)&&isFinite(val)){
+      if(!d[p])d[p]={};d[p][v]=val;comp[p+'-'+v]=true;if(reason)steps.push(reason);}
   }
   for(let pass=0;pass<6;pass++){
-    // EA from x,xs
-    if(v.x!==undefined&&v.xs!==undefined&&v.ea===undefined){
-      const ea=Math.abs(v.x-v.xs);
-      set('ea',ea,'<b>Error Absoluto:</b> \\(E_A = |x - x^*| = |'+fmt(v.x)+' - '+fmt(v.xs)+'| = '+fmt(ea)+'\\)');}
-    // ER from EA,x
-    if(v.ea!==undefined&&v.x!==undefined&&v.x!==0&&v.er===undefined){
-      const er=v.ea/Math.abs(v.x);
-      set('er',er,'<b>Error Relativo:</b> \\(E_R = \\frac{E_A}{|x|} = \\frac{'+fmt(v.ea)+'}{'+fmt(Math.abs(v.x))+'} = '+fmt(er)+'\\)');}
-    // EA from ER,x
-    if(v.er!==undefined&&v.x!==undefined&&v.ea===undefined){
-      const ea=v.er*Math.abs(v.x);
-      set('ea',ea,'<b>Error Absoluto:</b> \\(E_A = E_R \\cdot |x| = '+fmt(v.er)+' \\cdot '+fmt(Math.abs(v.x))+' = '+fmt(ea)+'\\)');}
-    // p from ea
-    if(v.ea!==undefined&&v.p===undefined){
-      let p=0;while(v.ea<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
-      set('p',p,'<b>Cifras decimales exactas:</b> Mayor \\(p\\) con \\(E_A \\leq 10^{-p}\\): \\('+fmt(v.ea)+' \\leq 10^{-'+p+'} = '+fmt(Math.pow(10,-p))+'\\) \\(\\Rightarrow p = '+p+'\\)');}
-    // t from er
-    if(v.er!==undefined&&v.t===undefined){
-      let t=0;while(v.er<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
-      set('t',t,'<b>Cifras significativas:</b> Mayor \\(t\\) con \\(E_R < 5\\cdot10^{-t}\\): \\('+fmt(v.er)+' < '+fmt(5*Math.pow(10,-t))+'\\) \\(\\Rightarrow t = '+t+'\\)');}
-    // eps from tipo+k
-    if(v.k!==undefined&&v.eps===undefined){
-      if(tipo==='redondeo'){const eps=0.5*Math.pow(10,-v.k);
-        set('eps',eps,'<b>Cota del error (Prop. 27):</b> Redondeo a \\(k='+v.k+'\\) cifras: \\(\\varepsilon \\leq \\tfrac{1}{2}\\cdot10^{-'+v.k+'} = '+fmt(eps)+'\\)');}
-      else if(tipo==='truncamiento'){const eps=Math.pow(10,-v.k);
-        set('eps',eps,'<b>Cota del error (Prop. 27):</b> Truncamiento a \\(k='+v.k+'\\) cifras: \\(\\varepsilon \\leq 10^{-'+v.k+'} = '+fmt(eps)+'\\)');}}
-    // Interval from xs,eps
-    if(v.xs!==undefined&&v.eps!==undefined){
-      if(v.linf===undefined)set('linf',v.xs-v.eps,'<b>Limite inferior (por defecto):</b> \\(x^* - \\varepsilon = '+fmt(v.xs)+' - '+fmt(v.eps)+' = '+fmt(v.xs-v.eps)+'\\)');
-      if(v.lsup===undefined)set('lsup',v.xs+v.eps,'<b>Limite superior (por exceso):</b> \\(x^* + \\varepsilon = '+fmt(v.xs)+' + '+fmt(v.eps)+' = '+fmt(v.xs+v.eps)+'\\)');}
-    // xs,eps from interval
-    if(v.linf!==undefined&&v.lsup!==undefined){
-      if(v.xs===undefined){const xs=(v.linf+v.lsup)/2;
-        set('xs',xs,'<b>Aproximacion optima (Prop. 17):</b> \\(x^* = \\frac{a+b}{2} = \\frac{'+fmt(v.linf)+'+'+fmt(v.lsup)+'}{2} = '+fmt(xs)+'\\)');}
-      if(v.eps===undefined){const eps=(v.lsup-v.linf)/2;
-        set('eps',eps,'<b>Cota del error:</b> \\(\\varepsilon = \\frac{b-a}{2} = \\frac{'+fmt(v.lsup)+'-'+fmt(v.linf)+'}{2} = '+fmt(eps)+'\\)');}}
-    // Redondeo/truncamiento
-    const numR=v.x!==undefined?v.x:v.xs;const srcR=v.x!==undefined?'x':'x^*';
-    if(numR!==undefined&&v.k!==undefined){
-      if(v.rd===undefined){const f=Math.pow(10,v.k),rd=Math.round(numR*f)/f;
-        set('rd',rd,'<b>Redondeo:</b> \\(\\mathrm{Rd}('+srcR+', '+v.k+') = \\mathrm{Rd}('+fmt(numR)+', '+v.k+') = '+rd.toFixed(v.k)+'\\)');}
-      if(v.tr===undefined){const f=Math.pow(10,v.k),tr=Math.trunc(numR*f)/f;
-        set('tr',tr,'<b>Truncamiento:</b> \\(\\mathrm{Tr}('+srcR+', '+v.k+') = \\mathrm{Tr}('+fmt(numR)+', '+v.k+') = '+tr.toFixed(v.k)+'\\)');}}
-    // EA of rd/tr
-    if(v.rd!==undefined&&numR!==undefined&&!comp._eaRd){const eaRd=Math.abs(numR-v.rd);
-      steps.push('<b>EA del redondeo:</b> \\(|'+srcR+' - \\mathrm{Rd}| = |'+fmt(numR)+' - '+fmt(v.rd)+'| = '+fmt(eaRd)+'\\)');comp._eaRd=true;}
-    if(v.tr!==undefined&&numR!==undefined&&!comp._eaTr){const eaTr=Math.abs(numR-v.tr);
-      steps.push('<b>EA del truncamiento:</b> \\(|'+srcR+' - \\mathrm{Tr}| = |'+fmt(numR)+' - '+fmt(v.tr)+'| = '+fmt(eaTr)+'\\)');comp._eaTr=true;}
-    // Condicion
-    if(fd&&v.cond===undefined){
-      const xv=v.x!==undefined?v.x:v.xs;
-      if(xv!==undefined){const fv=fd.f(xv),dfv=fd.df(xv);
-        if(fv!==0&&!isNaN(fv)&&!isNaN(dfv)&&isFinite(fv)&&isFinite(dfv)){const c=Math.abs(xv*dfv/fv);
-          const src=v.x!==undefined?'x':'x^*';
-          set('cond',c,'<b>Condicion:</b> \\(C('+src+') = \\left|\\frac{'+src+'\\cdot f\'('+src+')}{f('+src+')}\\right| = \\left|\\frac{'+fmt(xv)+'\\cdot'+fmt(dfv)+'}{'+fmt(fv)+'}\\right| = '+fmt(c)+'\\) &rarr; '+(c>1?'<span style="color:#e74c3c">Mal condicionado</span>':'<span style="color:#27ae60">Bien condicionado</span>'));}}}
-    // Cota ER
-    if(v.eps!==undefined&&v.xs!==undefined&&!comp._cotaER){const cotaER=v.eps/Math.abs(v.xs);
-      steps.push('<b>Cota del Error Relativo:</b> \\(\\frac{\\varepsilon}{|x^*|} = \\frac{'+fmt(v.eps)+'}{'+fmt(Math.abs(v.xs))+'} = '+fmt(cotaER)+'\\)');comp._cotaER=true;}
+    ['x','y','z'].forEach(V=>{
+      if(gv('real',V)!==undefined&&gv('aprox',V)!==undefined&&gv('ea',V)===undefined){
+        const ea=Math.abs(gv('real',V)-gv('aprox',V));
+        sv('ea',V,ea,'<b>EA('+V+'):</b> \\(|'+V+'-'+V+'^*|=|'+fmt(gv('real',V))+'-'+fmt(gv('aprox',V))+'|='+fmt(ea)+'\\)');}
+      if(gv('ea',V)!==undefined&&gv('real',V)!==undefined&&gv('real',V)!==0&&gv('er',V)===undefined){
+        const er=gv('ea',V)/Math.abs(gv('real',V));
+        sv('er',V,er,'<b>ER('+V+'):</b> \\(\\frac{EA}{|'+V+'|}=\\frac{'+fmt(gv('ea',V))+'}{'+fmt(Math.abs(gv('real',V)))+'}='+fmt(er)+'\\)');}
+      if(gv('er',V)!==undefined&&gv('real',V)!==undefined&&gv('ea',V)===undefined){
+        const ea=gv('er',V)*Math.abs(gv('real',V));
+        sv('ea',V,ea,'<b>EA('+V+'):</b> \\(ER\\cdot|'+V+'|='+fmt(gv('er',V))+'\\cdot'+fmt(Math.abs(gv('real',V)))+'='+fmt(ea)+'\\)');}
+      if(gv('ea',V)!==undefined&&gv('p',V)===undefined){
+        let p=0;while(gv('ea',V)<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+        sv('p',V,p,'<b>p('+V+'):</b> \\(EA\\leq10^{-'+p+'}\\) \\(\\Rightarrow p='+p+'\\)');}
+      if(gv('er',V)!==undefined&&gv('t',V)===undefined){
+        let t=0;while(gv('er',V)<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+        sv('t',V,t,'<b>t('+V+'):</b> \\(ER<5\\cdot10^{-'+t+'}\\) \\(\\Rightarrow t='+t+'\\)');}
+      if(gv('k',V)!==undefined&&gv('eps',V)===undefined){
+        if(tipo==='redondeo'){const eps=0.5*Math.pow(10,-gv('k',V));
+          sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(\\frac{1}{2}\\cdot10^{-'+gv('k',V)+'}='+fmt(eps)+'\\)');}
+        else if(tipo==='truncamiento'){const eps=Math.pow(10,-gv('k',V));
+          sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(10^{-'+gv('k',V)+'}='+fmt(eps)+'\\)');}}
+      if(gv('aprox',V)!==undefined&&gv('eps',V)!==undefined){
+        if(gv('linf',V)===undefined)sv('linf',V,gv('aprox',V)-gv('eps',V),'<b>L.inf('+V+'):</b> \\('+V+'^*-\\varepsilon='+fmt(gv('aprox',V)-gv('eps',V))+'\\) (defecto)');
+        if(gv('lsup',V)===undefined)sv('lsup',V,gv('aprox',V)+gv('eps',V),'<b>L.sup('+V+'):</b> \\('+V+'^*+\\varepsilon='+fmt(gv('aprox',V)+gv('eps',V))+'\\) (exceso)');}
+      if(gv('linf',V)!==undefined&&gv('lsup',V)!==undefined){
+        if(gv('aprox',V)===undefined){const xs=(gv('linf',V)+gv('lsup',V))/2;
+          sv('aprox',V,xs,'<b>'+V+'* (Prop.17):</b> \\(\\frac{a+b}{2}='+fmt(xs)+'\\)');}
+        if(gv('eps',V)===undefined){const eps=(gv('lsup',V)-gv('linf',V))/2;
+          sv('eps',V,eps,'<b>\u03b5('+V+'):</b> \\(\\frac{b-a}{2}='+fmt(eps)+'\\)');}}
+      const numR=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
+      const srcR=gv('real',V)!==undefined?V:V+'^*';
+      if(numR!==undefined&&gv('k',V)!==undefined){
+        if(gv('rd',V)===undefined){const f=Math.pow(10,gv('k',V)),rd=Math.round(numR*f)/f;
+          sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+gv('k',V)+')='+rd.toFixed(gv('k',V))+'\\)');}
+        if(gv('tr',V)===undefined){const f=Math.pow(10,gv('k',V)),tr=Math.trunc(numR*f)/f;
+          sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+gv('k',V)+')='+tr.toFixed(gv('k',V))+'\\)');}}
+      if(fd&&gv('cond',V)===undefined){
+        const xv=gv('real','x')||gv('aprox','x')||0,yv=gv('real','y')||gv('aprox','y')||0,zv=gv('real','z')||gv('aprox','z')||0;
+        const vv=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
+        if(vv!==undefined){const fv=fd.f(xv,yv,zv),dfv=fd.df(V,xv,yv,zv);
+          if(fv!==0&&!isNaN(fv)&&!isNaN(dfv)&&isFinite(fv)&&isFinite(dfv)){const c=Math.abs(vv*dfv/fv);
+            sv('cond',V,c,'<b>C('+V+'):</b> \\(\\left|\\frac{'+V+'\\cdot\\partial f/\\partial '+V+'}{f}\\right|='+fmt(c)+'\\) '+(c>1?'<span style="color:#e74c3c">Mal cond.</span>':'<span style="color:#27ae60">Bien cond.</span>'));}}}
+      if(gv('eps',V)!==undefined&&gv('aprox',V)!==undefined&&!comp['_cotaER-'+V]){
+        const c=gv('eps',V)/Math.abs(gv('aprox',V));
+        steps.push('<b>Cota ER('+V+'):</b> \\(\\varepsilon/|'+V+'^*|='+fmt(c)+'\\)');comp['_cotaER-'+V]=true;}
+    });
+    // f column
+    if(fd){
+      const rx=gv('real','x'),ry=gv('real','y'),rz=gv('real','z');
+      const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
+      if((rx!==undefined||ax!==undefined)&&gv('real','f')===undefined){
+        const fv=fd.f(rx!==undefined?rx:(ax||0),ry!==undefined?ry:(ay||0),rz!==undefined?rz:(az||0));
+        if(rx!==undefined)sv('real','f',fv,'<b>f(real):</b> \\(f('+[rx,ry,rz].filter(v=>v!==undefined).map(fmt).join(',')+')='+fmt(fv)+'\\)');}
+      if(ax!==undefined&&gv('aprox','f')===undefined){
+        const fv=fd.f(ax,ay||0,az||0);
+        sv('aprox','f',fv,'<b>f(aprox):</b> \\(f('+[ax,ay,az].filter(v=>v!==undefined).map(fmt).join(',')+')='+fmt(fv)+'\\)');}
+      if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
+        const ea=Math.abs(gv('real','f')-gv('aprox','f'));
+        sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
+      if(gv('ea','f')===undefined){
+        let eaf=0,ok=false;
+        ['x','y','z'].forEach(V=>{const eaV=gv('eps',V)||gv('ea',V);
+          if(eaV!==undefined){const xv=ax||rx||0,yv=ay||ry||0,zv=az||rz||0;
+            const dfv=fd.df(V,xv,yv,zv);if(!isNaN(dfv)){eaf+=Math.abs(dfv)*eaV;ok=true}}});
+        if(ok)sv('ea','f',eaf,'<b>EA(f) propag.:</b> \\(\\sum|\\partial f/\\partial v_i|\\cdot EA(v_i)='+fmt(eaf)+'\\)');}
+      if(gv('ea','f')!==undefined&&gv('real','f')!==undefined&&gv('real','f')!==0&&gv('er','f')===undefined){
+        const er=gv('ea','f')/Math.abs(gv('real','f'));sv('er','f',er,'<b>ER(f):</b> \\(EA(f)/|f|='+fmt(er)+'\\)');}
+      if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
+        let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);sv('p','f',p,'<b>p(f)='+p+'</b>');}
+      if(gv('er','f')!==undefined&&gv('t','f')===undefined){
+        let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);sv('t','f',t,'<b>t(f)='+t+'</b>');}
+      if(gv('aprox','f')!==undefined&&gv('eps','f')===undefined&&gv('ea','f')!==undefined){
+        sv('eps','f',gv('ea','f'),'<b>\u03b5(f):</b> \\(\\leq'+fmt(gv('ea','f'))+'\\)');}
+      if(gv('aprox','f')!==undefined&&gv('eps','f')!==undefined){
+        if(gv('linf','f')===undefined)sv('linf','f',gv('aprox','f')-gv('eps','f'),'<b>L.inf(f)='+fmt(gv('aprox','f')-gv('eps','f'))+'</b>');
+        if(gv('lsup','f')===undefined)sv('lsup','f',gv('aprox','f')+gv('eps','f'),'<b>L.sup(f)='+fmt(gv('aprox','f')+gv('eps','f'))+'</b>');}
+    }
   }
   // Exceso/defecto
-  if(v.x!==undefined&&v.xs!==undefined){const sign=v.x-v.xs;
-    if(sign<0)steps.unshift('<b>Tipo de aproximacion:</b> \\(E\'_A = x - x^* = '+fmt(sign)+' < 0\\) &rarr; Aproximacion <b>por exceso</b> (\\(x^* > x\\))');
-    else if(sign>0)steps.unshift('<b>Tipo de aproximacion:</b> \\(E\'_A = x - x^* = '+fmt(sign)+' > 0\\) &rarr; Aproximacion <b>por defecto</b> (\\(x^* < x\\))');
-    else steps.unshift('<b>Tipo de aproximacion:</b> \\(x^* = x\\) &rarr; Aproximacion exacta');}
-  if(fd)steps.unshift('<b>Funcion:</b> \\(f(x) = '+fnExpr+'\\), \\(f\'(x) = '+fd.dexpr+'\\)');
-  // Fill computed values
-  _sp.forEach(id=>{if(comp[id]){
-    const el=document.getElementById('val-'+id);
-    el.value=(id==='p'||id==='t'||id==='k')?v[id]:fmt(v[id]);
-    el.style.background='#d5f5e3';el.style.color='#1e8449';el.disabled=false;}});
+  ['x','y','z'].forEach(V=>{
+    if(gv('real',V)!==undefined&&gv('aprox',V)!==undefined){const s=gv('real',V)-gv('aprox',V);
+      if(s<0)steps.unshift('<b>'+V+':</b> \\(E\'_A='+fmt(s)+'<0\\) → Por <b>exceso</b>');
+      else if(s>0)steps.unshift('<b>'+V+':</b> \\(E\'_A='+fmt(s)+'>0\\) → Por <b>defecto</b>');}
+  });
+  if(fd){let ds='<b>Funcion:</b> \\(f='+fnExpr+'\\)';
+    if(fd.dexpr.x!=='0')ds+=', \\(\\partial f/\\partial x='+fd.dexpr.x+'\\)';
+    if(fd.dexpr.y!=='0')ds+=', \\(\\partial f/\\partial y='+fd.dexpr.y+'\\)';
+    if(fd.dexpr.z!=='0')ds+=', \\(\\partial f/\\partial z='+fd.dexpr.z+'\\)';
+    steps.unshift(ds);}
+  // Fill computed
+  _pd.forEach(p=>_cv.forEach(v=>{if(comp[p.id+'-'+v]){
+    const el=document.getElementById('val-'+p.id+'-'+v);
+    el.value=p.isInt?d[p.id][v]:fmt(d[p.id][v]);el.classList.add('computed');el.disabled=false;}}));
   // Reasoning
   const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
-  if(steps.length>0){
-    rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.5rem">Razonamiento paso a paso</h4>'+steps.map(s=>'<div class="step">'+s+'</div>').join('');
-    renderMathInElement(rBox,mathOpts);
-  }else{rBox.innerHTML='<p style="color:var(--txtl)">No se pudieron derivar nuevos valores. Introduce mas datos conocidos.</p>';}
-  drawSolverAxis(v);
+  if(steps.length>0){rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.4rem">Razonamiento paso a paso</h4>'+
+    steps.map(s=>'<div class="step">'+s+'</div>').join('');renderMathInElement(rBox,mathOpts);
+  }else{rBox.innerHTML='<p style="color:var(--txtl)">Introduce mas datos conocidos.</p>';}
+  drawSolverAxis(d);
 }
-function drawSolverAxis(v){
-  const pl=document.getElementById('solver-plot');
-  const nums=[v.x,v.xs,v.linf,v.lsup,v.rd,v.tr].filter(n=>n!==undefined&&!isNaN(n)&&isFinite(n));
-  if(nums.length===0){pl.style.display='none';return}
-  pl.style.display='block';
-  const mn=Math.min(...nums),mx=Math.max(...nums);
-  const pad=Math.max((mx-mn)*.2,Math.abs(mx||1)*.005,.001);
-  const traces=[],ann=[];
-  if(v.linf!==undefined&&v.lsup!==undefined){
-    traces.push({x:[v.linf,v.lsup],y:[0,0],mode:'lines',line:{color:'rgba(41,128,185,.3)',width:20},name:'Intervalo [x*-\u03b5, x*+\u03b5]',hoverinfo:'x'});
-    traces.push({x:[v.linf,v.linf],y:[-.35,.35],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false,hoverinfo:'skip'});
-    traces.push({x:[v.lsup,v.lsup],y:[-.35,.35],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false,hoverinfo:'skip'});
-    ann.push({x:v.linf,y:-.55,text:fmt(v.linf)+'<br><i>(por defecto)</i>',showarrow:false,font:{size:9,color:'#2980b9'}});
-    ann.push({x:v.lsup,y:-.55,text:fmt(v.lsup)+'<br><i>(por exceso)</i>',showarrow:false,font:{size:9,color:'#2980b9'}});}
-  if(v.x!==undefined)traces.push({x:[v.x],y:[0],mode:'markers',marker:{size:15,color:'#27ae60',symbol:'star',line:{width:1,color:'#1a7a3e'}},name:'x = '+fmt(v.x),hoverinfo:'x+name'});
-  if(v.xs!==undefined)traces.push({x:[v.xs],y:[0],mode:'markers',marker:{size:14,color:'#e74c3c',symbol:'diamond',line:{width:1,color:'#922b21'}},name:'x* = '+fmt(v.xs),hoverinfo:'x+name'});
-  if(v.rd!==undefined)traces.push({x:[v.rd],y:[.18],mode:'markers',marker:{size:10,color:'#8e44ad',symbol:'circle'},name:'Rd = '+fmt(v.rd),hoverinfo:'x+name'});
-  if(v.tr!==undefined)traces.push({x:[v.tr],y:[-.18],mode:'markers',marker:{size:10,color:'#f39c12',symbol:'triangle-up'},name:'Tr = '+fmt(v.tr),hoverinfo:'x+name'});
-  if(v.x!==undefined&&v.xs!==undefined){
-    traces.push({x:[Math.min(v.x,v.xs),Math.max(v.x,v.xs)],y:[.4,.4],mode:'lines',line:{color:'#e74c3c',width:3},showlegend:false,hoverinfo:'skip'});
-    ann.push({x:(v.x+v.xs)/2,y:.52,text:'<b>EA = '+fmt(Math.abs(v.x-v.xs))+'</b>',showarrow:false,font:{size:10,color:'#e74c3c'}});}
-  Plotly.newPlot(pl,traces,{margin:{t:10,b:70,l:40,r:40},yaxis:{visible:false,range:[-.8,.7]},
-    xaxis:{title:'Eje numerico',range:[mn-pad,mx+pad],zeroline:false},height:240,
-    legend:{orientation:'h',y:1.15,font:{size:11}},annotations:ann,plot_bgcolor:'#fafbfc'},{responsive:true});
+function drawSolverAxis(d){
+  const container=document.getElementById('solver-plot');container.innerHTML='';container.style.display='none';
+  const toPlot=[];
+  _cv.forEach(V=>{const nums=[d.real?.[V],d.aprox?.[V],d.linf?.[V],d.lsup?.[V],d.rd?.[V],d.tr?.[V]].filter(n=>n!==undefined&&!isNaN(n)&&isFinite(n));
+    if(nums.length>=2)toPlot.push({V,nums})});
+  if(toPlot.length===0)return;
+  container.style.display='block';
+  toPlot.forEach(({V,nums})=>{
+    const pid='sp-'+V;const div=document.createElement('div');div.id=pid;div.style.marginBottom='.3rem';container.appendChild(div);
+    const traces=[],ann=[],mn=Math.min(...nums),mx=Math.max(...nums),pad=Math.max((mx-mn)*.2,.001);
+    if(d.linf?.[V]!==undefined&&d.lsup?.[V]!==undefined){
+      traces.push({x:[d.linf[V],d.lsup[V]],y:[0,0],mode:'lines',line:{color:'rgba(41,128,185,.3)',width:16},name:'Intervalo',hoverinfo:'x'});
+      traces.push({x:[d.linf[V],d.linf[V]],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:1.5,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      traces.push({x:[d.lsup[V],d.lsup[V]],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:1.5,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:d.linf[V],y:-.42,text:fmt(d.linf[V])+'<br><i>(defecto)</i>',showarrow:false,font:{size:8,color:'#2980b9'}});
+      ann.push({x:d.lsup[V],y:-.42,text:fmt(d.lsup[V])+'<br><i>(exceso)</i>',showarrow:false,font:{size:8,color:'#2980b9'}});}
+    if(d.real?.[V]!==undefined)traces.push({x:[d.real[V]],y:[0],mode:'markers',marker:{size:13,color:'#27ae60',symbol:'star'},name:V+' real',hoverinfo:'x+name'});
+    if(d.aprox?.[V]!==undefined)traces.push({x:[d.aprox[V]],y:[0],mode:'markers',marker:{size:12,color:'#e74c3c',symbol:'diamond'},name:V+'*',hoverinfo:'x+name'});
+    if(d.rd?.[V]!==undefined)traces.push({x:[d.rd[V]],y:[.13],mode:'markers',marker:{size:8,color:'#8e44ad',symbol:'circle'},name:'Rd',hoverinfo:'x+name'});
+    if(d.tr?.[V]!==undefined)traces.push({x:[d.tr[V]],y:[-.13],mode:'markers',marker:{size:8,color:'#f39c12',symbol:'triangle-up'},name:'Tr',hoverinfo:'x+name'});
+    if(d.real?.[V]!==undefined&&d.aprox?.[V]!==undefined){
+      const r=d.real[V],a=d.aprox[V];
+      traces.push({x:[Math.min(r,a),Math.max(r,a)],y:[.33,.33],mode:'lines',line:{color:'#e74c3c',width:2.5},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:(r+a)/2,y:.43,text:'<b>EA='+fmt(Math.abs(r-a))+'</b>',showarrow:false,font:{size:9,color:'#e74c3c'}});}
+    Plotly.newPlot(pid,traces,{margin:{t:22,b:35,l:30,r:20},yaxis:{visible:false,range:[-.6,.55]},
+      xaxis:{title:V==='f'?'f(x,y,z)':V,range:[mn-pad,mx+pad],zeroline:false},height:150,
+      legend:{orientation:'h',y:1.15,font:{size:9}},annotations:ann,plot_bgcolor:'#fafbfc',
+      title:{text:'Variable '+(V==='f'?'f(x,y,z)':V),font:{size:10},x:.01,xanchor:'left'}},{responsive:true});
+  });
 }
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
   renderMathInElement(document.body,mathOpts);
+  buildSolverTable();
   buildTest();
   renderMathInElement(document.getElementById('test-container'),mathOpts);
   renderMathInElement(document.getElementById('problems-container'),mathOpts);
