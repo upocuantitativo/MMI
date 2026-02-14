@@ -734,7 +734,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
     <div style="text-align:center;margin:1.2rem 0">
       <button class="btn btn-primary" onclick="solveProblema()" style="font-size:1.1rem;padding:.8rem 2.5rem">Resolver</button>
-      <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.5rem">Limpiar</button>
+      <button class="btn btn-primary" onclick="resetCalc()" style="margin-left:.5rem;background:var(--warn)">Limpiar calculos</button>
+      <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.5rem">Resetear todo</button>
     </div>
 
     <div class="reasoning-box" id="solver-reasoning" style="display:none"></div>
@@ -1237,6 +1238,12 @@ function spin(id,step){
   const el=document.getElementById('val-'+id);
   let v=parseFloat(el.value);if(isNaN(v))v=0;v+=step;
   el.value=(id==='p'||id==='t'||id==='k')?Math.max(0,Math.round(v)):parseFloat(v.toPrecision(10));
+}
+function resetCalc(){
+  _sp.forEach(id=>{const el=document.getElementById('val-'+id);
+    if(el.style.background==='rgb(213, 245, 227)'){el.value='';el.style.background='';el.style.color='';el.disabled=true}});
+  document.getElementById('solver-reasoning').style.display='none';
+  document.getElementById('solver-plot').style.display='none';
 }
 function resetSolver(){
   _sp.forEach(id=>{document.getElementById('chk-'+id).checked=false;toggleParam(id)});
