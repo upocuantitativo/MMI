@@ -132,13 +132,13 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="header">
   <h1>Teoria de Errores</h1>
-  <p>Metodos Matematicos para la Ingenieria &mdash; Tema 1 &mdash; UPO</p>
+  <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
-  <button class="tab-btn" onclick="switchTab('test')">Test de Autoevaluacion</button>
   <button class="tab-btn" onclick="switchTab('problems')">Problemas</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test de Autoevaluacion</button>
 </div>
 
 <!-- ============ TEORIA ============ -->
@@ -681,7 +681,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 function switchTab(t){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-  const idx={theory:0,test:1,problems:2};
+  const idx={theory:0,problems:1,test:2};
   document.querySelectorAll('.tab-btn')[idx[t]||0].classList.add('active');
   document.getElementById('tab-'+t).classList.add('active');
 }
@@ -1273,7 +1273,7 @@ function parseFuncMV(expr){
     return {f,df,dexpr:{x:dxS,y:dyS,z:dzS},node};
   }catch(e){return null}
 }
-// Aritmética de k cifras: evalúa el árbol aplicando rd/tr en cada operación
+// Aritmetica de k cifras: evalua el arbol aplicando rd/tr en cada operacion
 function evalKArith(nd,scope,k,mode,isDec,log){
   const apK=v=>{
     if(v===0||!isFinite(v)||isNaN(v))return v;
@@ -1307,7 +1307,6 @@ function evalKArith(nd,scope,k,mode,isDec,log){
   }
 }
 function solveProblema(){
-  const d={},giv={};
   // Limpiar valores computed anteriores y checkboxes auto-marcados
   _pd.forEach(p=>{const chkEl=document.getElementById('chk-'+p.id);
     if(chkEl&&chkEl.dataset.auto){chkEl.checked=false;delete chkEl.dataset.auto;}
@@ -1452,7 +1451,7 @@ function solveProblema(){
         let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);sv('p','f',p,'<b>p(f)='+p+'</b>');}
       if(gv('er','f')!==undefined&&gv('t','f')===undefined){
         let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);sv('t','f',t,'<b>t(f)='+t+'</b>');}
-      // Rd/Tr de f con aritmética de k cifras
+      // Rd/Tr de f con aritmetica de k cifras
       const kf=gv('k','f')??gv('k','x')??gv('k','y')??gv('k','z');
       if(kf!==undefined&&fd.node){
         const isDec=document.getElementById('k-dec')?.checked??true;
