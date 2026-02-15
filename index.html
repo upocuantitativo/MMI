@@ -7,6 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Teoria de Errores - Metodos Matematicos (UPO)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%232c3e50'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='white' font-family='serif'>∑ε</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -134,7 +135,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v8</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v9</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -1350,7 +1351,9 @@ function solveProblema(){
   const tipo=document.getElementById('val-tipo').value;
   const hasFn=document.getElementById('chk-func').checked;
   const fnExpr=document.getElementById('val-func').value.trim();
-  let fd=null;if(hasFn&&fnExpr)fd=parseFuncMV(prepExpr(fnExpr));
+  let fd=null;
+  if(hasFn&&fnExpr){fd=parseFuncMV(prepExpr(fnExpr));
+    if(!fd)console.warn('No se pudo parsear f(x,y,z)='+fnExpr);}
   const steps=[],comp={};
   function gv(p,v){return d[p]?d[p][v]:undefined}
   function sv(p,v,val,reason){
@@ -1488,7 +1491,7 @@ function solveProblema(){
         steps.push('<b>Cota ER('+V+'):</b> \\(\\varepsilon/|'+V+'^*|='+fmt(c)+'\\)');comp['_cotaER-'+V]=true;}
     });
     // f column
-    if(fd){
+    if(fd){try{
       const rx=gv('real','x'),ry=gv('real','y'),rz=gv('real','z');
       const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
       const hasReal=rx!==undefined||ry!==undefined||rz!==undefined;
@@ -1580,7 +1583,6 @@ function solveProblema(){
             steps.push('<span style="margin-left:1em">Truncamiento a '+pf+' dec: \\('+fmt(fTr)+'\\)</span>');
             steps.push('<span style="margin-left:1em">Redondeo a '+pf+' dec: \\('+fmt(fRd)+'\\)</span>');
             steps.push('<span style="margin-left:1em;color:#27ae60"><b>Aprox. con '+pf+' c.d.e.: \\(f\\approx'+fmt(fRd)+'\\pm'+fmt(epsf)+'\\)</b></span>');stepN++;}
-          steps.push('</div>');
         }
         // Caso INVERSO: tenemos p(f) deseado → calcular ε(x) minimo necesario
         else if(gv('p','f')!==undefined&&!ok){
@@ -1667,6 +1669,7 @@ function solveProblema(){
       else if(gv('aprox','f')!==undefined&&epsF!==undefined){
         const fLinf=gv('aprox','f')-epsF,fLsup=gv('aprox','f')+epsF;
         steps.push('<b>Int. conf. f:</b> \\(['+fmt(fLinf)+',\\ '+fmt(fLsup)+']\\)');}}
+    }catch(err){steps.push('<span style="color:red"><b>Error en propagacion:</b> '+err.message+'</span>');console.error('Prop error:',err);}
     }
   }
   // Exceso/defecto
@@ -1741,7 +1744,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v8 cargado');
+  console.log('MMI v9 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
