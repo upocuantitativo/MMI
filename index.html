@@ -744,7 +744,7 @@ function drawTarget(ex,pr,btn){
 }
 
 // === SAFE EVAL ===
-function sEval(e){try{return math.evaluate(e)}catch(x){try{return Function('"use strict";return('+e+')')()}catch(x2){return NaN}}}
+function sEval(e){e=prepExpr(e);try{return math.evaluate(e)}catch(x){try{return Function('"use strict";return('+e+')')()}catch(x2){return NaN}}}
 
 // === ERROR CALCULATOR ===
 function calcError(){
@@ -1201,7 +1201,7 @@ function toggleRow(id){
   _cv.forEach(v=>{const el=document.getElementById('val-'+id+'-'+v);el.disabled=!c;if(!c){el.value='';el.classList.remove('computed')}});
 }
 function toggleEq(){document.getElementById('eq-editor-box').style.display=document.getElementById('chk-func').checked?'block':'none'}
-function prepExpr(e){return e.replace(/\bln\b/g,'log')}
+function prepExpr(e){return e.replace(/\bln\b/g,'log').replace(/\braiz\b/gi,'sqrt').replace(/\bsen\b/gi,'sin')}
 function previewEq(){
   const e=document.getElementById('val-func').value.trim(),p=document.getElementById('eq-preview');
   if(!e){p.innerHTML='';return}
@@ -1374,6 +1374,24 @@ function solveProblema(){
       if(gv('er',V)!==undefined&&gv('t',V)===undefined){
         let t=0;while(gv('er',V)<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
         sv('t',V,t,'<b>t('+V+'):</b> \\(ER<5\\cdot10^{-'+t+'}\\) \\(\\Rightarrow t='+t+'\\)');}
+      // p → eps (Def.4): si tenemos p y no eps/ea, eps = 10^(-p)
+      if(gv('p',V)!==undefined&&gv('eps',V)===undefined&&gv('ea',V)===undefined){
+        const pv=gv('p',V),epsP=Math.pow(10,-pv);
+        sv('eps',V,epsP,'<b>\u03b5('+V+') Def.4:</b> \\(EA('+V+'^*)\\leq 10^{-'+pv+'}='+fmt(epsP)+'\\)');}
+      // t → er (Def.9): si tenemos t y no er, ER < 5×10^(-t)
+      if(gv('t',V)!==undefined&&gv('er',V)===undefined){
+        const tv=gv('t',V),erT=5*Math.pow(10,-tv);
+        sv('er',V,erT,'<b>ER('+V+') Def.9:</b> \\(ER('+V+'^*)<5\\cdot10^{-'+tv+'}='+fmt(erT)+'\\)');
+        // De ER, derivar EA si hay valor real
+        if(gv('ea',V)===undefined&&gv('real',V)!==undefined&&gv('real',V)!==0){
+          const ea2=erT*Math.abs(gv('real',V));
+          sv('ea',V,ea2,'<b>EA('+V+'):</b> \\(ER\\cdot|'+V+'|='+fmt(erT)+'\\cdot'+fmt(Math.abs(gv('real',V)))+'='+fmt(ea2)+'\\)');
+          // Y eps tambien
+          if(gv('eps',V)===undefined)sv('eps',V,ea2,'<b>\u03b5('+V+'):</b> \\('+fmt(ea2)+'\\)');}}
+      // eps → er (si tenemos eps y real pero no er): cota ER ≤ eps/|x|
+      if(gv('eps',V)!==undefined&&gv('er',V)===undefined&&gv('real',V)!==undefined&&gv('real',V)!==0){
+        const erEps=gv('eps',V)/Math.abs(gv('real',V));
+        sv('er',V,erEps,'<b>ER('+V+'):</b> \\(\\frac{\\varepsilon}{|'+V+'|}=\\frac{'+fmt(gv('eps',V))+'}{'+fmt(Math.abs(gv('real',V)))+'}='+fmt(erEps)+'\\)');}
       if(gv('k',V)!==undefined&&gv('eps',V)===undefined){
         const kv=gv('k',V),isDec=document.getElementById('k-dec')?.checked??true;
         let exp;
@@ -1493,31 +1511,38 @@ function solveProblema(){
       if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
         const ea=Math.abs(gv('real','f')-gv('aprox','f'));
         sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
-      // ε(f) Prop.21: Σ max|∂f/∂vi|·EA(vi), max sobre [vi*, vi_real]
+      // ε(f) Prop.21: EA(f(x*)) ≤ Σ max|∂f/∂vi(z)|·ε(vi), z∈I=[vi-ε, vi+ε]
       if(gv('eps','f')===undefined){
         let epsf=0,ok=false,detail=[],stepsDeriv=[];
-        const sc_r={x:rx??ax??0,y:ry??ay??0,z:rz??az??0};
-        const sc_a={x:ax??rx??0,y:ay??ry??0,z:az??rz??0};
+        const baseScope={x:rx??ax??0,y:ry??ay??0,z:rz??az??0};
         ['x','y','z'].forEach(V=>{
           const eaV=gv('eps',V)??gv('ea',V);
-          if(eaV!==undefined){
-            const df_r=Math.abs(fd.df(V,sc_r.x,sc_r.y,sc_r.z));
-            const df_a=Math.abs(fd.df(V,sc_a.x,sc_a.y,sc_a.z));
-            const vr=isNaN(df_r)?0:df_r,va=isNaN(df_a)?0:df_a;
-            const maxdf=Math.max(vr,va);
-            if(maxdf>0||eaV>0){
-              epsf+=maxdf*eaV;ok=true;
-              const rv=gv('real',V),av=gv('aprox',V);
-              stepsDeriv.push('<b>|\\(\\partial f/\\partial '+V+'\\)| en ['+V+'*,'+V+']:</b> |f\'('+fmt(av)+')|='+fmt(va)+', |f\'('+fmt(rv)+')|='+fmt(vr)+' → max=<b>'+fmt(maxdf)+'</b>');
-              detail.push(fmt(maxdf)+'\\times'+fmt(eaV));
-            }}});
+          if(eaV===undefined)return;
+          // Calcular max|∂f/∂V| en el intervalo [centro-ε, centro+ε]
+          const centro=gv('real',V)??gv('aprox',V)??0;
+          const lo=centro-eaV,hi=centro+eaV;
+          // Muestrear N puntos en el intervalo para encontrar el maximo
+          const N=20;let maxdf=0;const evalPts=[];
+          for(let i=0;i<=N;i++){
+            const zi=lo+(hi-lo)*i/N;
+            const sc=Object.assign({},baseScope);sc[V]=zi;
+            const dfi=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
+            if(!isNaN(dfi)&&isFinite(dfi)){if(dfi>maxdf){maxdf=dfi;}
+              if(i===0||i===N)evalPts.push({z:zi,df:dfi});}}
+          if(maxdf>0||eaV>0){
+            epsf+=maxdf*eaV;ok=true;
+            const loS=evalPts[0],hiS=evalPts[1]||evalPts[0];
+            stepsDeriv.push('<b>Prop.21 - \\(|\\partial f/\\partial '+V+'|\\) en \\(['+fmt(lo)+',\\ '+fmt(hi)+']\\):</b>');
+            stepsDeriv.push('<span style="margin-left:1em">\\(|f\'('+fmt(loS.z)+')|='+fmt(loS.df)+'\\), \\(|f\'('+fmt(hiS.z)+')|='+fmt(hiS.df)+'\\) → \\(\\max='+fmt(maxdf)+'\\)</span>');
+            stepsDeriv.push('<span style="margin-left:1em">\\('+fmt(maxdf)+'\\cdot\\varepsilon('+V+')='+fmt(maxdf)+'\\cdot'+fmt(eaV)+'='+fmt(maxdf*eaV)+'\\)</span>');
+            detail.push(fmt(maxdf)+'\\cdot'+fmt(eaV));}});
         if(ok){
           stepsDeriv.forEach(s=>steps.push(s));
-          sv('eps','f',epsf,'<b>\u03b5(f) Prop.21:</b> \\('+detail.join(' + ')+'='+fmt(epsf)+'\\)');
+          sv('eps','f',epsf,'<b>\u03b5(f) Prop.21:</b> \\(\\sum\\max|\\partial f/\\partial v_i|\\cdot\\varepsilon(v_i)='+detail.join('+')+' = '+fmt(epsf)+'\\)');
         }}
-      // EA(f) directo o ≤ ε(f) si no hay valores reales
+      // EA(f) ≤ ε(f) si no se conoce directamente
       if(gv('ea','f')===undefined&&gv('eps','f')!==undefined){
-        sv('ea','f',gv('eps','f'),'<b>EA(f)\\(\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)</b>');}
+        sv('ea','f',gv('eps','f'),'<b>EA(f):</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)');}
       // ER(f)
       if(gv('ea','f')!==undefined&&gv('er','f')===undefined){
         const denom=gv('real','f')??gv('aprox','f');
@@ -1525,9 +1550,11 @@ function solveProblema(){
           sv('er','f',er,'<b>ER(f):</b> \\(\\frac{EA(f)}{|f|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');}}
       // p(f), t(f)
       if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
-        let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);sv('p','f',p,'<b>p(f)='+p+'</b>');}
+        let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+        sv('p','f',p,'<b>p(f)='+p+':</b> \\(EA(f)\\leq'+fmt(gv('ea','f'))+'\\leq10^{-'+p+'}\\) → '+p+' cifras dec. exactas');}
       if(gv('er','f')!==undefined&&gv('t','f')===undefined){
-        let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);sv('t','f',t,'<b>t(f)='+t+'</b>');}
+        let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+        sv('t','f',t,'<b>t(f)='+t+':</b> \\(ER(f)='+fmt(gv('er','f'))+'<5\\cdot10^{-'+t+'}\\) → '+t+' cifras significativas');}
       // Rd/Tr de f con aritmetica de k cifras
       const kf=gv('k','f')??gv('k','x')??gv('k','y')??gv('k','z');
       if(kf!==undefined&&fd.node){
@@ -1546,10 +1573,30 @@ function solveProblema(){
               lg.forEach(s=>steps.push('<span style="color:#f39c12;margin-left:1em">'+s+'</span>'));}}
         }catch(err){steps.push('<span style="color:red">Error en arit. k cifras: '+err.message+'</span>');}
       }
-      // Intervalo confianza de f
-      if(gv('aprox','f')!==undefined&&gv('eps','f')!==undefined){
-        const fLinf=gv('aprox','f')-gv('eps','f'),fLsup=gv('aprox','f')+gv('eps','f');
-        steps.push('<b>Int. conf. f:</b> \\(['+fmt(fLinf)+',\\ '+fmt(fLsup)+']\\)');}
+      // Intervalos de confianza de f (defecto, exceso, mayor, menor)
+      {const epsF=gv('eps','f')??gv('ea','f');
+      const fReal=gv('real','f');
+      if(epsF!==undefined&&fReal!==undefined&&!comp['_intEA-f']){
+        comp['_intEA-f']=true;
+        const pEff=Math.max(0,Math.round(-Math.log10(epsF)));
+        const fac=Math.pow(10,pEff);
+        const def=Math.trunc(fReal*fac)/fac;
+        const exc=def+(fReal>=0?1:-1)/fac;
+        sv('apdef','f',def,'<b>Aprox. defecto (f):</b> \\(\\mathrm{Tr}('+fmt(fReal)+')='+fmt(def)+'\\)');
+        sv('apexc','f',exc,'<b>Aprox. exceso (f):</b> \\('+fmt(def)+'+'+(fReal>=0?'':'-')+'10^{-'+pEff+'}='+fmt(exc)+'\\)');
+        const lDef=def-epsF,uDef=def+epsF;
+        const lExc=exc-epsF,uExc=exc+epsF;
+        const mayor_l=Math.min(lDef,lExc),mayor_u=Math.max(uDef,uExc);
+        const menor_l=Math.max(lDef,lExc),menor_u=Math.min(uDef,uExc);
+        sv('intdef','f','['+fmt(lDef)+', '+fmt(uDef)+']','<b>Int. defecto (f):</b> \\(['+fmt(def)+'\\pm'+fmt(epsF)+'] = ['+fmt(lDef)+',\\ '+fmt(uDef)+']\\)');
+        sv('intexc','f','['+fmt(lExc)+', '+fmt(uExc)+']','<b>Int. exceso (f):</b> \\(['+fmt(exc)+'\\pm'+fmt(epsF)+'] = ['+fmt(lExc)+',\\ '+fmt(uExc)+']\\)');
+        sv('intmayor','f','['+fmt(mayor_l)+', '+fmt(mayor_u)+']','<b>Mayor intervalo (f):</b> \\(['+fmt(mayor_l)+',\\ '+fmt(mayor_u)+']\\)');
+        if(menor_l<=menor_u)sv('intmenor','f','['+fmt(menor_l)+', '+fmt(menor_u)+']','<b>Menor intervalo (f):</b> \\(['+fmt(menor_l)+',\\ '+fmt(menor_u)+']\\)');
+      }
+      // Int. confianza simple si solo hay aprox ± ε
+      else if(gv('aprox','f')!==undefined&&epsF!==undefined){
+        const fLinf=gv('aprox','f')-epsF,fLsup=gv('aprox','f')+epsF;
+        steps.push('<b>Int. conf. f:</b> \\(['+fmt(fLinf)+',\\ '+fmt(fLsup)+']\\)');}}
     }
   }
   // Exceso/defecto
@@ -1624,7 +1671,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v6 cargado');
+  console.log('MMI v7 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
