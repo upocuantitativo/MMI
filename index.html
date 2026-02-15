@@ -134,7 +134,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v7</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v8</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -1511,50 +1511,120 @@ function solveProblema(){
       if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
         const ea=Math.abs(gv('real','f')-gv('aprox','f'));
         sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
-      // ε(f) Prop.21: EA(f(x*)) ≤ Σ max|∂f/∂vi(z)|·ε(vi), z∈I=[vi-ε, vi+ε]
+      // === PROPAGACION DEL ERROR (Prop.21) ===
+      // Caso DIRECTO: tenemos ε(vi) → calcular ε(f)
       if(gv('eps','f')===undefined){
-        let epsf=0,ok=false,detail=[],stepsDeriv=[];
+        let epsf=0,ok=false,detail=[];
         const baseScope={x:rx??ax??0,y:ry??ay??0,z:rz??az??0};
+        const propData=[];// guardar datos para pasos
         ['x','y','z'].forEach(V=>{
           const eaV=gv('eps',V)??gv('ea',V);
           if(eaV===undefined)return;
-          // Calcular max|∂f/∂V| en el intervalo [centro-ε, centro+ε]
           const centro=gv('real',V)??gv('aprox',V)??0;
           const lo=centro-eaV,hi=centro+eaV;
-          // Muestrear N puntos en el intervalo para encontrar el maximo
-          const N=20;let maxdf=0;const evalPts=[];
+          const N=20;let maxdf=0,maxAt=centro;const pts=[];
           for(let i=0;i<=N;i++){
             const zi=lo+(hi-lo)*i/N;
             const sc=Object.assign({},baseScope);sc[V]=zi;
             const dfi=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
-            if(!isNaN(dfi)&&isFinite(dfi)){if(dfi>maxdf){maxdf=dfi;}
-              if(i===0||i===N)evalPts.push({z:zi,df:dfi});}}
+            if(!isNaN(dfi)&&isFinite(dfi)){if(dfi>maxdf){maxdf=dfi;maxAt=zi;}
+              if(i===0||i===N)pts.push({z:zi,df:dfi});}}
           if(maxdf>0||eaV>0){
             epsf+=maxdf*eaV;ok=true;
-            const loS=evalPts[0],hiS=evalPts[1]||evalPts[0];
-            stepsDeriv.push('<b>Prop.21 - \\(|\\partial f/\\partial '+V+'|\\) en \\(['+fmt(lo)+',\\ '+fmt(hi)+']\\):</b>');
-            stepsDeriv.push('<span style="margin-left:1em">\\(|f\'('+fmt(loS.z)+')|='+fmt(loS.df)+'\\), \\(|f\'('+fmt(hiS.z)+')|='+fmt(hiS.df)+'\\) → \\(\\max='+fmt(maxdf)+'\\)</span>');
-            stepsDeriv.push('<span style="margin-left:1em">\\('+fmt(maxdf)+'\\cdot\\varepsilon('+V+')='+fmt(maxdf)+'\\cdot'+fmt(eaV)+'='+fmt(maxdf*eaV)+'\\)</span>');
+            propData.push({V,eaV,centro,lo,hi,maxdf,maxAt,pts});
             detail.push(fmt(maxdf)+'\\cdot'+fmt(eaV));}});
         if(ok){
-          stepsDeriv.forEach(s=>steps.push(s));
-          sv('eps','f',epsf,'<b>\u03b5(f) Prop.21:</b> \\(\\sum\\max|\\partial f/\\partial v_i|\\cdot\\varepsilon(v_i)='+detail.join('+')+' = '+fmt(epsf)+'\\)');
+          const fVal=gv('real','f')??gv('aprox','f');
+          // Cabecera
+          steps.push('<div style="background:#f0f4ff;border-left:3px solid #2980b9;padding:.5em .8em;margin:.5em 0;border-radius:4px">'+
+            '<b style="color:#2980b9;font-size:1.05em">Propagacion del error (Prop. 21)</b><br>'+
+            '<span style="color:#555">Formula: \\(EA(f(x^*))\\leq\\displaystyle\\sum_i \\max_{z\\in I_i}\\left|\\frac{\\partial f}{\\partial v_i}(z)\\right|\\cdot\\varepsilon(v_i)\\)</span></div>');
+          let stepN=1;
+          // Paso por cada variable
+          propData.forEach(({V,eaV,centro,lo,hi,maxdf,maxAt,pts})=>{
+            const loS=pts[0],hiS=pts[1]||pts[0];
+            const dexpr=fd.dexpr[V]||'?';
+            steps.push('<b>Paso '+stepN+'. Variable \\('+V+'\\):</b> \\(\\varepsilon('+V+')='+fmt(eaV)+'\\), intervalo \\(I=['+fmt(lo)+',\\ '+fmt(hi)+']\\)');
+            steps.push('<span style="margin-left:1em">Derivada: \\(\\frac{\\partial f}{\\partial '+V+'}='+dexpr+'\\)</span>');
+            steps.push('<span style="margin-left:1em">\\(\\left|f\'('+fmt(loS.z)+')\\right|='+fmt(loS.df)+'\\), \\(\\left|f\'('+fmt(hiS.z)+')\\right|='+fmt(hiS.df)+'\\)</span>');
+            steps.push('<span style="margin-left:1em;color:#2980b9">\\(\\max_{z\\in I}\\left|\\frac{\\partial f}{\\partial '+V+'}\\right|='+fmt(maxdf)+'\\) (en \\(z='+fmt(maxAt)+'\\))</span>');
+            steps.push('<span style="margin-left:1em">Contribucion: \\('+fmt(maxdf)+'\\times'+fmt(eaV)+'='+fmt(maxdf*eaV)+'\\)</span>');
+            stepN++;});
+          // Resultado
+          steps.push('<b>Paso '+stepN+'. Resultado:</b> \\(\\varepsilon(f)='+detail.join('+')+' = '+fmt(epsf)+'\\)');stepN++;
+          sv('eps','f',epsf,'');
+          // EA(f)
+          if(gv('ea','f')===undefined){
+            sv('ea','f',epsf,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(epsf)+'\\)');stepN++;}
+          // ER(f)
+          if(fVal!==undefined&&fVal!==0&&gv('er','f')===undefined){
+            const er=epsf/Math.abs(fVal);sv('er','f',er,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)=\\frac{EA(f)}{|f|}=\\frac{'+fmt(epsf)+'}{'+fmt(Math.abs(fVal))+'}='+fmt(er)+'\\)');stepN++;}
+          // p(f)
+          if(gv('p','f')===undefined){
+            let p=0;const eaf=gv('ea','f');while(eaf<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+            sv('p','f',p,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(EA(f)='+fmt(eaf)+'\\leq 10^{-'+p+'}\\) → \\(p(f)='+p+'\\) cifras decimales exactas');stepN++;}
+          // t(f)
+          if(gv('er','f')!==undefined&&gv('t','f')===undefined){
+            const erf=gv('er','f');let t=0;while(erf<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+            sv('t','f',t,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)='+fmt(erf)+'<5\\cdot10^{-'+t+'}\\) → \\(t(f)='+t+'\\) cifras significativas');stepN++;}
+          // Aproximacion de f con p(f) cifras
+          if(fVal!==undefined&&gv('p','f')!==undefined){
+            const pf=gv('p','f'),facP=Math.pow(10,pf);
+            const fTr=Math.trunc(fVal*facP)/facP;
+            const fRd=Math.round(fVal*facP)/facP;
+            steps.push('<b>Paso '+stepN+'. Aproximacion:</b> \\(f(x)\\approx'+fmt(fVal)+'\\)');
+            steps.push('<span style="margin-left:1em">Truncamiento a '+pf+' dec: \\('+fmt(fTr)+'\\)</span>');
+            steps.push('<span style="margin-left:1em">Redondeo a '+pf+' dec: \\('+fmt(fRd)+'\\)</span>');
+            steps.push('<span style="margin-left:1em;color:#27ae60"><b>Aprox. con '+pf+' c.d.e.: \\(f\\approx'+fmt(fRd)+'\\pm'+fmt(epsf)+'\\)</b></span>');stepN++;}
+          steps.push('</div>');
+        }
+        // Caso INVERSO: tenemos p(f) deseado → calcular ε(x) minimo necesario
+        else if(gv('p','f')!==undefined&&!ok){
+          const pfDes=gv('p','f'),epsfDes=Math.pow(10,-pfDes);
+          steps.push('<div style="background:#fff8f0;border-left:3px solid #e67e22;padding:.5em .8em;margin:.5em 0;border-radius:4px">'+
+            '<b style="color:#e67e22;font-size:1.05em">Propagacion inversa (Prop. 21)</b><br>'+
+            '<span style="color:#555">Problema: ¿Que precision necesita \\(x\\) para que \\(f\\) tenga \\(p='+pfDes+'\\) c.d.e.?</span></div>');
+          let stepN=1;
+          steps.push('<b>Paso '+stepN+'.</b> Se desea \\(EA(f)\\leq 10^{-'+pfDes+'}='+fmt(epsfDes)+'\\)');stepN++;
+          ['x','y','z'].forEach(V=>{
+            const centro=gv('real',V)??gv('aprox',V);
+            if(centro===undefined)return;
+            const sc=Object.assign({},baseScope);
+            const dfAtV=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
+            if(isNaN(dfAtV)||dfAtV===0)return;
+            const dexpr=fd.dexpr[V]||'?';
+            const epsNeed=epsfDes/dfAtV;
+            steps.push('<b>Paso '+stepN+'.</b> \\(\\left|\\frac{\\partial f}{\\partial '+V+'}\\right|=|'+dexpr+'|\\) evaluada en \\('+V+'='+fmt(centro)+'\\): \\('+fmt(dfAtV)+'\\)');stepN++;
+            steps.push('<b>Paso '+stepN+'.</b> De \\(EA(f)\\leq|f\'|\\cdot\\varepsilon('+V+')\\) → \\(\\varepsilon('+V+')\\leq\\frac{'+fmt(epsfDes)+'}{'+fmt(dfAtV)+'}='+fmt(epsNeed)+'\\)');stepN++;
+            let pNeed=0;while(epsNeed<=Math.pow(10,-pNeed)&&pNeed<50)pNeed++;pNeed=Math.max(0,pNeed-1);
+            // Verificar: si epsNeed > 10^(-pNeed), hay que subir p? No, pNeed ya es el p minimo
+            steps.push('<b>Paso '+stepN+'.</b> \\(\\varepsilon('+V+')='+fmt(epsNeed)+'\\leq 10^{-'+pNeed+'}\\) → <b style="color:#e67e22">minimo \\(p('+V+')='+pNeed+'\\) c.d.e.</b>');stepN++;
+            // Calcular t necesario
+            if(centro!==0){const erNeed=epsNeed/Math.abs(centro);
+              let tNeed=0;while(erNeed<5*Math.pow(10,-tNeed)&&tNeed<50)tNeed++;tNeed=Math.max(0,tNeed-1);
+              steps.push('<b>Paso '+stepN+'.</b> \\(ER('+V+')\\leq\\frac{'+fmt(epsNeed)+'}{'+fmt(Math.abs(centro))+'}='+fmt(erNeed)+'<5\\cdot10^{-'+tNeed+'}\\) → <b style="color:#e67e22">minimo \\(t('+V+')='+tNeed+'\\) c.s.</b>');stepN++;
+              if(gv('eps',V)===undefined)sv('eps',V,epsNeed,'');
+              if(gv('p',V)===undefined)sv('p',V,pNeed,'');
+              if(gv('t',V)===undefined)sv('t',V,tNeed,'');
+              if(gv('er',V)===undefined)sv('er',V,erNeed,'');}});
         }}
-      // EA(f) ≤ ε(f) si no se conoce directamente
-      if(gv('ea','f')===undefined&&gv('eps','f')!==undefined){
+      // Si eps(f) fue calculado por otro camino (no prop.), mantener inferencias simples
+      if(gv('ea','f')===undefined&&gv('eps','f')!==undefined&&!comp['ea-f']){
         sv('ea','f',gv('eps','f'),'<b>EA(f):</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)');}
-      // ER(f)
       if(gv('ea','f')!==undefined&&gv('er','f')===undefined){
         const denom=gv('real','f')??gv('aprox','f');
         if(denom!==undefined&&denom!==0){const er=gv('ea','f')/Math.abs(denom);
           sv('er','f',er,'<b>ER(f):</b> \\(\\frac{EA(f)}{|f|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');}}
-      // p(f), t(f)
       if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
         let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
-        sv('p','f',p,'<b>p(f)='+p+':</b> \\(EA(f)\\leq'+fmt(gv('ea','f'))+'\\leq10^{-'+p+'}\\) → '+p+' cifras dec. exactas');}
+        sv('p','f',p,'<b>p(f)='+p+':</b> \\(EA(f)\\leq10^{-'+p+'}\\) → '+p+' c.d.e.');}
       if(gv('er','f')!==undefined&&gv('t','f')===undefined){
         let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
-        sv('t','f',t,'<b>t(f)='+t+':</b> \\(ER(f)='+fmt(gv('er','f'))+'<5\\cdot10^{-'+t+'}\\) → '+t+' cifras significativas');}
+        sv('t','f',t,'<b>t(f)='+t+':</b> \\(ER(f)<5\\cdot10^{-'+t+'}\\) → '+t+' c.s.');}
       // Rd/Tr de f con aritmetica de k cifras
       const kf=gv('k','f')??gv('k','x')??gv('k','y')??gv('k','z');
       if(kf!==undefined&&fd.node){
@@ -1671,7 +1741,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v7 cargado');
+  console.log('MMI v8 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
