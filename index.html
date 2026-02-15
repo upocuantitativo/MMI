@@ -135,7 +135,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v10</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v11</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -1339,33 +1339,37 @@ function solveProblema(){
       if(el.classList.contains('computed')){el.value='';el.disabled=true;el.classList.remove('computed');}});
   });
   const d={},giv={},rawExpr={};
+  // Leer valores de la tabla. Para la columna f, si contiene variables, guardar como funcion
+  let _autoFnExpr='';
   _pd.forEach(p=>{d[p.id]={};giv[p.id]={};
     const chk=document.getElementById('chk-'+p.id).checked;
     _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
       const raw=el.value.trim();
-      if(chk&&raw!==''){d[p.id][v]=sEval(raw);giv[p.id][v]=true;
-        // Guardar expresion raw si contiene operadores (para evalKArith)
-        if((p.id==='real'||p.id==='aprox')&&/[+\-*/^()]/.test(raw)){
-          if(!rawExpr[v])rawExpr[v]={};rawExpr[v][p.id]=raw;}}});
+      if(chk&&raw!==''){
+        // Auto-detectar: si la celda f contiene variables x,y,z → es una funcion
+        if(v==='f'&&(p.id==='real'||p.id==='aprox')&&/\b[xyz]\b/.test(raw)){
+          _autoFnExpr=raw;console.log('[Solver] Auto-detectada funcion en '+p.id+'(f): '+raw);
+        } else {
+          d[p.id][v]=sEval(raw);giv[p.id][v]=true;
+          // Guardar expresion raw si contiene operadores (para evalKArith)
+          if((p.id==='real'||p.id==='aprox')&&/[+\-*/^()]/.test(raw)){
+            if(!rawExpr[v])rawExpr[v]={};rawExpr[v][p.id]=raw;}}}});
   });
   const tipo=document.getElementById('val-tipo').value;
   let hasFn=document.getElementById('chk-func').checked;
   let fnExpr=document.getElementById('val-func').value.trim();
-  // Auto-detectar funcion: si real(f) o aprox(f) contiene variables x,y,z
-  ['real','aprox'].forEach(pid=>{
-    const fEl=document.getElementById('val-'+pid+'-f');
-    if(fEl){const fRaw=fEl.value.trim();
-      if(fRaw&&/\b[xyz]\b/.test(fRaw)&&!fnExpr){
-        fnExpr=fRaw;hasFn=true;
-        // Activar checkbox visual
-        const chk=document.getElementById('chk-func');if(chk)chk.checked=true;
-        document.getElementById('val-func').value=fRaw;toggleEq();previewEq();
-        // Limpiar celda f para que no intente evaluar como numero
-        fEl.value='';if(d[pid])delete d[pid].f;if(giv&&giv[pid])delete giv[pid].f;
-      }}});
+  // Si se auto-detecto funcion en columna f, usarla
+  if(_autoFnExpr&&!fnExpr){
+    fnExpr=_autoFnExpr;hasFn=true;
+    const chk=document.getElementById('chk-func');if(chk)chk.checked=true;
+    document.getElementById('val-func').value=_autoFnExpr;toggleEq();previewEq();
+    console.log('[Solver] Funcion auto-activada: '+fnExpr);}
   let fd=null;
   if(hasFn&&fnExpr){fd=parseFuncMV(prepExpr(fnExpr));
+    console.log('[Solver] fd='+(fd?'OK':'FALLO')+', fnExpr='+fnExpr);
     if(!fd)console.warn('No se pudo parsear f(x,y,z)='+fnExpr);}
+  else{console.log('[Solver] Sin funcion. hasFn='+hasFn+', fnExpr="'+fnExpr+'"');}
+  console.log('[Solver] Datos leidos:',JSON.stringify(d));
   const steps=[],comp={};
   function gv(p,v){return d[p]?d[p][v]:undefined}
   function sv(p,v,val,reason){
@@ -1504,6 +1508,7 @@ function solveProblema(){
     });
     // f column
     if(fd){try{
+      console.log('[Solver] Entrando en bloque f. eps(x)=',gv('eps','x'),'p(x)=',gv('p','x'),'p(f)=',gv('p','f'));
       const rx=gv('real','x'),ry=gv('real','y'),rz=gv('real','z');
       const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
       const hasReal=rx!==undefined||ry!==undefined||rz!==undefined;
@@ -1756,7 +1761,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v10 cargado');
+  console.log('MMI v11 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
