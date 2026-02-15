@@ -1338,23 +1338,35 @@ function solveProblema(){
       if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
         const ea=Math.abs(gv('real','f')-gv('aprox','f'));
         sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
-      if(gv('ea','f')===undefined){
-        let eaf=0,ok=false;
-        ['x','y','z'].forEach(V=>{const eaV=gv('eps',V)??gv('ea',V);
-          if(eaV!==undefined){const xv=ax??rx??0,yv=ay??ry??0,zv=az??rz??0;
-            const dfv=fd.df(V,xv,yv,zv);if(!isNaN(dfv)){eaf+=Math.abs(dfv)*eaV;ok=true}}});
-        if(ok)sv('ea','f',eaf,'<b>EA(f) propag.:</b> \\(\\sum|\\partial f/\\partial v_i|\\cdot EA(v_i)='+fmt(eaf)+'\\)');}
+      // ε(f) Prop.21: Σ max|∂f/∂vi|·EA(vi), max sobre [vi*, vi_real]
+      if(gv('eps','f')===undefined){
+        let epsf=0,ok=false,detail=[];
+        const sc_r={x:rx??ax??0,y:ry??ay??0,z:rz??az??0};
+        const sc_a={x:ax??rx??0,y:ay??ry??0,z:az??rz??0};
+        ['x','y','z'].forEach(V=>{
+          const eaV=gv('eps',V)??gv('ea',V);
+          if(eaV!==undefined){
+            const df_r=Math.abs(fd.df(V,sc_r.x,sc_r.y,sc_r.z));
+            const df_a=Math.abs(fd.df(V,sc_a.x,sc_a.y,sc_a.z));
+            const maxdf=Math.max(isNaN(df_r)?0:df_r,isNaN(df_a)?0:df_a);
+            epsf+=maxdf*eaV;ok=true;
+            detail.push('\\max|\\partial f/\\partial '+V+'|\\cdot EA('+V+')='+fmt(maxdf)+'\\times'+fmt(eaV)+'='+fmt(maxdf*eaV));
+          }});
+        if(ok)sv('eps','f',epsf,'<b>\u03b5(f) Prop.21:</b> \\('+detail.join(' + ')+'='+fmt(epsf)+'\\)');}
+      // EA(f) directo o ≤ ε(f) si no hay valores reales
+      if(gv('ea','f')===undefined&&gv('eps','f')!==undefined){
+        sv('ea','f',gv('eps','f'),'<b>EA(f)\\(\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)</b>');}
+      // ER(f)
       if(gv('ea','f')!==undefined&&gv('er','f')===undefined){
         const denom=gv('real','f')??gv('aprox','f');
         if(denom!==undefined&&denom!==0){const er=gv('ea','f')/Math.abs(denom);
-          sv('er','f',er,'<b>ER(f):</b> \\(\\frac{|f_{real}-f_{aprox}|}{|f_{real}|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');
-        }}
+          sv('er','f',er,'<b>ER(f):</b> \\(\\frac{EA(f)}{|f|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');}}
+      // p(f), t(f)
       if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
         let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);sv('p','f',p,'<b>p(f)='+p+'</b>');}
       if(gv('er','f')!==undefined&&gv('t','f')===undefined){
         let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);sv('t','f',t,'<b>t(f)='+t+'</b>');}
-      if(gv('aprox','f')!==undefined&&gv('eps','f')===undefined&&gv('ea','f')!==undefined){
-        sv('eps','f',gv('ea','f'),'<b>\u03b5(f):</b> \\(\\leq'+fmt(gv('ea','f'))+'\\)');}
+      // Intervalo confianza de f
       if(gv('aprox','f')!==undefined&&gv('eps','f')!==undefined){
         if(gv('linf','f')===undefined)sv('linf','f',gv('aprox','f')-gv('eps','f'),'<b>L.inf(f)='+fmt(gv('aprox','f')-gv('eps','f'))+'</b>');
         if(gv('lsup','f')===undefined)sv('lsup','f',gv('aprox','f')+gv('eps','f'),'<b>L.sup(f)='+fmt(gv('aprox','f')+gv('eps','f'))+'</b>');}
