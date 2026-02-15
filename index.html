@@ -1329,18 +1329,26 @@ function solveProblema(){
     if(fd){
       const rx=gv('real','x'),ry=gv('real','y'),rz=gv('real','z');
       const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
-      if((rx!==undefined||ax!==undefined)&&gv('real','f')===undefined){
+      const hasReal=rx!==undefined||ry!==undefined||rz!==undefined;
+      const hasAprox=ax!==undefined||ay!==undefined||az!==undefined;
+      if(hasReal&&gv('real','f')===undefined){
         const fv=fd.f(rx??ax??0,ry??ay??0,rz??az??0);
-        if(rx!==undefined)sv('real','f',fv,'<b>f(real):</b> \\(f('+[rx,ry,rz].filter(v=>v!==undefined).map(fmt).join(',')+')='+fmt(fv)+'\\)');}
-      if(ax!==undefined&&gv('aprox','f')===undefined){
-        const fv=fd.f(ax,ay??0,az??0);
-        sv('aprox','f',fv,'<b>f(aprox):</b> \\(f('+[ax,ay,az].filter(v=>v!==undefined).map(fmt).join(',')+')='+fmt(fv)+'\\)');}
+        const args=[];if(rx!==undefined||ax!==undefined)args.push(fmt(rx??ax??0));
+        if(ry!==undefined||ay!==undefined)args.push(fmt(ry??ay??0));
+        if(rz!==undefined||az!==undefined)args.push(fmt(rz??az??0));
+        sv('real','f',fv,'<b>f(real):</b> \\(f('+args.join(',')+')='+fmt(fv)+'\\)');}
+      if(hasAprox&&gv('aprox','f')===undefined){
+        const fv=fd.f(ax??rx??0,ay??ry??0,az??rz??0);
+        const args=[];if(ax!==undefined||rx!==undefined)args.push(fmt(ax??rx??0));
+        if(ay!==undefined||ry!==undefined)args.push(fmt(ay??ry??0));
+        if(az!==undefined||rz!==undefined)args.push(fmt(az??rz??0));
+        sv('aprox','f',fv,'<b>f(aprox):</b> \\(f('+args.join(',')+')='+fmt(fv)+'\\)');}
       if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
         const ea=Math.abs(gv('real','f')-gv('aprox','f'));
         sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
       // ε(f) Prop.21: Σ max|∂f/∂vi|·EA(vi), max sobre [vi*, vi_real]
       if(gv('eps','f')===undefined){
-        let epsf=0,ok=false,detail=[];
+        let epsf=0,ok=false,detail=[],stepsDeriv=[];
         const sc_r={x:rx??ax??0,y:ry??ay??0,z:rz??az??0};
         const sc_a={x:ax??rx??0,y:ay??ry??0,z:az??rz??0};
         ['x','y','z'].forEach(V=>{
@@ -1348,11 +1356,18 @@ function solveProblema(){
           if(eaV!==undefined){
             const df_r=Math.abs(fd.df(V,sc_r.x,sc_r.y,sc_r.z));
             const df_a=Math.abs(fd.df(V,sc_a.x,sc_a.y,sc_a.z));
-            const maxdf=Math.max(isNaN(df_r)?0:df_r,isNaN(df_a)?0:df_a);
-            epsf+=maxdf*eaV;ok=true;
-            detail.push('\\max|\\partial f/\\partial '+V+'|\\cdot EA('+V+')='+fmt(maxdf)+'\\times'+fmt(eaV)+'='+fmt(maxdf*eaV));
-          }});
-        if(ok)sv('eps','f',epsf,'<b>\u03b5(f) Prop.21:</b> \\('+detail.join(' + ')+'='+fmt(epsf)+'\\)');}
+            const vr=isNaN(df_r)?0:df_r,va=isNaN(df_a)?0:df_a;
+            const maxdf=Math.max(vr,va);
+            if(maxdf>0||eaV>0){
+              epsf+=maxdf*eaV;ok=true;
+              const rv=gv('real',V),av=gv('aprox',V);
+              stepsDeriv.push('<b>|\\(\\partial f/\\partial '+V+'\\)| en ['+V+'*,'+V+']:</b> |f\'('+fmt(av)+')|='+fmt(va)+', |f\'('+fmt(rv)+')|='+fmt(vr)+' → max=<b>'+fmt(maxdf)+'</b>');
+              detail.push(fmt(maxdf)+'\\times'+fmt(eaV));
+            }}});
+        if(ok){
+          stepsDeriv.forEach(s=>steps.push(s));
+          sv('eps','f',epsf,'<b>\u03b5(f) Prop.21:</b> \\('+detail.join(' + ')+'='+fmt(epsf)+'\\)');
+        }}
       // EA(f) directo o ≤ ε(f) si no hay valores reales
       if(gv('ea','f')===undefined&&gv('eps','f')!==undefined){
         sv('ea','f',gv('eps','f'),'<b>EA(f)\\(\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)</b>');}
