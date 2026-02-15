@@ -1577,20 +1577,35 @@ function solveProblema(){
 }
 function drawSolverAxis(d){
   const container=document.getElementById('solver-plot');container.innerHTML='';container.style.display='none';
+  function parseIntv(s){if(!s||typeof s!=='string')return null;const m=s.match(/\[([^,]+),\s*([^\]]+)\]/);return m?[parseFloat(m[1]),parseFloat(m[2])]:null;}
   const toPlot=[];
-  _cv.forEach(V=>{const nums=[d.real?.[V],d.aprox?.[V],d.apdef?.[V],d.apexc?.[V],d.rd?.[V],d.tr?.[V]].filter(n=>n!==undefined&&!isNaN(n)&&isFinite(n));
-    if(nums.length>=2)toPlot.push({V,nums})});
+  _cv.forEach(V=>{
+    const nums=[d.real?.[V],d.aprox?.[V],d.apdef?.[V],d.apexc?.[V],d.rd?.[V],d.tr?.[V]].filter(n=>n!==undefined&&!isNaN(n)&&isFinite(n));
+    const iMay=parseIntv(d.intmayor?.[V]),iMen=parseIntv(d.intmenor?.[V]);
+    if(iMay){nums.push(iMay[0],iMay[1]);}
+    if(iMen){nums.push(iMen[0],iMen[1]);}
+    if(nums.length>=2)toPlot.push({V,nums,iMay,iMen})});
   if(toPlot.length===0)return;
   container.style.display='block';
-  toPlot.forEach(({V,nums})=>{
+  toPlot.forEach(({V,nums,iMay,iMen})=>{
     const pid='sp-'+V;const div=document.createElement('div');div.id=pid;div.style.marginBottom='0';container.appendChild(div);
     const traces=[],ann=[],mn=Math.min(...nums),mx=Math.max(...nums),pad=Math.max((mx-mn)*.2,.001);
-    if(d.apdef?.[V]!==undefined&&d.apexc?.[V]!==undefined){
-      traces.push({x:[d.apdef[V],d.apexc[V]],y:[0,0],mode:'lines',line:{color:'rgba(41,128,185,.3)',width:16},name:'Intervalo',hoverinfo:'x'});
-      traces.push({x:[d.apdef[V],d.apdef[V]],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:1.5,dash:'dot'},showlegend:false,hoverinfo:'skip'});
-      traces.push({x:[d.apexc[V],d.apexc[V]],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:1.5,dash:'dot'},showlegend:false,hoverinfo:'skip'});
-      ann.push({x:d.apdef[V],y:-.42,text:fmt(d.apdef[V])+'<br><i>(defecto)</i>',showarrow:false,font:{size:8,color:'#2980b9'}});
-      ann.push({x:d.apexc[V],y:-.42,text:fmt(d.apexc[V])+'<br><i>(exceso)</i>',showarrow:false,font:{size:8,color:'#2980b9'}});}
+    const iMayor=iMay,iMenor=iMen;
+    // Mayor intervalo: franja ancha gris-azul
+    if(iMayor){
+      traces.push({x:[iMayor[0],iMayor[1]],y:[-.15,-.15],mode:'lines',line:{color:'rgba(41,128,185,.15)',width:20},name:'Mayor int.',hoverinfo:'x'});
+      traces.push({x:[iMayor[0],iMayor[0]],y:[-.35,.05],mode:'lines',line:{color:'#2980b9',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      traces.push({x:[iMayor[1],iMayor[1]],y:[-.35,.05],mode:'lines',line:{color:'#2980b9',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:(iMayor[0]+iMayor[1])/2,y:-.38,text:'<b>Mayor ['+fmt(iMayor[0])+', '+fmt(iMayor[1])+']</b>',showarrow:false,font:{size:8,color:'#2980b9'}});}
+    // Menor intervalo: franja estrecha verde
+    if(iMenor){
+      traces.push({x:[iMenor[0],iMenor[1]],y:[.15,.15],mode:'lines',line:{color:'rgba(39,174,96,.25)',width:20},name:'Menor int.',hoverinfo:'x'});
+      traces.push({x:[iMenor[0],iMenor[0]],y:[-.05,.35],mode:'lines',line:{color:'#27ae60',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      traces.push({x:[iMenor[1],iMenor[1]],y:[-.05,.35],mode:'lines',line:{color:'#27ae60',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:(iMenor[0]+iMenor[1])/2,y:.38,text:'<b>Menor ['+fmt(iMenor[0])+', '+fmt(iMenor[1])+']</b>',showarrow:false,font:{size:8,color:'#27ae60'}});}
+    // Defecto/exceso como marcadores
+    if(d.apdef?.[V]!==undefined)traces.push({x:[d.apdef[V]],y:[0],mode:'markers',marker:{size:9,color:'#2980b9',symbol:'triangle-left'},name:'Defecto',hoverinfo:'x+name'});
+    if(d.apexc?.[V]!==undefined)traces.push({x:[d.apexc[V]],y:[0],mode:'markers',marker:{size:9,color:'#2980b9',symbol:'triangle-right'},name:'Exceso',hoverinfo:'x+name'});
     if(d.real?.[V]!==undefined)traces.push({x:[d.real[V]],y:[0],mode:'markers',marker:{size:13,color:'#27ae60',symbol:'star'},name:V+' real',hoverinfo:'x+name'});
     if(d.aprox?.[V]!==undefined)traces.push({x:[d.aprox[V]],y:[0],mode:'markers',marker:{size:12,color:'#e74c3c',symbol:'diamond'},name:V+'*',hoverinfo:'x+name'});
     if(d.rd?.[V]!==undefined)traces.push({x:[d.rd[V]],y:[.13],mode:'markers',marker:{size:8,color:'#8e44ad',symbol:'circle'},name:'Rd',hoverinfo:'x+name'});
@@ -1599,8 +1614,9 @@ function drawSolverAxis(d){
       const r=d.real[V],a=d.aprox[V];
       traces.push({x:[Math.min(r,a),Math.max(r,a)],y:[.33,.33],mode:'lines',line:{color:'#e74c3c',width:2.5},showlegend:false,hoverinfo:'skip'});
       ann.push({x:(r+a)/2,y:.43,text:'<b>EA='+fmt(Math.abs(r-a))+'</b>',showarrow:false,font:{size:9,color:'#e74c3c'}});}
-    Plotly.newPlot(pid,traces,{margin:{t:18,b:28,l:30,r:15},yaxis:{visible:false,range:[-.6,.55]},
-      xaxis:{title:V==='f'?'f(x,y,z)':V,range:[mn-pad,mx+pad],zeroline:false},height:115,
+    const hasIntv=iMayor||iMenor;
+    Plotly.newPlot(pid,traces,{margin:{t:18,b:32,l:30,r:15},yaxis:{visible:false,range:[hasIntv?-.7:-.6,hasIntv?.65:.55]},
+      xaxis:{title:V==='f'?'f(x,y,z)':V,range:[mn-pad,mx+pad],zeroline:false},height:hasIntv?145:115,
       legend:{orientation:'h',y:1.15,font:{size:9}},annotations:ann,plot_bgcolor:'#fafbfc',
       title:{text:'Variable '+(V==='f'?'f(x,y,z)':V),font:{size:10},x:.01,xanchor:'left'}},{responsive:true});
   });
@@ -1608,7 +1624,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v5 cargado');
+  console.log('MMI v6 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
