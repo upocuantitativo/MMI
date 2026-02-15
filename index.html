@@ -135,7 +135,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v11</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v12</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -1601,35 +1601,88 @@ function solveProblema(){
             steps.push('<span style="margin-left:1em">Redondeo a '+pf+' dec: \\('+fmt(fRd)+'\\)</span>');
             steps.push('<span style="margin-left:1em;color:#27ae60"><b>Aprox. con '+pf+' c.d.e.: \\(f\\approx'+fmt(fRd)+'\\pm'+fmt(epsf)+'\\)</b></span>');stepN++;}
         }
-        // Caso INVERSO: tenemos p(f) deseado → calcular ε(x) minimo necesario
-        else if(gv('p','f')!==undefined&&!ok){
-          const pfDes=gv('p','f'),epsfDes=Math.pow(10,-pfDes);
+        // Caso INVERSO iterativo: tenemos p(f) o t(f) deseado → buscar p(vi) minimo
+        else if((gv('p','f')!==undefined||gv('t','f')!==undefined)&&!ok){
+          const pfDes=gv('p','f'),tfDes=gv('t','f');
+          const usePf=pfDes!==undefined;
+          const fVal=gv('real','f')??gv('aprox','f');
+          // Convertir objetivo a EA(f) target
+          let targetEAf;
+          if(usePf){targetEAf=Math.pow(10,-pfDes);}
+          else{const erT=5*Math.pow(10,-tfDes);targetEAf=(fVal!==undefined&&fVal!==0)?erT*Math.abs(fVal):erT;}
+          const tgtLabel=usePf?'p(f)='+pfDes+' c.d.e.':'t(f)='+tfDes+' c.s.';
           steps.push('<div style="background:#fff8f0;border-left:3px solid #e67e22;padding:.5em .8em;margin:.5em 0;border-radius:4px">'+
-            '<b style="color:#e67e22;font-size:1.05em">Propagacion inversa (Prop. 21)</b><br>'+
-            '<span style="color:#555">Problema: ¿Que precision necesita \\(x\\) para que \\(f\\) tenga \\(p='+pfDes+'\\) c.d.e.?</span></div>');
+            '<b style="color:#e67e22;font-size:1.05em">Propagacion inversa iterativa (Prop. 21)</b><br>'+
+            '<span style="color:#555">¿Que precision minima necesitan las variables para que \\(f\\) tenga '+tgtLabel+'?</span></div>');
           let stepN=1;
-          steps.push('<b>Paso '+stepN+'.</b> Se desea \\(EA(f)\\leq 10^{-'+pfDes+'}='+fmt(epsfDes)+'\\)');stepN++;
-          ['x','y','z'].forEach(V=>{
-            const centro=gv('real',V)??gv('aprox',V);
-            if(centro===undefined)return;
-            const sc=Object.assign({},baseScope);
-            const dfAtV=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
-            if(isNaN(dfAtV)||dfAtV===0)return;
-            const dexpr=fd.dexpr[V]||'?';
-            const epsNeed=epsfDes/dfAtV;
-            steps.push('<b>Paso '+stepN+'.</b> \\(\\left|\\frac{\\partial f}{\\partial '+V+'}\\right|=|'+dexpr+'|\\) evaluada en \\('+V+'='+fmt(centro)+'\\): \\('+fmt(dfAtV)+'\\)');stepN++;
-            steps.push('<b>Paso '+stepN+'.</b> De \\(EA(f)\\leq|f\'|\\cdot\\varepsilon('+V+')\\) → \\(\\varepsilon('+V+')\\leq\\frac{'+fmt(epsfDes)+'}{'+fmt(dfAtV)+'}='+fmt(epsNeed)+'\\)');stepN++;
-            let pNeed=0;while(epsNeed<=Math.pow(10,-pNeed)&&pNeed<50)pNeed++;pNeed=Math.max(0,pNeed-1);
-            // Verificar: si epsNeed > 10^(-pNeed), hay que subir p? No, pNeed ya es el p minimo
-            steps.push('<b>Paso '+stepN+'.</b> \\(\\varepsilon('+V+')='+fmt(epsNeed)+'\\leq 10^{-'+pNeed+'}\\) → <b style="color:#e67e22">minimo \\(p('+V+')='+pNeed+'\\) c.d.e.</b>');stepN++;
-            // Calcular t necesario
-            if(centro!==0){const erNeed=epsNeed/Math.abs(centro);
-              let tNeed=0;while(erNeed<5*Math.pow(10,-tNeed)&&tNeed<50)tNeed++;tNeed=Math.max(0,tNeed-1);
-              steps.push('<b>Paso '+stepN+'.</b> \\(ER('+V+')\\leq\\frac{'+fmt(epsNeed)+'}{'+fmt(Math.abs(centro))+'}='+fmt(erNeed)+'<5\\cdot10^{-'+tNeed+'}\\) → <b style="color:#e67e22">minimo \\(t('+V+')='+tNeed+'\\) c.s.</b>');stepN++;
-              if(gv('eps',V)===undefined)sv('eps',V,epsNeed,'');
-              if(gv('p',V)===undefined)sv('p',V,pNeed,'');
-              if(gv('t',V)===undefined)sv('t',V,tNeed,'');
-              if(gv('er',V)===undefined)sv('er',V,erNeed,'');}});
+          if(usePf){steps.push('<b>Paso '+stepN+'.</b> Objetivo: \\(EA(f)\\leq 10^{-'+pfDes+'}='+fmt(targetEAf)+'\\)');}
+          else{steps.push('<b>Paso '+stepN+'.</b> Objetivo: \\(ER(f)<5\\cdot10^{-'+tfDes+'}\\) → \\(EA(f)<'+fmt(targetEAf)+'\\)');}
+          stepN++;
+          // Variables activas
+          const actV=[];['x','y','z'].forEach(V=>{if(gv('real',V)!==undefined||gv('aprox',V)!==undefined)actV.push(V);});
+          // Derivadas primera y segunda
+          const d2c={};
+          actV.forEach(V=>{
+            const de=fd.dexpr[V]||'?';let d2s='';
+            try{const d2n=math.derivative(math.derivative(fd.node,V),V);d2c[V]=d2n.compile();d2s=', \\quad f\'\'_{'+V+'}='+d2n.toString();}catch(e){}
+            steps.push('<b>Paso '+stepN+'.</b> \\(f\'_{'+V+'}='+de+'\\)'+d2s);stepN++;});
+          // Iteracion: probar p=0,1,2,...
+          const MXP=20;let foundP=-1,foundEA=0;
+          steps.push('<b>Paso '+stepN+'. Iteraciones \\(p=0,1,2,\\ldots\\):</b>');stepN++;
+          for(let pt=0;pt<=MXP;pt++){
+            const ea=Math.pow(10,-pt);let tEA=0;const vi=[];
+            actV.forEach(V=>{
+              const c=gv('real',V)??gv('aprox',V)??0;
+              const lo=c-ea,hi=c+ea;
+              const bs={x:gv('real','x')??gv('aprox','x')??0,y:gv('real','y')??gv('aprox','y')??0,z:gv('real','z')??gv('aprox','z')??0};
+              let mx=0,dfL=0,dfH=0;
+              for(let i=0;i<=20;i++){const zi=lo+(hi-lo)*i/20;
+                const sc=Object.assign({},bs);sc[V]=zi;
+                const dv=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
+                if(!isNaN(dv)&&isFinite(dv)){if(i===0)dfL=dv;if(i===20)dfH=dv;if(dv>mx)mx=dv;}}
+              // Monotonia con f''
+              let mn='';if(d2c[V]){try{const sc2=Object.assign({},bs);sc2[V]=(lo+hi)/2;
+                const d2v=d2c[V].evaluate({x:sc2.x,y:sc2.y,z:sc2.z});
+                if(d2v>1e-8)mn=' \\nearrow';else if(d2v<-1e-8)mn=' \\searrow';}catch(e){}}
+              tEA+=mx*ea;vi.push({V,lo,hi,dfL,dfH,mx,mn,ct:mx*ea});});
+            const ok2=tEA<=targetEAf;
+            let ln='<div style="margin-left:1em;padding:3px 6px;margin:1px 0;border-radius:3px;font-size:.92em;'+
+              (ok2?'background:#eafbe7;border:1px solid #a3d9a5':'background:#fafafa;border:1px solid #eee')+'">';
+            ln+='<b>\\(p='+pt+'\\)</b>: \\(\\varepsilon='+fmt(ea)+'\\)';
+            vi.forEach(({V,lo,hi,dfL,dfH,mx,mn})=>{
+              if(actV.length===1)ln+=', \\(I=['+fmt(lo)+','+fmt(hi)+']\\), \\(|f\'('+fmt(lo)+')|='+fmt(dfL)+'\\), \\(|f\'('+fmt(hi)+')|='+fmt(dfH)+'\\)'+mn+', \\(\\max|f\'|='+fmt(mx)+'\\)';
+              else ln+=', \\(\\max|f\'_{'+V+'}|='+fmt(mx)+'\\)';});
+            ln+=', \\(EA(f)='+fmt(tEA)+'\\) '+(ok2?'\\(\\leq '+fmt(targetEAf)+'\\) <b style="color:#27ae60">✓</b>':'\\(> '+fmt(targetEAf)+'\\) <span style="color:#aaa">✗</span>');
+            ln+='</div>';steps.push(ln);
+            if(ok2){foundP=pt;foundEA=tEA;break;}}
+          // Resultado
+          if(foundP>=0){
+            const epsR=Math.pow(10,-foundP);
+            steps.push('<div style="margin:.5em 0;padding:.5em .8em;background:#eafbe7;border-left:3px solid #27ae60;border-radius:4px">'+
+              '<b style="color:#27ae60;font-size:1.05em">Minimo \\(p='+foundP+'\\) c.d.e.</b> para cada variable (\\(\\varepsilon='+fmt(epsR)+'\\))<br>'+
+              '\\(EA(f)='+fmt(foundEA)+'\\leq'+fmt(targetEAf)+'\\) ✓</div>');stepN++;
+            actV.forEach(V=>{
+              const c=gv('real',V)??gv('aprox',V)??0;
+              if(gv('p',V)===undefined)sv('p',V,foundP,'');
+              if(gv('eps',V)===undefined)sv('eps',V,epsR,'');
+              if(c!==0){const er=epsR/Math.abs(c);
+                let t=0;while(er<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+                if(gv('t',V)===undefined)sv('t',V,t,'');
+                if(gv('er',V)===undefined)sv('er',V,er,'');
+                steps.push('<span style="margin-left:1em;color:#e67e22">\\('+V+'\\): \\(p='+foundP+'\\) c.d.e., \\(t='+t+'\\) c.s., \\(\\varepsilon='+fmt(epsR)+'\\), \\(ER='+fmt(er)+'\\)</span>');}});
+            sv('eps','f',foundEA,'');if(gv('ea','f')===undefined)sv('ea','f',foundEA,'');
+            // p(f) y t(f) derivados
+            let pfC=0;while(foundEA<=Math.pow(10,-pfC)&&pfC<50)pfC++;pfC=Math.max(0,pfC-1);
+            if(gv('p','f')===undefined)sv('p','f',pfC,'');
+            if(fVal!==undefined&&fVal!==0){const erF=foundEA/Math.abs(fVal);
+              let tF=0;while(erF<5*Math.pow(10,-tF)&&tF<50)tF++;tF=Math.max(0,tF-1);
+              if(gv('t','f')===undefined)sv('t','f',tF,'');
+              if(gv('er','f')===undefined)sv('er','f',erF,'');}
+            // Aproximacion de f
+            if(fVal!==undefined){const pc=gv('p','f')??pfC;const fc=Math.pow(10,pc);
+              steps.push('<b>Paso '+stepN+'. Aproximacion:</b> \\(f\\approx'+fmt(fVal)+'\\pm'+fmt(foundEA)+'\\)');
+              steps.push('<span style="margin-left:1em">Redondeo a '+pc+' dec: \\('+fmt(Math.round(fVal*fc)/fc)+'\\)</span>');stepN++;}
+          }else{steps.push('<span style="color:#c0392b">No se encontro precision suficiente hasta \\(p='+MXP+'\\)</span>');}
         }}
       // Si eps(f) fue calculado por otro camino (no prop.), mantener inferencias simples
       if(gv('ea','f')===undefined&&gv('eps','f')!==undefined&&!comp['ea-f']){
@@ -1761,7 +1814,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v11 cargado');
+  console.log('MMI v12 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
