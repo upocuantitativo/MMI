@@ -119,6 +119,9 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 .sv-in.computed.cv-x{background:#d4e6f1!important;color:#1a5276!important;border-color:#85c1e9}
 .sv-in.computed.cv-y{background:#fdebd0!important;color:#935116!important;border-color:#f0b27a}
 .sv-in.computed.cv-z{background:#e8daef!important;color:#6c3483!important;border-color:#bb8fce}
+.st-sep{grid-column:1/-1;padding:.2rem .5rem;font-size:.65rem;font-weight:700;color:#fff;border-radius:2px;letter-spacing:.3px;margin-top:2px}
+.k-mode{font-size:.6rem;font-weight:400;cursor:pointer;display:inline-flex;align-items:center;gap:2px;margin-top:1px;color:var(--txt)}
+.k-mode input{width:12px;height:12px;cursor:pointer}
 .drag-h{cursor:ns-resize;color:var(--pri);font-size:.65rem;user-select:none;padding:0 1px;flex-shrink:0;opacity:.5;transition:.2s}
 .drag-h::after{content:'\u21D5'}.drag-h:hover,.drag-h.dragging{opacity:1;color:var(--acc)}
 @media(max-width:900px){.solver-grid{grid-template-columns:1fr}.solver-right{position:static}.solver-tbl{grid-template-columns:24px 1fr repeat(4,1fr)}}
@@ -1152,7 +1155,7 @@ const _pd=[
   {id:'p',label:'Cifras dec. exactas',sub:'Exactitud',isInt:1},
   {id:'t',label:'Cifras significativas',sub:'Precision',isInt:1},
   {id:'eps',label:'Cota del error (\u03b5)',sub:'Limite sup. EA'},
-  {id:'k',label:'Cifras decimales (k)',sub:'Redondeo/trunc.',isInt:1},
+  {id:'k',label:'Cifras (k)',sub:'Redondeo/trunc.',isInt:1},
   {id:'rd',label:'Redondeo',sub:'A k cifras'},
   {id:'tr',label:'Truncamiento',sub:'A k cifras'},
   {id:'linf',label:'Lim. inferior',sub:'Por defecto'},
@@ -1160,12 +1163,22 @@ const _pd=[
   {id:'cond',label:'Condicion C',sub:'|v\u00b7\u2202f/\u2202v / f|'}
 ];
 const _cv=['x','y','z','f'];
+const _grpStart={real:0,k:1,linf:2,cond:3};
+const _grpInfo=[
+  {l:'Errores',c:'#2c3e50'},{l:'Cifras / Redondeo',c:'#e67e22'},
+  {l:'Intervalo de confianza',c:'#27ae60'},{l:'Condicionamiento',c:'#c0392b'}];
 function buildSolverTable(){
   let h='<div class="st-h0"></div><div class="st-hdr st-hl">Parametro</div>';
   _cv.forEach(v=>h+='<div class="st-hdr">'+(v==='f'?'f(x,y,z)':v)+'</div>');
   _pd.forEach(p=>{
+    if(_grpStart[p.id]!==undefined){const g=_grpInfo[_grpStart[p.id]];
+      h+='<div class="st-sep" style="background:'+g.c+'">'+g.l+'</div>';}
     h+='<div class="st-chk"><input type="checkbox" id="chk-'+p.id+'" onchange="toggleRow(\''+p.id+'\')"></div>';
-    h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span></div>';
+    if(p.id==='k'){
+      h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span><label class="k-mode"><input type="checkbox" id="k-dec" checked onchange="solveProblema()"> Dec.</label></div>';
+    } else {
+      h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span></div>';
+    }
     _cv.forEach(v=>{
       const iid='val-'+p.id+'-'+v;
       h+='<div class="st-val"><input type="text" id="'+iid+'" disabled class="sv-in cv-'+v+'"'+(p.isInt?' inputmode="numeric"':'')+' placeholder="'+(v==='f'?'f':v)+'">';
@@ -1296,10 +1309,16 @@ function solveProblema(){
         let t=0;while(gv('er',V)<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
         sv('t',V,t,'<b>t('+V+'):</b> \\(ER<5\\cdot10^{-'+t+'}\\) \\(\\Rightarrow t='+t+'\\)');}
       if(gv('k',V)!==undefined&&gv('eps',V)===undefined){
-        if(tipo==='redondeo'){const eps=0.5*Math.pow(10,-gv('k',V));
-          sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(\\frac{1}{2}\\cdot10^{-'+gv('k',V)+'}='+fmt(eps)+'\\)');}
-        else if(tipo==='truncamiento'){const eps=Math.pow(10,-gv('k',V));
-          sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(10^{-'+gv('k',V)+'}='+fmt(eps)+'\\)');}}
+        const kv=gv('k',V),isDec=document.getElementById('k-dec')?.checked??true;
+        let exp;
+        if(isDec){exp=-kv;}
+        else{const numV=gv('real',V)??gv('aprox',V);
+          if(numV!==undefined&&numV!==0){exp=Math.ceil(Math.log10(Math.abs(numV)))-kv;}else{exp=-kv;}}
+        if(exp!==undefined){
+          if(tipo==='redondeo'){const eps=0.5*Math.pow(10,exp);
+            sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(\\frac{1}{2}\\cdot10^{'+exp+'}='+fmt(eps)+'\\)');}
+          else if(tipo==='truncamiento'){const eps=Math.pow(10,exp);
+            sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(10^{'+exp+'}='+fmt(eps)+'\\)');}}}
       if(gv('aprox',V)!==undefined&&gv('eps',V)!==undefined){
         if(gv('linf',V)===undefined)sv('linf',V,gv('aprox',V)-gv('eps',V),'<b>L.inf('+V+'):</b> \\('+V+'^*-\\varepsilon='+fmt(gv('aprox',V)-gv('eps',V))+'\\) (defecto)');
         if(gv('lsup',V)===undefined)sv('lsup',V,gv('aprox',V)+gv('eps',V),'<b>L.sup('+V+'):</b> \\('+V+'^*+\\varepsilon='+fmt(gv('aprox',V)+gv('eps',V))+'\\) (exceso)');}
@@ -1311,10 +1330,19 @@ function solveProblema(){
       const numR=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
       const srcR=gv('real',V)!==undefined?V:V+'^*';
       if(numR!==undefined&&gv('k',V)!==undefined){
-        if(gv('rd',V)===undefined){const f=Math.pow(10,gv('k',V)),rd=Math.round(numR*f)/f;
-          sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+gv('k',V)+')='+rd.toFixed(gv('k',V))+'\\)');}
-        if(gv('tr',V)===undefined){const f=Math.pow(10,gv('k',V)),tr=Math.trunc(numR*f)/f;
-          sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+gv('k',V)+')='+tr.toFixed(gv('k',V))+'\\)');}}
+        const kv=gv('k',V),isDec=document.getElementById('k-dec')?.checked??true;
+        if(isDec){
+          if(gv('rd',V)===undefined){const f=Math.pow(10,kv),rd=Math.round(numR*f)/f;
+            sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+kv+')='+rd.toFixed(kv)+'\\)');}
+          if(gv('tr',V)===undefined){const f=Math.pow(10,kv),tr=Math.trunc(numR*f)/f;
+            sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+kv+')='+tr.toFixed(kv)+'\\)');}
+        } else if(numR!==0){
+          const d=Math.ceil(Math.log10(Math.abs(numR))),sh=kv-d,mag=Math.pow(10,sh);
+          if(gv('rd',V)===undefined){const rd=Math.round(numR*mag)/mag;
+            sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+kv+'\\text{ c.s.})='+fmt(rd)+'\\)');}
+          if(gv('tr',V)===undefined){const tr=Math.trunc(numR*mag)/mag;
+            sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+kv+'\\text{ c.s.})='+fmt(tr)+'\\)');}
+        }}
       if(fd&&gv('cond',V)===undefined){
         const xv=gv('real','x')??gv('aprox','x')??0,yv=gv('real','y')??gv('aprox','y')??0,zv=gv('real','z')??gv('aprox','z')??0;
         const vv=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
