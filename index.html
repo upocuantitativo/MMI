@@ -135,7 +135,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v9</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v10</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -1349,8 +1349,20 @@ function solveProblema(){
           if(!rawExpr[v])rawExpr[v]={};rawExpr[v][p.id]=raw;}}});
   });
   const tipo=document.getElementById('val-tipo').value;
-  const hasFn=document.getElementById('chk-func').checked;
-  const fnExpr=document.getElementById('val-func').value.trim();
+  let hasFn=document.getElementById('chk-func').checked;
+  let fnExpr=document.getElementById('val-func').value.trim();
+  // Auto-detectar funcion: si real(f) o aprox(f) contiene variables x,y,z
+  ['real','aprox'].forEach(pid=>{
+    const fEl=document.getElementById('val-'+pid+'-f');
+    if(fEl){const fRaw=fEl.value.trim();
+      if(fRaw&&/\b[xyz]\b/.test(fRaw)&&!fnExpr){
+        fnExpr=fRaw;hasFn=true;
+        // Activar checkbox visual
+        const chk=document.getElementById('chk-func');if(chk)chk.checked=true;
+        document.getElementById('val-func').value=fRaw;toggleEq();previewEq();
+        // Limpiar celda f para que no intente evaluar como numero
+        fEl.value='';if(d[pid])delete d[pid].f;if(giv&&giv[pid])delete giv[pid].f;
+      }}});
   let fd=null;
   if(hasFn&&fnExpr){fd=parseFuncMV(prepExpr(fnExpr));
     if(!fd)console.warn('No se pudo parsear f(x,y,z)='+fnExpr);}
@@ -1744,7 +1756,7 @@ function drawSolverAxis(d){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v9 cargado');
+  console.log('MMI v10 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
