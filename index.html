@@ -1161,12 +1161,19 @@ const _pd=[
   {id:'k',label:'Cifras (k)',sub:'Redondeo/trunc.',isInt:1},
   {id:'rd',label:'Redondeo',sub:'A k cifras'},
   {id:'tr',label:'Truncamiento',sub:'A k cifras'},
-  {id:'linf',label:'Lim. inferior',sub:'Por defecto'},
-  {id:'lsup',label:'Lim. superior',sub:'Por exceso'},
+  {id:'linf',label:'Lim. inferior',sub:'x* - \u03b5'},
+  {id:'lsup',label:'Lim. superior',sub:'x* + \u03b5'},
+  {id:'apdef',label:'Aprox. defecto',sub:'Truncamiento'},
+  {id:'apexc',label:'Aprox. exceso',sub:'Techo'},
+  {id:'intdef',label:'Int. defecto',sub:'[def-\u03b5, def+\u03b5]',isTxt:1},
+  {id:'intexc',label:'Int. exceso',sub:'[exc-\u03b5, exc+\u03b5]',isTxt:1},
+  {id:'intmayor',label:'Mayor intervalo',sub:'Union',isTxt:1},
+  {id:'intmenor',label:'Menor intervalo',sub:'Interseccion',isTxt:1},
   {id:'cond',label:'Condicion C',sub:'|v\u00b7\u2202f/\u2202v / f|'}
 ];
 const _cv=['x','y','z','f'];
 const _grpStart={real:0,k:1,linf:2,cond:3};
+// Nota: linf es la primera fila del grupo Intervalo, cond la primera de Condicionamiento
 const _grpInfo=[
   {l:'Errores',c:'#2c3e50'},{l:'Cifras / Redondeo',c:'#e67e22'},
   {l:'Intervalo de confianza',c:'#27ae60'},{l:'Condicionamiento',c:'#c0392b'}];
@@ -1340,7 +1347,7 @@ function solveProblema(){
   const steps=[],comp={};
   function gv(p,v){return d[p]?d[p][v]:undefined}
   function sv(p,v,val,reason){
-    if(gv(p,v)===undefined&&val!==undefined&&!isNaN(val)&&isFinite(val)){
+    if(gv(p,v)===undefined&&val!==undefined&&(typeof val==='string'||(!isNaN(val)&&isFinite(val)))){
       if(!d[p])d[p]={};d[p][v]=val;comp[p+'-'+v]=true;if(reason)steps.push(reason);}
   }
   for(let pass=0;pass<6;pass++){
@@ -1371,14 +1378,55 @@ function solveProblema(){
             sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(\\frac{1}{2}\\cdot10^{'+exp+'}='+fmt(eps)+'\\)');}
           else if(tipo==='truncamiento'){const eps=Math.pow(10,exp);
             sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(10^{'+exp+'}='+fmt(eps)+'\\)');}}}
+      // Intervalo simple: [x* - ε, x* + ε]
       if(gv('aprox',V)!==undefined&&gv('eps',V)!==undefined){
-        if(gv('linf',V)===undefined)sv('linf',V,gv('aprox',V)-gv('eps',V),'<b>L.inf('+V+'):</b> \\('+V+'^*-\\varepsilon='+fmt(gv('aprox',V)-gv('eps',V))+'\\) (defecto)');
-        if(gv('lsup',V)===undefined)sv('lsup',V,gv('aprox',V)+gv('eps',V),'<b>L.sup('+V+'):</b> \\('+V+'^*+\\varepsilon='+fmt(gv('aprox',V)+gv('eps',V))+'\\) (exceso)');}
+        if(gv('linf',V)===undefined)sv('linf',V,gv('aprox',V)-gv('eps',V),'<b>L.inf('+V+'):</b> \\('+V+'^*-\\varepsilon='+fmt(gv('aprox',V))+'-'+fmt(gv('eps',V))+'='+fmt(gv('aprox',V)-gv('eps',V))+'\\)');
+        if(gv('lsup',V)===undefined)sv('lsup',V,gv('aprox',V)+gv('eps',V),'<b>L.sup('+V+'):</b> \\('+V+'^*+\\varepsilon='+fmt(gv('aprox',V))+'+'+fmt(gv('eps',V))+'='+fmt(gv('aprox',V)+gv('eps',V))+'\\)');}
       if(gv('linf',V)!==undefined&&gv('lsup',V)!==undefined){
         if(gv('aprox',V)===undefined){const xs=(gv('linf',V)+gv('lsup',V))/2;
           sv('aprox',V,xs,'<b>'+V+'* (Prop.17):</b> \\(\\frac{a+b}{2}='+fmt(xs)+'\\)');}
         if(gv('eps',V)===undefined){const eps=(gv('lsup',V)-gv('linf',V))/2;
           sv('eps',V,eps,'<b>\u03b5('+V+'):</b> \\(\\frac{b-a}{2}='+fmt(eps)+'\\)');}}
+      // Intervalos por defecto/exceso: dado p (cifras exactas) y valor real
+      if(gv('p',V)!==undefined&&gv('real',V)!==undefined&&!comp['_intDE-'+V]){
+        const pv=gv('p',V),rv=gv('real',V),eps10=Math.pow(10,-pv);
+        const fac=Math.pow(10,pv);
+        const def=Math.trunc(rv*fac)/fac;
+        const exc=def+(rv>=0?eps10:-eps10);
+        sv('apdef',V,def,'<b>Aprox. defecto ('+V+'):</b> \\(\\mathrm{Tr}('+fmt(rv)+','+pv+')='+fmt(def)+'\\)');
+        sv('apexc',V,exc,'<b>Aprox. exceso ('+V+'):</b> \\('+fmt(def)+'+'+(rv>=0?'':'-')+'10^{-'+pv+'}='+fmt(exc)+'\\)');
+        const lDef=def-eps10,uDef=def+eps10;
+        const lExc=exc-eps10,uExc=exc+eps10;
+        const mayor_l=Math.min(lDef,lExc),mayor_u=Math.max(uDef,uExc);
+        const menor_l=Math.max(lDef,lExc),menor_u=Math.min(uDef,uExc);
+        comp['_intDE-'+V]=true;
+        sv('intdef',V,'['+fmt(lDef)+', '+fmt(uDef)+']','<b>Int. defecto ('+V+'):</b> \\(['+fmt(def)+'\\pm10^{-'+pv+'}] = ['+fmt(lDef)+',\\ '+fmt(uDef)+']\\)');
+        sv('intexc',V,'['+fmt(lExc)+', '+fmt(uExc)+']','<b>Int. exceso ('+V+'):</b> \\(['+fmt(exc)+'\\pm10^{-'+pv+'}] = ['+fmt(lExc)+',\\ '+fmt(uExc)+']\\)');
+        sv('intmayor',V,'['+fmt(mayor_l)+', '+fmt(mayor_u)+']','<b>Mayor intervalo ('+V+'):</b> \\(['+fmt(mayor_l)+',\\ '+fmt(mayor_u)+']\\)');
+        sv('intmenor',V,'['+fmt(menor_l)+', '+fmt(menor_u)+']','<b>Menor intervalo ('+V+'):</b> \\(['+fmt(menor_l)+',\\ '+fmt(menor_u)+']\\)');
+      }
+      // Intervalos por cifras significativas (t): [x*(1-5·10^(-t)), x*(1+5·10^(-t))]
+      if(gv('t',V)!==undefined&&gv('real',V)!==undefined&&!comp['_intCS-'+V]){
+        const tv=gv('t',V),rv=gv('real',V),delta=5*Math.pow(10,-tv);
+        comp['_intCS-'+V]=true;
+        // Defecto/exceso con t cifras significativas
+        const dd=Math.ceil(Math.log10(Math.abs(rv))),sh=tv-dd,mag=Math.pow(10,sh);
+        const defCS=Math.trunc(rv*mag)/mag;
+        const step10=Math.pow(10,-sh);
+        const excCS=defCS+(rv>=0?step10:-step10);
+        sv('apdef',V,defCS,'<b>Aprox. defecto ('+V+', '+tv+' c.s.):</b> \\('+fmt(defCS)+'\\)');
+        sv('apexc',V,excCS,'<b>Aprox. exceso ('+V+', '+tv+' c.s.):</b> \\('+fmt(excCS)+'\\)');
+        const lCS=rv*(1-delta),uCS=rv*(1+delta);
+        steps.push('<b>Int. por ER ('+V+'):</b> \\(|'+V+'-'+V+'^*|/|'+V+'|\\leq 5\\cdot10^{-'+tv+'}='+fmt(delta)+'\\)');
+        sv('intmayor',V,'['+fmt(lCS)+', '+fmt(uCS)+']','\\(['+V+'(1-'+fmt(delta)+'),\\ '+V+'(1+'+fmt(delta)+')] = ['+fmt(lCS)+',\\ '+fmt(uCS)+']\\)');
+      }
+      // Intervalo directo por ER (si el usuario da ER sin t)
+      if(gv('er',V)!==undefined&&gv('real',V)!==undefined&&gv('t',V)===undefined&&!comp['_intER-'+V]){
+        const erv=gv('er',V),rv=gv('real',V);
+        const lER=rv*(1-erv),uER=rv*(1+erv);
+        comp['_intER-'+V]=true;
+        sv('intmayor',V,'['+fmt(lER)+', '+fmt(uER)+']','<b>Int. por ER ('+V+'):</b> \\(['+V+'(1-ER),\\ '+V+'(1+ER)] = ['+fmt(lER)+',\\ '+fmt(uER)+']\\)');
+      }
       const numR=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
       const srcR=gv('real',V)!==undefined?V:V+'^*';
       if(numR!==undefined&&gv('k',V)!==undefined){
@@ -1469,14 +1517,18 @@ function solveProblema(){
       if(kf!==undefined&&fd.node){
         const isDec=document.getElementById('k-dec')?.checked??true;
         const sc={x:ax??rx??0,y:ay??ry??0,z:az??rz??0};
-        if(gv('rd','f')===undefined){const lg=[];
-          const rv=evalKArith(fd.node,sc,kf,'rd',isDec,lg);
-          sv('rd','f',rv,'<b>Rd(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(rv)+'\\)');
-          lg.forEach(s=>steps.push('<span style="color:#8e44ad">Rd: '+s+'</span>'));}
-        if(gv('tr','f')===undefined){const lg=[];
-          const tv=evalKArith(fd.node,sc,kf,'tr',isDec,lg);
-          sv('tr','f',tv,'<b>Tr(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(tv)+'\\)');
-          lg.forEach(s=>steps.push('<span style="color:#f39c12">Tr: '+s+'</span>'));}
+        try{
+          if(gv('rd','f')===undefined){const lg=[];
+            const rv=evalKArith(fd.node,sc,kf,'rd',isDec,lg);
+            sv('rd','f',rv,'<b>Rd(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(rv)+'\\)');
+            if(lg.length>0){steps.push('<b style="color:#8e44ad">Pasos Redondeo (k='+kf+', '+(isDec?'dec':'c.s.')+'):</b>');
+              lg.forEach(s=>steps.push('<span style="color:#8e44ad;margin-left:1em">'+s+'</span>'));}}
+          if(gv('tr','f')===undefined){const lg=[];
+            const tv=evalKArith(fd.node,sc,kf,'tr',isDec,lg);
+            sv('tr','f',tv,'<b>Tr(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(tv)+'\\)');
+            if(lg.length>0){steps.push('<b style="color:#f39c12">Pasos Truncamiento (k='+kf+', '+(isDec?'dec':'c.s.')+'):</b>');
+              lg.forEach(s=>steps.push('<span style="color:#f39c12;margin-left:1em">'+s+'</span>'));}}
+        }catch(err){steps.push('<span style="color:red">Error en arit. k cifras: '+err.message+'</span>');}
       }
       // Intervalo confianza de f
       if(gv('aprox','f')!==undefined&&gv('eps','f')!==undefined){
@@ -1498,7 +1550,7 @@ function solveProblema(){
   // Fill computed
   _pd.forEach(p=>{let anyComp=false;_cv.forEach(v=>{if(comp[p.id+'-'+v]){
     const el=document.getElementById('val-'+p.id+'-'+v);
-    el.value=p.isInt?d[p.id][v]:fmt(d[p.id][v]);el.classList.add('computed');el.disabled=false;anyComp=true;}});
+    el.value=p.isTxt?d[p.id][v]:(p.isInt?d[p.id][v]:fmt(d[p.id][v]));el.classList.add('computed');el.disabled=false;anyComp=true;}});
     if(anyComp){const chk=document.getElementById('chk-'+p.id);if(chk&&!chk.checked){chk.checked=true;chk.dataset.auto='1';}}});
   // Reasoning
   const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
