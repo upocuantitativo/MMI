@@ -1270,14 +1270,54 @@ function parseFuncMV(expr){
       if(vr==='y'&&dyC)try{return dyC.evaluate(sc)}catch(e){return 0}
       if(vr==='z'&&dzC)try{return dzC.evaluate(sc)}catch(e){return 0}
       return 0;};
-    return {f,df,dexpr:{x:dxS,y:dyS,z:dzS}};
+    return {f,df,dexpr:{x:dxS,y:dyS,z:dzS},node};
   }catch(e){return null}
+}
+// Aritmética de k cifras: evalúa el árbol aplicando rd/tr en cada operación
+function evalKArith(nd,scope,k,mode,isDec,log){
+  const apK=v=>{
+    if(v===0||!isFinite(v)||isNaN(v))return v;
+    if(isDec){const f=Math.pow(10,k);return mode==='rd'?Math.round(v*f)/f:Math.trunc(v*f)/f;}
+    const dd=Math.ceil(Math.log10(Math.abs(v))),mag=Math.pow(10,k-dd);
+    return mode==='rd'?Math.round(v*mag)/mag:Math.trunc(v*mag)/mag;
+  };
+  switch(nd.type){
+    case 'ConstantNode': return apK(nd.value);
+    case 'SymbolNode':{
+      if(scope[nd.name]!==undefined)return apK(scope[nd.name]);
+      try{return apK(math.evaluate(nd.name))}catch(e){return NaN}}
+    case 'ParenthesisNode': return evalKArith(nd.content,scope,k,mode,isDec,log);
+    case 'OperatorNode':{
+      if(nd.args.length===1){const a=evalKArith(nd.args[0],scope,k,mode,isDec,log);
+        return nd.op==='-'?apK(-a):a;}
+      const L=evalKArith(nd.args[0],scope,k,mode,isDec,log);
+      const R=evalKArith(nd.args[1],scope,k,mode,isDec,log);
+      let res;
+      switch(nd.op){case'+':res=L+R;break;case'-':res=L-R;break;case'*':res=L*R;break;case'/':res=L/R;break;case'^':res=Math.pow(L,R);break;default:res=NaN;}
+      const rnd=apK(res);
+      if(log){const ml=mode==='rd'?'Rd':'Tr';
+        log.push(fmt(L)+' '+nd.op+' '+fmt(R)+' = '+fmt(res)+(res!==rnd?' → '+ml+'('+k+')='+fmt(rnd):''));}
+      return rnd;}
+    case 'FunctionNode':{
+      const args=nd.args.map(a=>evalKArith(a,scope,k,mode,isDec,log));
+      try{const fn=math[nd.fn?.name||nd.name];const res=fn(...args);const rnd=apK(res);
+        if(log)log.push((nd.fn?.name||nd.name)+'('+args.map(fmt).join(',')+')='+fmt(res)+(res!==rnd?' → '+fmt(rnd):''));
+        return rnd;}catch(e){return NaN}}
+    default:try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
+  }
 }
 function solveProblema(){
   const d={},giv={};
+  // Limpiar valores computed anteriores y checkboxes auto-marcados
+  _pd.forEach(p=>{const chkEl=document.getElementById('chk-'+p.id);
+    if(chkEl&&chkEl.dataset.auto){chkEl.checked=false;delete chkEl.dataset.auto;}
+    _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
+      if(el.classList.contains('computed')){el.value='';el.disabled=true;el.classList.remove('computed');}});
+  });
+  const d={},giv={};
   _pd.forEach(p=>{d[p.id]={};giv[p.id]={};
     const chk=document.getElementById('chk-'+p.id).checked;
-    _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);el.classList.remove('computed');
+    _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
       const raw=el.value.trim();
       if(chk&&raw!==''){d[p.id][v]=sEval(raw);giv[p.id][v]=true}});
   });
@@ -1359,12 +1399,15 @@ function solveProblema(){
       const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
       const hasReal=rx!==undefined||ry!==undefined||rz!==undefined;
       const hasAprox=ax!==undefined||ay!==undefined||az!==undefined;
-      if(hasReal&&gv('real','f')===undefined){
+      // f_real: evaluar con valores reales (o constante si no hay variables)
+      if(gv('real','f')===undefined){
         const fv=fd.f(rx??ax??0,ry??ay??0,rz??az??0);
-        const args=[];if(rx!==undefined||ax!==undefined)args.push(fmt(rx??ax??0));
-        if(ry!==undefined||ay!==undefined)args.push(fmt(ry??ay??0));
-        if(rz!==undefined||az!==undefined)args.push(fmt(rz??az??0));
-        sv('real','f',fv,'<b>f(real):</b> \\(f('+args.join(',')+')='+fmt(fv)+'\\)');}
+        if(!isNaN(fv)&&isFinite(fv)){
+          const args=[];if(hasReal||hasAprox){
+            if(rx!==undefined||ax!==undefined)args.push(fmt(rx??ax??0));
+            if(ry!==undefined||ay!==undefined)args.push(fmt(ry??ay??0));
+            if(rz!==undefined||az!==undefined)args.push(fmt(rz??az??0));}
+          sv('real','f',fv,'<b>f(real):</b> \\(f'+(args.length?'('+args.join(',')+')':'')+' = '+fmt(fv)+'\\)');}}
       if(hasAprox&&gv('aprox','f')===undefined){
         const fv=fd.f(ax??rx??0,ay??ry??0,az??rz??0);
         const args=[];if(ax!==undefined||rx!==undefined)args.push(fmt(ax??rx??0));
@@ -1409,6 +1452,20 @@ function solveProblema(){
         let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);sv('p','f',p,'<b>p(f)='+p+'</b>');}
       if(gv('er','f')!==undefined&&gv('t','f')===undefined){
         let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);sv('t','f',t,'<b>t(f)='+t+'</b>');}
+      // Rd/Tr de f con aritmética de k cifras
+      const kf=gv('k','f')??gv('k','x')??gv('k','y')??gv('k','z');
+      if(kf!==undefined&&fd.node){
+        const isDec=document.getElementById('k-dec')?.checked??true;
+        const sc={x:ax??rx??0,y:ay??ry??0,z:az??rz??0};
+        if(gv('rd','f')===undefined){const lg=[];
+          const rv=evalKArith(fd.node,sc,kf,'rd',isDec,lg);
+          sv('rd','f',rv,'<b>Rd(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(rv)+'\\)');
+          lg.forEach(s=>steps.push('<span style="color:#8e44ad">Rd: '+s+'</span>'));}
+        if(gv('tr','f')===undefined){const lg=[];
+          const tv=evalKArith(fd.node,sc,kf,'tr',isDec,lg);
+          sv('tr','f',tv,'<b>Tr(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(tv)+'\\)');
+          lg.forEach(s=>steps.push('<span style="color:#f39c12">Tr: '+s+'</span>'));}
+      }
       // Intervalo confianza de f
       if(gv('aprox','f')!==undefined&&gv('eps','f')!==undefined){
         if(gv('linf','f')===undefined)sv('linf','f',gv('aprox','f')-gv('eps','f'),'<b>L.inf(f)='+fmt(gv('aprox','f')-gv('eps','f'))+'</b>');
@@ -1430,7 +1487,7 @@ function solveProblema(){
   _pd.forEach(p=>{let anyComp=false;_cv.forEach(v=>{if(comp[p.id+'-'+v]){
     const el=document.getElementById('val-'+p.id+'-'+v);
     el.value=p.isInt?d[p.id][v]:fmt(d[p.id][v]);el.classList.add('computed');el.disabled=false;anyComp=true;}});
-    if(anyComp){const chk=document.getElementById('chk-'+p.id);if(chk&&!chk.checked)chk.checked=true;}});
+    if(anyComp){const chk=document.getElementById('chk-'+p.id);if(chk&&!chk.checked){chk.checked=true;chk.dataset.auto='1';}}});
   // Reasoning
   const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
   if(steps.length>0){rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.4rem">Razonamiento paso a paso</h4>'+
