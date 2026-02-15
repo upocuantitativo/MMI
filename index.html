@@ -1277,6 +1277,8 @@ function parseFuncMV(expr){
 function evalKArith(nd,scope,k,mode,isDec,log){
   const apK=v=>{
     if(v===0||!isFinite(v)||isNaN(v))return v;
+    // Limpiar ruido flotante antes de truncar/redondear
+    v=parseFloat(v.toPrecision(12));
     if(isDec){const f=Math.pow(10,k);return mode==='rd'?Math.round(v*f)/f:Math.trunc(v*f)/f;}
     const dd=Math.ceil(Math.log10(Math.abs(v))),mag=Math.pow(10,k-dd);
     return mode==='rd'?Math.round(v*mag)/mag:Math.trunc(v*mag)/mag;
