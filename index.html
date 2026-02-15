@@ -134,7 +134,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores</h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v3</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -1276,23 +1276,28 @@ function parseFuncMV(expr){
     return {f,df,dexpr:{x:dxS,y:dyS,z:dzS},node};
   }catch(e){return null}
 }
-// Aritmetica de k cifras: evalua el arbol aplicando rd/tr en cada operacion
+// Aritmetica de k cifras: evalua el arbol aplicando rd/tr en cada operacion (v3)
 function evalKArith(nd,scope,k,mode,isDec,log){
   const apK=v=>{
     if(v===0||!isFinite(v)||isNaN(v))return v;
-    // Limpiar ruido flotante antes de truncar/redondear
     v=parseFloat(v.toPrecision(12));
     if(isDec){const f=Math.pow(10,k);return mode==='rd'?Math.round(v*f)/f:Math.trunc(v*f)/f;}
     const dd=Math.ceil(Math.log10(Math.abs(v))),mag=Math.pow(10,k-dd);
     return mode==='rd'?Math.round(v*mag)/mag:Math.trunc(v*mag)/mag;
   };
-  if(nd.isConstantNode) return apK(nd.value);
-  if(nd.isSymbolNode){
+  // Detectar tipo de nodo con booleanas y con type string como fallback
+  const isConst=nd.isConstantNode||(nd.type==='ConstantNode');
+  const isSym=nd.isSymbolNode||(nd.type==='SymbolNode');
+  const isParen=nd.isParenthesisNode||(nd.type==='ParenthesisNode');
+  const isOp=nd.isOperatorNode||(nd.type==='OperatorNode');
+  const isFn=nd.isFunctionNode||(nd.type==='FunctionNode');
+  if(isConst) return apK(nd.value);
+  if(isSym){
     if(scope[nd.name]!==undefined)return apK(scope[nd.name]);
     try{return apK(math.evaluate(nd.name))}catch(e){return NaN}
   }
-  if(nd.isParenthesisNode) return evalKArith(nd.content,scope,k,mode,isDec,log);
-  if(nd.isOperatorNode){
+  if(isParen) return evalKArith(nd.content,scope,k,mode,isDec,log);
+  if(isOp){
     if(nd.args.length===1){const a=evalKArith(nd.args[0],scope,k,mode,isDec,log);
       return nd.op==='-'?apK(-a):a;}
     const L=evalKArith(nd.args[0],scope,k,mode,isDec,log);
@@ -1304,16 +1309,14 @@ function evalKArith(nd,scope,k,mode,isDec,log){
       log.push(fmt(L)+' '+nd.op+' '+fmt(R)+' = '+fmt(res)+(res!==rnd?' → '+ml+'('+k+')='+fmt(rnd):''));}
     return rnd;
   }
-  if(nd.isFunctionNode){
+  if(isFn){
     const args=nd.args.map(a=>evalKArith(a,scope,k,mode,isDec,log));
     try{const fn=math[nd.fn?.name||nd.name];const res=fn(...args);const rnd=apK(res);
       if(log)log.push((nd.fn?.name||nd.name)+'('+args.map(fmt).join(',')+')='+fmt(res)+(res!==rnd?' → '+fmt(rnd):''));
       return rnd;}catch(e){return NaN}
   }
-  if(nd.isAccessorNode||nd.isArrayNode||nd.isAssignmentNode||nd.isBlockNode||
-     nd.isConditionalNode||nd.isIndexNode||nd.isObjectNode||nd.isRangeNode){
-    try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
-  }
+  // Fallback: nodo no reconocido - log para depurar
+  if(log)log.push('[FALLBACK nodo: type='+nd.type+' constructor='+nd.constructor?.name+'] evaluacion completa');
   try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
 }
 function solveProblema(){
