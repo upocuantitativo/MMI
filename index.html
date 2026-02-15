@@ -1283,30 +1283,35 @@ function evalKArith(nd,scope,k,mode,isDec,log){
     const dd=Math.ceil(Math.log10(Math.abs(v))),mag=Math.pow(10,k-dd);
     return mode==='rd'?Math.round(v*mag)/mag:Math.trunc(v*mag)/mag;
   };
-  switch(nd.type){
-    case 'ConstantNode': return apK(nd.value);
-    case 'SymbolNode':{
-      if(scope[nd.name]!==undefined)return apK(scope[nd.name]);
-      try{return apK(math.evaluate(nd.name))}catch(e){return NaN}}
-    case 'ParenthesisNode': return evalKArith(nd.content,scope,k,mode,isDec,log);
-    case 'OperatorNode':{
-      if(nd.args.length===1){const a=evalKArith(nd.args[0],scope,k,mode,isDec,log);
-        return nd.op==='-'?apK(-a):a;}
-      const L=evalKArith(nd.args[0],scope,k,mode,isDec,log);
-      const R=evalKArith(nd.args[1],scope,k,mode,isDec,log);
-      let res;
-      switch(nd.op){case'+':res=L+R;break;case'-':res=L-R;break;case'*':res=L*R;break;case'/':res=L/R;break;case'^':res=Math.pow(L,R);break;default:res=NaN;}
-      const rnd=apK(res);
-      if(log){const ml=mode==='rd'?'Rd':'Tr';
-        log.push(fmt(L)+' '+nd.op+' '+fmt(R)+' = '+fmt(res)+(res!==rnd?' → '+ml+'('+k+')='+fmt(rnd):''));}
-      return rnd;}
-    case 'FunctionNode':{
-      const args=nd.args.map(a=>evalKArith(a,scope,k,mode,isDec,log));
-      try{const fn=math[nd.fn?.name||nd.name];const res=fn(...args);const rnd=apK(res);
-        if(log)log.push((nd.fn?.name||nd.name)+'('+args.map(fmt).join(',')+')='+fmt(res)+(res!==rnd?' → '+fmt(rnd):''));
-        return rnd;}catch(e){return NaN}}
-    default:try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
+  if(nd.isConstantNode) return apK(nd.value);
+  if(nd.isSymbolNode){
+    if(scope[nd.name]!==undefined)return apK(scope[nd.name]);
+    try{return apK(math.evaluate(nd.name))}catch(e){return NaN}
   }
+  if(nd.isParenthesisNode) return evalKArith(nd.content,scope,k,mode,isDec,log);
+  if(nd.isOperatorNode){
+    if(nd.args.length===1){const a=evalKArith(nd.args[0],scope,k,mode,isDec,log);
+      return nd.op==='-'?apK(-a):a;}
+    const L=evalKArith(nd.args[0],scope,k,mode,isDec,log);
+    const R=evalKArith(nd.args[1],scope,k,mode,isDec,log);
+    let res;
+    switch(nd.op){case'+':res=L+R;break;case'-':res=L-R;break;case'*':res=L*R;break;case'/':res=L/R;break;case'^':res=Math.pow(L,R);break;default:res=NaN;}
+    const rnd=apK(res);
+    if(log){const ml=mode==='rd'?'Rd':'Tr';
+      log.push(fmt(L)+' '+nd.op+' '+fmt(R)+' = '+fmt(res)+(res!==rnd?' → '+ml+'('+k+')='+fmt(rnd):''));}
+    return rnd;
+  }
+  if(nd.isFunctionNode){
+    const args=nd.args.map(a=>evalKArith(a,scope,k,mode,isDec,log));
+    try{const fn=math[nd.fn?.name||nd.name];const res=fn(...args);const rnd=apK(res);
+      if(log)log.push((nd.fn?.name||nd.name)+'('+args.map(fmt).join(',')+')='+fmt(res)+(res!==rnd?' → '+fmt(rnd):''));
+      return rnd;}catch(e){return NaN}
+  }
+  if(nd.isAccessorNode||nd.isArrayNode||nd.isAssignmentNode||nd.isBlockNode||
+     nd.isConditionalNode||nd.isIndexNode||nd.isObjectNode||nd.isRangeNode){
+    try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
+  }
+  try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
 }
 function solveProblema(){
   // Limpiar valores computed anteriores y checkboxes auto-marcados
