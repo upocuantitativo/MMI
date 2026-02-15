@@ -1288,7 +1288,12 @@ function evalKArith(nd,scope,k,mode,isDec,log){
   const apK=v=>{
     if(v===0||!isFinite(v)||isNaN(v))return v;
     v=parseFloat(v.toPrecision(12));
-    if(isDec){const f=Math.pow(10,k);return mode==='rd'?Math.round(v*f)/f:Math.trunc(v*f)/f;}
+    if(isDec){
+      // k decimales desde el primer digito no-cero despues de la coma
+      let kEff=k;
+      if(Math.abs(v)<1&&v!==0){const lz=Math.max(0,Math.ceil(-Math.log10(Math.abs(v)))-1);kEff=k+lz;}
+      const f=Math.pow(10,kEff);return mode==='rd'?Math.round(v*f)/f:Math.trunc(v*f)/f;
+    }
     const dd=Math.ceil(Math.log10(Math.abs(v))),mag=Math.pow(10,k-dd);
     return mode==='rd'?Math.round(v*mag)/mag:Math.trunc(v*mag)/mag;
   };
@@ -1387,55 +1392,55 @@ function solveProblema(){
           sv('aprox',V,xs,'<b>'+V+'* (Prop.17):</b> \\(\\frac{a+b}{2}='+fmt(xs)+'\\)');}
         if(gv('eps',V)===undefined){const eps=(gv('lsup',V)-gv('linf',V))/2;
           sv('eps',V,eps,'<b>\u03b5('+V+'):</b> \\(\\frac{b-a}{2}='+fmt(eps)+'\\)');}}
-      // Intervalos por defecto/exceso: dado p (cifras exactas) y valor real
-      if(gv('p',V)!==undefined&&gv('real',V)!==undefined&&!comp['_intDE-'+V]){
-        const pv=gv('p',V),rv=gv('real',V),eps10=Math.pow(10,-pv);
-        const fac=Math.pow(10,pv);
+      // Intervalos defecto/exceso por EA (eps o calculada desde p)
+      if(gv('eps',V)!==undefined&&gv('real',V)!==undefined&&!comp['_intDE-'+V]){
+        const rv=gv('real',V),epsV=gv('eps',V);
+        // Hallar precision: cuantos decimales corresponden a eps
+        const pEff=Math.max(0,Math.round(-Math.log10(epsV)));
+        const fac=Math.pow(10,pEff);
         const def=Math.trunc(rv*fac)/fac;
-        const exc=def+(rv>=0?eps10:-eps10);
-        sv('apdef',V,def,'<b>Aprox. defecto ('+V+'):</b> \\(\\mathrm{Tr}('+fmt(rv)+','+pv+')='+fmt(def)+'\\)');
-        sv('apexc',V,exc,'<b>Aprox. exceso ('+V+'):</b> \\('+fmt(def)+'+'+(rv>=0?'':'-')+'10^{-'+pv+'}='+fmt(exc)+'\\)');
-        const lDef=def-eps10,uDef=def+eps10;
-        const lExc=exc-eps10,uExc=exc+eps10;
+        const exc=def+(rv>=0?1:-1)/fac;
+        sv('apdef',V,def,'<b>Aprox. defecto ('+V+'):</b> \\(\\mathrm{Tr}('+fmt(rv)+')='+fmt(def)+'\\)');
+        sv('apexc',V,exc,'<b>Aprox. exceso ('+V+'):</b> \\('+fmt(def)+'+'+(rv>=0?'':'-')+'10^{-'+pEff+'}='+fmt(exc)+'\\)');
+        const lDef=def-epsV,uDef=def+epsV;
+        const lExc=exc-epsV,uExc=exc+epsV;
         const mayor_l=Math.min(lDef,lExc),mayor_u=Math.max(uDef,uExc);
         const menor_l=Math.max(lDef,lExc),menor_u=Math.min(uDef,uExc);
         comp['_intDE-'+V]=true;
-        sv('intdef',V,'['+fmt(lDef)+', '+fmt(uDef)+']','<b>Int. defecto ('+V+'):</b> \\(['+fmt(def)+'\\pm10^{-'+pv+'}] = ['+fmt(lDef)+',\\ '+fmt(uDef)+']\\)');
-        sv('intexc',V,'['+fmt(lExc)+', '+fmt(uExc)+']','<b>Int. exceso ('+V+'):</b> \\(['+fmt(exc)+'\\pm10^{-'+pv+'}] = ['+fmt(lExc)+',\\ '+fmt(uExc)+']\\)');
+        sv('intdef',V,'['+fmt(lDef)+', '+fmt(uDef)+']','<b>Int. defecto ('+V+'):</b> \\(['+fmt(def)+'\\pm'+fmt(epsV)+'] = ['+fmt(lDef)+',\\ '+fmt(uDef)+']\\)');
+        sv('intexc',V,'['+fmt(lExc)+', '+fmt(uExc)+']','<b>Int. exceso ('+V+'):</b> \\(['+fmt(exc)+'\\pm'+fmt(epsV)+'] = ['+fmt(lExc)+',\\ '+fmt(uExc)+']\\)');
         sv('intmayor',V,'['+fmt(mayor_l)+', '+fmt(mayor_u)+']','<b>Mayor intervalo ('+V+'):</b> \\(['+fmt(mayor_l)+',\\ '+fmt(mayor_u)+']\\)');
-        sv('intmenor',V,'['+fmt(menor_l)+', '+fmt(menor_u)+']','<b>Menor intervalo ('+V+'):</b> \\(['+fmt(menor_l)+',\\ '+fmt(menor_u)+']\\)');
+        if(menor_l<=menor_u)sv('intmenor',V,'['+fmt(menor_l)+', '+fmt(menor_u)+']','<b>Menor intervalo ('+V+'):</b> \\(['+fmt(menor_l)+',\\ '+fmt(menor_u)+']\\)');
       }
-      // Intervalos por cifras significativas (t): [x*(1-5·10^(-t)), x*(1+5·10^(-t))]
-      if(gv('t',V)!==undefined&&gv('real',V)!==undefined&&!comp['_intCS-'+V]){
-        const tv=gv('t',V),rv=gv('real',V),delta=5*Math.pow(10,-tv);
-        comp['_intCS-'+V]=true;
-        // Defecto/exceso con t cifras significativas
-        const dd=Math.ceil(Math.log10(Math.abs(rv))),sh=tv-dd,mag=Math.pow(10,sh);
-        const defCS=Math.trunc(rv*mag)/mag;
-        const step10=Math.pow(10,-sh);
-        const excCS=defCS+(rv>=0?step10:-step10);
-        sv('apdef',V,defCS,'<b>Aprox. defecto ('+V+', '+tv+' c.s.):</b> \\('+fmt(defCS)+'\\)');
-        sv('apexc',V,excCS,'<b>Aprox. exceso ('+V+', '+tv+' c.s.):</b> \\('+fmt(excCS)+'\\)');
-        const lCS=rv*(1-delta),uCS=rv*(1+delta);
-        steps.push('<b>Int. por ER ('+V+'):</b> \\(|'+V+'-'+V+'^*|/|'+V+'|\\leq 5\\cdot10^{-'+tv+'}='+fmt(delta)+'\\)');
-        sv('intmayor',V,'['+fmt(lCS)+', '+fmt(uCS)+']','\\(['+V+'(1-'+fmt(delta)+'),\\ '+V+'(1+'+fmt(delta)+')] = ['+fmt(lCS)+',\\ '+fmt(uCS)+']\\)');
-      }
-      // Intervalo directo por ER (si el usuario da ER sin t)
-      if(gv('er',V)!==undefined&&gv('real',V)!==undefined&&gv('t',V)===undefined&&!comp['_intER-'+V]){
+      // Intervalos por ER: [x*(1-ER), x*(1+ER)]
+      if(gv('er',V)!==undefined&&gv('real',V)!==undefined&&!comp['_intER-'+V]){
         const erv=gv('er',V),rv=gv('real',V);
         const lER=rv*(1-erv),uER=rv*(1+erv);
         comp['_intER-'+V]=true;
-        sv('intmayor',V,'['+fmt(lER)+', '+fmt(uER)+']','<b>Int. por ER ('+V+'):</b> \\(['+V+'(1-ER),\\ '+V+'(1+ER)] = ['+fmt(lER)+',\\ '+fmt(uER)+']\\)');
+        // Defecto/exceso para ER
+        const epsEA=erv*Math.abs(rv);
+        const pEff=Math.max(0,Math.round(-Math.log10(epsEA)));
+        const fac=Math.pow(10,pEff);
+        const def=Math.trunc(rv*fac)/fac;
+        const exc=def+(rv>=0?1:-1)/fac;
+        sv('apdef',V,def,'<b>Aprox. defecto ('+V+'):</b> \\('+fmt(def)+'\\)');
+        sv('apexc',V,exc,'<b>Aprox. exceso ('+V+'):</b> \\('+fmt(exc)+'\\)');
+        sv('intmayor',V,'['+fmt(lER)+', '+fmt(uER)+']','<b>Mayor int. por ER ('+V+'):</b> \\(['+V+'(1-'+fmt(erv)+'),\\ '+V+'(1+'+fmt(erv)+')] = ['+fmt(lER)+',\\ '+fmt(uER)+']\\)');
+        if(def>=lER&&exc<=uER)sv('intmenor',V,'['+fmt(def)+', '+fmt(exc)+']','<b>Menor int. ('+V+'):</b> \\(['+fmt(def)+',\\ '+fmt(exc)+']\\)');
       }
       const numR=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
       const srcR=gv('real',V)!==undefined?V:V+'^*';
       if(numR!==undefined&&gv('k',V)!==undefined){
         const kv=gv('k',V),isDec=document.getElementById('k-dec')?.checked??true;
         if(isDec){
-          if(gv('rd',V)===undefined){const f=Math.pow(10,kv),rd=Math.round(numR*f)/f;
-            sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+kv+')='+rd.toFixed(kv)+'\\)');}
-          if(gv('tr',V)===undefined){const f=Math.pow(10,kv),tr=Math.trunc(numR*f)/f;
-            sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+kv+')='+tr.toFixed(kv)+'\\)');}
+          // k decimales desde primer digito no-cero despues de la coma
+          let kEff=kv;
+          if(Math.abs(numR)<1&&numR!==0){const lz=Math.max(0,Math.ceil(-Math.log10(Math.abs(numR)))-1);kEff=kv+lz;}
+          const f=Math.pow(10,kEff);
+          if(gv('rd',V)===undefined){const rd=Math.round(numR*f)/f;
+            sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+kv+(kEff!==kv?' \\text{→eff. }'+kEff:'')+')='+fmt(rd)+'\\)');}
+          if(gv('tr',V)===undefined){const tr=Math.trunc(numR*f)/f;
+            sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+kv+(kEff!==kv?' \\text{→eff. }'+kEff:'')+')='+fmt(tr)+'\\)');}
         } else if(numR!==0){
           const d=Math.ceil(Math.log10(Math.abs(numR))),sh=kv-d,mag=Math.pow(10,sh);
           if(gv('rd',V)===undefined){const rd=Math.round(numR*mag)/mag;
