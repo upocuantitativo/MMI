@@ -136,7 +136,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v15</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v16</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -649,6 +649,11 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
         <option value="5">5. Propagacion inversa</option>
         <option value="6">6. Aritmetica de k cifras</option>
         <option value="7">7. Condicionamiento</option>
+      </select>
+      <select id="prob-diff" style="padding:.4rem .6rem;border:2px solid var(--warn);border-radius:var(--r);font-size:.9rem">
+        <option value="baja">Baja</option>
+        <option value="media" selected>Media</option>
+        <option value="alta">Alta</option>
       </select>
       <button class="btn btn-primary" onclick="generateProblem()" style="background:var(--warn);font-size:.95rem;padding:.5rem 1.2rem">Generar problema aleatorio</button>
     </div>
@@ -1850,27 +1855,43 @@ function drawSolverAxis(d){
 // === PROBLEM GENERATOR ===
 let _currentProblem=null,_problemAnswerFields=null;
 const _numPool=[
-  {n:'\\pi',v:Math.PI,e:'pi'},
-  {n:'e',v:Math.E,e:'e'},
-  {n:'\\sqrt{2}',v:Math.sqrt(2),e:'sqrt(2)'},
-  {n:'\\sqrt{3}',v:Math.sqrt(3),e:'sqrt(3)'},
-  {n:'\\sqrt{5}',v:Math.sqrt(5),e:'sqrt(5)'},
-  {n:'\\sqrt{7}',v:Math.sqrt(7),e:'sqrt(7)'},
-  {n:'\\sqrt{10}',v:Math.sqrt(10),e:'sqrt(10)'},
-  {n:'\\ln(2)',v:Math.log(2),e:'ln(2)'},
-  {n:'\\varphi',v:(1+Math.sqrt(5))/2,e:'(1+sqrt(5))/2'},
-  {n:'1/7',v:1/7,e:'1/7'},
-  {n:'22/7',v:22/7,e:'22/7'}
+  {n:'\\pi',v:Math.PI,e:'pi',d:1},
+  {n:'e',v:Math.E,e:'e',d:1},
+  {n:'\\sqrt{2}',v:Math.sqrt(2),e:'sqrt(2)',d:1},
+  {n:'\\sqrt{3}',v:Math.sqrt(3),e:'sqrt(3)',d:1},
+  {n:'\\sqrt{5}',v:Math.sqrt(5),e:'sqrt(5)',d:2},
+  {n:'\\sqrt{7}',v:Math.sqrt(7),e:'sqrt(7)',d:2},
+  {n:'\\sqrt{10}',v:Math.sqrt(10),e:'sqrt(10)',d:2},
+  {n:'\\ln(2)',v:Math.log(2),e:'ln(2)',d:2},
+  {n:'\\varphi',v:(1+Math.sqrt(5))/2,e:'(1+sqrt(5))/2',d:3},
+  {n:'1/7',v:1/7,e:'1/7',d:3},
+  {n:'22/7',v:22/7,e:'22/7',d:3}
 ];
 const _fnPool=[
-  {n:'x^2',e:'x^2'},{n:'x^3',e:'x^3'},{n:'\\sqrt{x}',e:'sqrt(x)'},
-  {n:'\\ln(x)',e:'ln(x)'},{n:'\\sin(x)',e:'sin(x)'},{n:'\\cos(x)',e:'cos(x)'},
-  {n:'e^x',e:'exp(x)'},{n:'1/(1+x)',e:'1/(1+x)'},{n:'(x-1)^2',e:'(x-1)^2'},
-  {n:'x^{1/3}',e:'x^(1/3)'}
+  {n:'x^2',e:'x^2',d:1},{n:'x^3',e:'x^3',d:1},{n:'\\sqrt{x}',e:'sqrt(x)',d:1},
+  {n:'\\ln(x)',e:'ln(x)',d:2},{n:'\\sin(x)',e:'sin(x)',d:2},{n:'\\cos(x)',e:'cos(x)',d:2},
+  {n:'e^x',e:'exp(x)',d:2},{n:'1/(1+x)',e:'1/(1+x)',d:2},{n:'(x-1)^2',e:'(x-1)^2',d:1},
+  {n:'x^{1/3}',e:'x^(1/3)',d:2},
+  {n:'\\sin(x)+\\ln(x)',e:'sin(x)+ln(x)',d:3},
+  {n:'e^x\\cdot\\cos(x)',e:'exp(x)*cos(x)',d:3},
+  {n:'\\sqrt{x}+x^2',e:'sqrt(x)+x^2',d:3},
+  {n:'\\frac{x^2}{1+x}',e:'x^2/(1+x)',d:3},
+  {n:'\\ln(x^2+1)',e:'ln(x^2+1)',d:3},
+  {n:'\\sin(x)\\cdot\\sqrt{x}',e:'sin(x)*sqrt(x)',d:3},
+  {n:'e^{-x^2}',e:'exp(-x^2)',d:3}
 ];
 function _pk(a){return a[Math.floor(Math.random()*a.length)]}
 function _ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function _mkAp(r,p){const f=Math.pow(10,p);return(Math.random()>.5?Math.round(r*f):Math.trunc(r*f))/f;}
+function _getDiff(){const v=document.getElementById('prob-diff').value;return v==='baja'?1:v==='alta'?3:2;}
+function _dLv(){return _getDiff();}
+function _pkN(dl){return _pk(_numPool.filter(n=>n.d<=dl));}
+function _pkF(num,dl){
+  const pool=_fnPool.filter(f=>f.d<=dl);
+  const valid=pool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});
+  if(dl>=3){const hard=valid.filter(f=>f.d===3);if(hard.length)return _pk(hard);}
+  return _pk(valid.length?valid:[{n:'x^2',e:'x^2',d:1}]);
+}
 function _validFn(num){return _fnPool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});}
 
 function onProbTypeChange(){
@@ -1882,69 +1903,78 @@ function onProbTypeChange(){
 function generateProblem(){
   let tp=+document.getElementById('prob-type').value;
   if(tp===0)tp=_ri(1,7);
+  const dl=_dLv();
   const g=[null,_gT1,_gT2,_gT3,_gT4,_gT5,_gT6,_gT7];
-  _currentProblem=g[tp]();_problemAnswerFields=null;
+  _currentProblem=g[tp](dl);_problemAnswerFields=null;
+  const dlNames={1:'Baja',2:'Media',3:'Alta'};
+  const dlColors={1:'#27ae60',2:'var(--warn)',3:'#e74c3c'};
   const sd=document.getElementById('problem-statement');
   sd.style.display='block';
-  sd.innerHTML='<b style="color:var(--warn)">Problema (Tipo '+tp+'):</b><br>'+_currentProblem.statement;
+  sd.innerHTML='<b style="color:var(--warn)">Problema (Tipo '+tp+')</b> <span style="background:'+dlColors[dl]+';color:#fff;padding:2px 8px;border-radius:10px;font-size:.8rem">'+dlNames[dl]+'</span><br>'+_currentProblem.statement;
   renderMathInElement(sd,mathOpts);
   document.getElementById('btn-load-problem').style.display='inline-block';
 }
-function _gT1(){
-  const nm=_pk(_numPool),p=_ri(1,5);
+function _gT1(dl){
+  const nm=_pkN(dl),p=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,5);
   const ap=_mkAp(nm.v,p),aps=ap.toFixed(p);
   return{type:1,
     statement:'Sea \\(x='+nm.n+'\\) y su aproximacion \\(x^*='+aps+'\\).<br>Calcula: <b>(a)</b> \\(E_A(x^*)\\), <b>(b)</b> \\(E_R(x^*)\\), <b>(c)</b> cifras decimales exactas \\(p\\), <b>(d)</b> cifras significativas \\(t\\). Indica si es por exceso o por defecto.',
     data:{real:{x:nm.e},aprox:{x:aps}},
     answerFields:['val-ea-x','val-er-x','val-p-x','val-t-x']};
 }
-function _gT2(){
-  const nm=_pk(_numPool),p=_ri(1,4);
+function _gT2(dl){
+  const nm=_pkN(dl),p=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,5);
   return{type:2,
     statement:'Sea \\(x='+nm.n+'\\) con \\(p='+p+'\\) cifras decimales exactas.<br>Calcula: <b>(a)</b> la cota \\(\\varepsilon\\), <b>(b)</b> aprox. por defecto y exceso, <b>(c)</b> intervalos de confianza por defecto y exceso, <b>(d)</b> mayor y menor intervalo.',
     data:{real:{x:nm.e},p:{x:p}},
     answerFields:['val-eps-x','val-apdef-x','val-apexc-x','val-intdef-x','val-intexc-x','val-intmayor-x','val-intmenor-x']};
 }
-function _gT3(){
-  const nm=_pk(_numPool),t=_ri(1,4);
+function _gT3(dl){
+  const nm=_pkN(dl),t=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,5);
   return{type:3,
     statement:'Sea \\(x='+nm.n+'\\) con \\(t='+t+'\\) cifras significativas.<br>Calcula: <b>(a)</b> cota \\(E_R\\), <b>(b)</b> cota \\(\\varepsilon\\) del EA, <b>(c)</b> aprox. defecto/exceso, <b>(d)</b> intervalos de confianza.',
     data:{real:{x:nm.e},t:{x:t}},
     answerFields:['val-er-x','val-eps-x','val-apdef-x','val-apexc-x','val-intmayor-x']};
 }
-function _gT4(){
-  const nm=_pk(_numPool.filter(n=>n.v>0.1)),p=_ri(1,4);
-  const vf=_validFn(nm),fn=_pk(vf.length?vf:[{n:'x^2',e:'x^2'}]);
+function _gT4(dl){
+  const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+  const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+  const p=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,4);
+  const fn=_pkF(num,dl);
   return{type:4,
-    statement:'Sea \\(x='+nm.n+'\\) con \\(p(x)='+p+'\\) c.d.e. y \\(f(x)='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\), <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\).',
-    data:{real:{x:nm.e},p:{x:p}},func:fn.e,
+    statement:'Sea \\(x='+num.n+'\\) con \\(p(x)='+p+'\\) c.d.e. y \\(f(x)='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\), <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\).',
+    data:{real:{x:num.e},p:{x:p}},func:fn.e,
     answerFields:['val-eps-f','val-p-f','val-t-f']};
 }
-function _gT5(){
-  const nm=_pk(_numPool.filter(n=>n.v>0.1)),pf=_ri(1,3);
-  const vf=_validFn(nm),fn=_pk(vf.length?vf:[{n:'x^2',e:'x^2'}]);
+function _gT5(dl){
+  const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+  const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+  const pf=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,4);
+  const fn=_pkF(num,dl);
   return{type:5,
-    statement:'Sea \\(x='+nm.n+'\\) y \\(f(x)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) minimo necesario, <b>(b)</b> \\(\\varepsilon(x)\\) necesario.',
-    data:{real:{x:nm.e},p:{f:pf}},func:fn.e,
+    statement:'Sea \\(x='+num.n+'\\) y \\(f(x)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) minimo necesario, <b>(b)</b> \\(\\varepsilon(x)\\) necesario.',
+    data:{real:{x:num.e},p:{f:pf}},func:fn.e,
     answerFields:['val-p-x','val-eps-x']};
 }
-function _gT6(){
-  const n1=_pk(_numPool);let n2=_pk(_numPool);
-  while(n2.e===n1.e)n2=_pk(_numPool);
-  const k=_ri(3,5);
+function _gT6(dl){
+  const n1=_pkN(dl);let n2=_pkN(dl);
+  while(n2.e===n1.e)n2=_pkN(dl);
+  const k=dl===1?3:dl===2?_ri(3,4):_ri(4,5);
   const ops=[{n:n1.n+' + '+n2.n,e:'x+y'},{n:n1.n+' - '+n2.n,e:'x-y'},{n:n1.n+' \\cdot '+n2.n,e:'x*y'}];
+  if(dl>=3)ops.push({n:'\\frac{'+n1.n+'}{'+n2.n+'}',e:'x/y'});
   const op=_pk(ops);
   return{type:6,
     statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\).',
     data:{real:{x:n1.e,y:n2.e},k:{x:k,y:k}},func:op.e,
     answerFields:['val-rd-f','val-tr-f']};
 }
-function _gT7(){
-  const nm=_pk(_numPool.filter(n=>n.v>0.1));
-  const vf=_validFn(nm),fn=_pk(vf.length?vf:[{n:'x^2',e:'x^2'}]);
+function _gT7(dl){
+  const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+  const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+  const fn=_pkF(num,dl);
   return{type:7,
-    statement:'Sea \\(f(x)='+fn.n+'\\) y \\(x='+nm.n+'\\).<br>Calcula \\(C(x)=\\left|\\frac{x\\cdot f\'(x)}{f(x)}\\right|\\). ¿Bien o mal condicionado?',
-    data:{real:{x:nm.e}},func:fn.e,
+    statement:'Sea \\(f(x)='+fn.n+'\\) y \\(x='+num.n+'\\).<br>Calcula \\(C(x)=\\left|\\frac{x\\cdot f\'(x)}{f(x)}\\right|\\). ¿Bien o mal condicionado?',
+    data:{real:{x:num.e}},func:fn.e,
     answerFields:['val-cond-x']};
 }
 function loadProblemToSolver(prob){
@@ -1971,7 +2001,7 @@ function loadProblemToSolver(prob){
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v15 cargado');
+  console.log('MMI v16 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
