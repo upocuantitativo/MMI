@@ -1868,17 +1868,40 @@ const _numPool=[
   {n:'22/7',v:22/7,e:'22/7',d:3}
 ];
 const _fnPool=[
-  {n:'x^2',e:'x^2',d:1},{n:'x^3',e:'x^3',d:1},{n:'\\sqrt{x}',e:'sqrt(x)',d:1},
-  {n:'\\ln(x)',e:'ln(x)',d:2},{n:'\\sin(x)',e:'sin(x)',d:2},{n:'\\cos(x)',e:'cos(x)',d:2},
-  {n:'e^x',e:'exp(x)',d:2},{n:'1/(1+x)',e:'1/(1+x)',d:2},{n:'(x-1)^2',e:'(x-1)^2',d:1},
-  {n:'x^{1/3}',e:'x^(1/3)',d:2},
-  {n:'\\sin(x)+\\ln(x)',e:'sin(x)+ln(x)',d:3},
-  {n:'e^x\\cdot\\cos(x)',e:'exp(x)*cos(x)',d:3},
-  {n:'\\sqrt{x}+x^2',e:'sqrt(x)+x^2',d:3},
-  {n:'\\frac{x^2}{1+x}',e:'x^2/(1+x)',d:3},
-  {n:'\\ln(x^2+1)',e:'ln(x^2+1)',d:3},
-  {n:'\\sin(x)\\cdot\\sqrt{x}',e:'sin(x)*sqrt(x)',d:3},
-  {n:'e^{-x^2}',e:'exp(-x^2)',d:3}
+  // d:1 - simple single-variable
+  {n:'x^2',e:'x^2',d:1,v:1},{n:'x^3',e:'x^3',d:1,v:1},{n:'\\sqrt{x}',e:'sqrt(x)',d:1,v:1},
+  {n:'(x-1)^2',e:'(x-1)^2',d:1,v:1},
+  // d:2 - medium single-variable
+  {n:'\\ln(x)',e:'ln(x)',d:2,v:1},{n:'\\sin(x)',e:'sin(x)',d:2,v:1},{n:'\\cos(x)',e:'cos(x)',d:2,v:1},
+  {n:'e^x',e:'exp(x)',d:2,v:1},{n:'1/(1+x)',e:'1/(1+x)',d:2,v:1},{n:'x^{1/3}',e:'x^(1/3)',d:2,v:1},
+  // d:3 - compound single-variable
+  {n:'\\sin(x)+\\ln(x)',e:'sin(x)+ln(x)',d:3,v:1},
+  {n:'e^x\\cdot\\cos(x)',e:'exp(x)*cos(x)',d:3,v:1},
+  {n:'\\sqrt{x}+x^2',e:'sqrt(x)+x^2',d:3,v:1},
+  {n:'\\frac{x^2}{1+x}',e:'x^2/(1+x)',d:3,v:1},
+  {n:'\\ln(x^2+1)',e:'ln(x^2+1)',d:3,v:1},
+  {n:'\\sin(x)\\cdot\\sqrt{x}',e:'sin(x)*sqrt(x)',d:3,v:1},
+  {n:'e^{-x^2}',e:'exp(-x^2)',d:3,v:1}
+];
+// Multi-variable functions for alta (propagation, conditioning)
+const _fnPoolMV=[
+  // 2 variables (x,y)
+  {n:'x^2+y^2',e:'x^2+y^2',d:3,v:2},
+  {n:'x\\cdot y',e:'x*y',d:3,v:2},
+  {n:'\\frac{x}{y}',e:'x/y',d:3,v:2},
+  {n:'x\\cdot e^y',e:'x*exp(y)',d:3,v:2},
+  {n:'\\ln(x)+\\sin(y)',e:'ln(x)+sin(y)',d:3,v:2},
+  {n:'\\sqrt{x^2+y^2}',e:'sqrt(x^2+y^2)',d:3,v:2},
+  {n:'x^2\\cdot\\ln(y)',e:'x^2*ln(y)',d:3,v:2},
+  {n:'\\sin(x)\\cdot\\cos(y)',e:'sin(x)*cos(y)',d:3,v:2},
+  // 3 variables (x,y,z)
+  {n:'x+y+z',e:'x+y+z',d:3,v:3},
+  {n:'x\\cdot y\\cdot z',e:'x*y*z',d:3,v:3},
+  {n:'x^2+y^2+z^2',e:'x^2+y^2+z^2',d:3,v:3},
+  {n:'\\frac{x\\cdot y}{z}',e:'x*y/z',d:3,v:3},
+  {n:'x\\cdot e^y+\\ln(z)',e:'x*exp(y)+ln(z)',d:3,v:3},
+  {n:'\\sqrt{x^2+y^2+z^2}',e:'sqrt(x^2+y^2+z^2)',d:3,v:3},
+  {n:'\\sin(x)+\\cos(y)+e^z',e:'sin(x)+cos(y)+exp(z)',d:3,v:3}
 ];
 function _pk(a){return a[Math.floor(Math.random()*a.length)]}
 function _ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
@@ -1890,7 +1913,15 @@ function _pkF(num,dl){
   const pool=_fnPool.filter(f=>f.d<=dl);
   const valid=pool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});
   if(dl>=3){const hard=valid.filter(f=>f.d===3);if(hard.length)return _pk(hard);}
-  return _pk(valid.length?valid:[{n:'x^2',e:'x^2',d:1}]);
+  return _pk(valid.length?valid:[{n:'x^2',e:'x^2',d:1,v:1}]);
+}
+function _pkFMV(nums,nVars){
+  // Pick a multi-variable function valid for given number of variables and values
+  const pool=_fnPoolMV.filter(f=>f.v===nVars);
+  const valid=pool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();
+    const sc={x:nums[0].v,y:nums[1]?nums[1].v:1,z:nums[2]?nums[2].v:1};
+    const r=c.evaluate(sc);return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});
+  return _pk(valid.length?valid:pool);
 }
 function _validFn(num){return _fnPool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});}
 
@@ -1915,67 +1946,177 @@ function generateProblem(){
   document.getElementById('btn-load-problem').style.display='inline-block';
 }
 function _gT1(dl){
-  const nm=_pkN(dl),p=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,5);
-  const ap=_mkAp(nm.v,p),aps=ap.toFixed(p);
+  // Baja: 1 variable. Media: 1 variable. Alta: 2-3 variables, cada una con su cálculo
+  if(dl<=2){
+    const nm=_pkN(dl),p=dl===1?_ri(1,2):_ri(2,3);
+    const ap=_mkAp(nm.v,p),aps=ap.toFixed(p);
+    return{type:1,
+      statement:'Sea \\(x='+nm.n+'\\) y su aproximacion \\(x^*='+aps+'\\).<br>Calcula: <b>(a)</b> \\(E_A(x^*)\\), <b>(b)</b> \\(E_R(x^*)\\), <b>(c)</b> cifras decimales exactas \\(p\\), <b>(d)</b> cifras significativas \\(t\\). Indica si es por exceso o por defecto.',
+      data:{real:{x:nm.e},aprox:{x:aps}},
+      answerFields:['val-ea-x','val-er-x','val-p-x','val-t-x']};
+  }
+  // Alta: 3 variables
+  const vars=['x','y','z'],nums=[],aps={},reals={},answers=[];
+  let stParts=[];
+  vars.forEach(V=>{
+    let nm=_pkN(3);while(nums.find(n=>n.e===nm.e))nm=_pkN(3);
+    nums.push(nm);
+    const p=_ri(3,5);const ap=_mkAp(nm.v,p);
+    reals[V]=nm.e;aps[V]=ap.toFixed(p);
+    stParts.push('\\('+V+'='+nm.n+'\\), \\('+V+'^*='+ap.toFixed(p)+'\\)');
+    answers.push('val-ea-'+V,'val-er-'+V,'val-p-'+V,'val-t-'+V);
+  });
   return{type:1,
-    statement:'Sea \\(x='+nm.n+'\\) y su aproximacion \\(x^*='+aps+'\\).<br>Calcula: <b>(a)</b> \\(E_A(x^*)\\), <b>(b)</b> \\(E_R(x^*)\\), <b>(c)</b> cifras decimales exactas \\(p\\), <b>(d)</b> cifras significativas \\(t\\). Indica si es por exceso o por defecto.',
-    data:{real:{x:nm.e},aprox:{x:aps}},
-    answerFields:['val-ea-x','val-er-x','val-p-x','val-t-x']};
+    statement:'Sean '+stParts.join('; ')+'.<br>Para <b>cada variable</b>, calcula: \\(E_A\\), \\(E_R\\), \\(p\\) y \\(t\\). Indica exceso/defecto.',
+    data:{real:reals,aprox:aps},
+    answerFields:answers};
 }
 function _gT2(dl){
-  const nm=_pkN(dl),p=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,5);
+  if(dl<=2){
+    const nm=_pkN(dl),p=dl===1?_ri(1,2):_ri(2,3);
+    return{type:2,
+      statement:'Sea \\(x='+nm.n+'\\) con \\(p='+p+'\\) cifras decimales exactas.<br>Calcula: <b>(a)</b> la cota \\(\\varepsilon\\), <b>(b)</b> aprox. por defecto y exceso, <b>(c)</b> intervalos de confianza por defecto y exceso, <b>(d)</b> mayor y menor intervalo.',
+      data:{real:{x:nm.e},p:{x:p}},
+      answerFields:['val-eps-x','val-apdef-x','val-apexc-x','val-intdef-x','val-intexc-x','val-intmayor-x','val-intmenor-x']};
+  }
+  // Alta: 2-3 variables con distintas p
+  const nv=_ri(2,3),vars=['x','y','z'].slice(0,nv);
+  const reals={},ps={},answers=[];let stParts=[];
+  const used=[];
+  vars.forEach(V=>{
+    let nm=_pkN(3);while(used.find(n=>n.e===nm.e))nm=_pkN(3);used.push(nm);
+    const p=_ri(3,5);reals[V]=nm.e;ps[V]=p;
+    stParts.push('\\('+V+'='+nm.n+'\\) con \\(p('+V+')='+p+'\\)');
+    answers.push('val-eps-'+V,'val-apdef-'+V,'val-apexc-'+V,'val-intdef-'+V,'val-intexc-'+V,'val-intmayor-'+V,'val-intmenor-'+V);
+  });
   return{type:2,
-    statement:'Sea \\(x='+nm.n+'\\) con \\(p='+p+'\\) cifras decimales exactas.<br>Calcula: <b>(a)</b> la cota \\(\\varepsilon\\), <b>(b)</b> aprox. por defecto y exceso, <b>(c)</b> intervalos de confianza por defecto y exceso, <b>(d)</b> mayor y menor intervalo.',
-    data:{real:{x:nm.e},p:{x:p}},
-    answerFields:['val-eps-x','val-apdef-x','val-apexc-x','val-intdef-x','val-intexc-x','val-intmayor-x','val-intmenor-x']};
+    statement:'Sean '+stParts.join('; ')+'.<br>Para <b>cada variable</b>, calcula: \\(\\varepsilon\\), aprox. defecto/exceso, intervalos de confianza, mayor y menor intervalo.',
+    data:{real:reals,p:ps},
+    answerFields:answers};
 }
 function _gT3(dl){
-  const nm=_pkN(dl),t=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,5);
+  if(dl<=2){
+    const nm=_pkN(dl),t=dl===1?_ri(1,2):_ri(2,3);
+    return{type:3,
+      statement:'Sea \\(x='+nm.n+'\\) con \\(t='+t+'\\) cifras significativas.<br>Calcula: <b>(a)</b> cota \\(E_R\\), <b>(b)</b> cota \\(\\varepsilon\\) del EA, <b>(c)</b> aprox. defecto/exceso, <b>(d)</b> intervalos de confianza.',
+      data:{real:{x:nm.e},t:{x:t}},
+      answerFields:['val-er-x','val-eps-x','val-apdef-x','val-apexc-x','val-intmayor-x']};
+  }
+  // Alta: 2-3 variables
+  const nv=_ri(2,3),vars=['x','y','z'].slice(0,nv);
+  const reals={},ts={},answers=[];let stParts=[];
+  const used=[];
+  vars.forEach(V=>{
+    let nm=_pkN(3);while(used.find(n=>n.e===nm.e))nm=_pkN(3);used.push(nm);
+    const t=_ri(3,5);reals[V]=nm.e;ts[V]=t;
+    stParts.push('\\('+V+'='+nm.n+'\\) con \\(t('+V+')='+t+'\\)');
+    answers.push('val-er-'+V,'val-eps-'+V,'val-apdef-'+V,'val-apexc-'+V,'val-intmayor-'+V);
+  });
   return{type:3,
-    statement:'Sea \\(x='+nm.n+'\\) con \\(t='+t+'\\) cifras significativas.<br>Calcula: <b>(a)</b> cota \\(E_R\\), <b>(b)</b> cota \\(\\varepsilon\\) del EA, <b>(c)</b> aprox. defecto/exceso, <b>(d)</b> intervalos de confianza.',
-    data:{real:{x:nm.e},t:{x:t}},
-    answerFields:['val-er-x','val-eps-x','val-apdef-x','val-apexc-x','val-intmayor-x']};
+    statement:'Sean '+stParts.join('; ')+'.<br>Para <b>cada variable</b>, calcula: cota \\(E_R\\), cota \\(\\varepsilon\\), aprox. defecto/exceso, intervalos de confianza.',
+    data:{real:reals,t:ts},
+    answerFields:answers};
 }
 function _gT4(dl){
-  const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
-  const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
-  const p=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,4);
-  const fn=_pkF(num,dl);
+  // Baja/Media: f(x) con 1 variable. Alta: f(x,y) o f(x,y,z) con propagación multivariable
+  if(dl<=2){
+    const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+    const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+    const p=dl===1?_ri(1,2):_ri(2,3);
+    const fn=_pkF(num,dl);
+    return{type:4,
+      statement:'Sea \\(x='+num.n+'\\) con \\(p(x)='+p+'\\) c.d.e. y \\(f(x)='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\), <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\).',
+      data:{real:{x:num.e},p:{x:p}},func:fn.e,
+      answerFields:['val-eps-f','val-p-f','val-t-f']};
+  }
+  // Alta: f(x,y) o f(x,y,z) - propagación con derivadas parciales
+  const nv=_ri(2,3),vars=['x','y','z'].slice(0,nv);
+  const pos=_numPool.filter(n=>n.d<=3&&n.v>0.1);
+  const nums=[],reals={},ps={};let stParts=[];
+  vars.forEach(V=>{
+    let nm=_pk(pos);while(nums.find(n=>n.e===nm.e))nm=_pk(pos);nums.push(nm);
+    const p=_ri(2,4);reals[V]=nm.e;ps[V]=p;
+    stParts.push('\\('+V+'='+nm.n+'\\) con \\(p('+V+')='+p+'\\)');
+  });
+  const fn=_pkFMV(nums,nv);
   return{type:4,
-    statement:'Sea \\(x='+num.n+'\\) con \\(p(x)='+p+'\\) c.d.e. y \\(f(x)='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\), <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\).',
-    data:{real:{x:num.e},p:{x:p}},func:fn.e,
-    answerFields:['val-eps-f','val-p-f','val-t-f']};
+    statement:'Sean '+stParts.join('; ')+' y \\(f('+vars.join(',')+')='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\) sumando las contribuciones de cada variable, <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\), <b>(d)</b> \\(E_R(f)\\).',
+    data:{real:reals,p:ps},func:fn.e,
+    answerFields:['val-eps-f','val-p-f','val-t-f','val-er-f']};
 }
 function _gT5(dl){
-  const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
-  const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
-  const pf=dl===1?_ri(1,2):dl===2?_ri(2,3):_ri(3,4);
-  const fn=_pkF(num,dl);
+  if(dl<=2){
+    const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+    const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+    const pf=dl===1?_ri(1,2):_ri(2,3);
+    const fn=_pkF(num,dl);
+    return{type:5,
+      statement:'Sea \\(x='+num.n+'\\) y \\(f(x)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) minimo necesario, <b>(b)</b> \\(\\varepsilon(x)\\) necesario.',
+      data:{real:{x:num.e},p:{f:pf}},func:fn.e,
+      answerFields:['val-p-x','val-eps-x']};
+  }
+  // Alta: f(x,y) con propagación inversa - hallar p(x),p(y) necesarios
+  const pos=_numPool.filter(n=>n.d<=3&&n.v>0.1);
+  const nums=[];let n1=_pk(pos);nums.push(n1);
+  let n2=_pk(pos);while(n2.e===n1.e)n2=_pk(pos);nums.push(n2);
+  const fn=_pkFMV(nums,2);
+  const pf=_ri(2,4);
   return{type:5,
-    statement:'Sea \\(x='+num.n+'\\) y \\(f(x)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) minimo necesario, <b>(b)</b> \\(\\varepsilon(x)\\) necesario.',
-    data:{real:{x:num.e},p:{f:pf}},func:fn.e,
-    answerFields:['val-p-x','val-eps-x']};
+    statement:'Sean \\(x='+n1.n+'\\), \\(y='+n2.n+'\\) y \\(f(x,y)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) y \\(p(y)\\) minimos necesarios, <b>(b)</b> \\(\\varepsilon(x)\\) y \\(\\varepsilon(y)\\) necesarios.',
+    data:{real:{x:n1.e,y:n2.e},p:{f:pf}},func:fn.e,
+    answerFields:['val-p-x','val-eps-x','val-p-y','val-eps-y']};
 }
 function _gT6(dl){
-  const n1=_pkN(dl);let n2=_pkN(dl);
-  while(n2.e===n1.e)n2=_pkN(dl);
-  const k=dl===1?3:dl===2?_ri(3,4):_ri(4,5);
-  const ops=[{n:n1.n+' + '+n2.n,e:'x+y'},{n:n1.n+' - '+n2.n,e:'x-y'},{n:n1.n+' \\cdot '+n2.n,e:'x*y'}];
-  if(dl>=3)ops.push({n:'\\frac{'+n1.n+'}{'+n2.n+'}',e:'x/y'});
+  if(dl<=2){
+    const n1=_pkN(dl);let n2=_pkN(dl);
+    while(n2.e===n1.e)n2=_pkN(dl);
+    const k=dl===1?3:_ri(3,4);
+    const ops=[{n:n1.n+' + '+n2.n,e:'x+y'},{n:n1.n+' - '+n2.n,e:'x-y'},{n:n1.n+' \\cdot '+n2.n,e:'x*y'}];
+    const op=_pk(ops);
+    return{type:6,
+      statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\).',
+      data:{real:{x:n1.e,y:n2.e},k:{x:k,y:k}},func:op.e,
+      answerFields:['val-rd-f','val-tr-f']};
+  }
+  // Alta: 3 variables, cadena de operaciones compuesta, k alto
+  const n1=_pkN(3);let n2=_pkN(3);while(n2.e===n1.e)n2=_pkN(3);
+  let n3=_pkN(3);while(n3.e===n1.e||n3.e===n2.e)n3=_pkN(3);
+  const k=_ri(4,5);
+  const ops=[
+    {n:'('+n1.n+' + '+n2.n+') \\cdot '+n3.n,e:'(x+y)*z'},
+    {n:n1.n+' \\cdot '+n2.n+' + '+n3.n,e:'x*y+z'},
+    {n:n1.n+' \\cdot '+n2.n+' - '+n3.n,e:'x*y-z'},
+    {n:'\\frac{'+n1.n+' + '+n2.n+'}{'+n3.n+'}',e:'(x+y)/z'},
+    {n:'\\frac{'+n1.n+' \\cdot '+n2.n+'}{'+n3.n+'}',e:'(x*y)/z'},
+    {n:n1.n+' \\cdot '+n2.n+' \\cdot '+n3.n,e:'x*y*z'},
+    {n:'('+n1.n+' - '+n2.n+') \\cdot '+n3.n+' + '+n1.n,e:'(x-y)*z+x'},
+    {n:'\\frac{'+n1.n+'}{'+n2.n+'} + '+n3.n,e:'x/y+z'}
+  ];
   const op=_pk(ops);
   return{type:6,
-    statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\).',
-    data:{real:{x:n1.e,y:n2.e},k:{x:k,y:k}},func:op.e,
+    statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\), \\(z='+n3.n+'\\).<br><i>Recuerda: cada operacion intermedia se redondea/trunca a \\(k\\) cifras.</i>',
+    data:{real:{x:n1.e,y:n2.e,z:n3.e},k:{x:k,y:k,z:k}},func:op.e,
     answerFields:['val-rd-f','val-tr-f']};
 }
 function _gT7(dl){
-  const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
-  const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
-  const fn=_pkF(num,dl);
+  if(dl<=2){
+    const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+    const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+    const fn=_pkF(num,dl);
+    return{type:7,
+      statement:'Sea \\(f(x)='+fn.n+'\\) y \\(x='+num.n+'\\).<br>Calcula \\(C(x)=\\left|\\frac{x\\cdot f\'(x)}{f(x)}\\right|\\). ¿Bien o mal condicionado?',
+      data:{real:{x:num.e}},func:fn.e,
+      answerFields:['val-cond-x']};
+  }
+  // Alta: f(x,y) - condicionamiento de cada variable
+  const pos=_numPool.filter(n=>n.d<=3&&n.v>0.1);
+  const nums=[];let n1=_pk(pos);nums.push(n1);
+  let n2=_pk(pos);while(n2.e===n1.e)n2=_pk(pos);nums.push(n2);
+  const fn=_pkFMV(nums,2);
   return{type:7,
-    statement:'Sea \\(f(x)='+fn.n+'\\) y \\(x='+num.n+'\\).<br>Calcula \\(C(x)=\\left|\\frac{x\\cdot f\'(x)}{f(x)}\\right|\\). ¿Bien o mal condicionado?',
-    data:{real:{x:num.e}},func:fn.e,
-    answerFields:['val-cond-x']};
+    statement:'Sea \\(f(x,y)='+fn.n+'\\) con \\(x='+n1.n+'\\) e \\(y='+n2.n+'\\).<br>Calcula el numero de condicion de <b>cada variable</b>: \\(C(x)=\\left|\\frac{x\\cdot\\partial f/\\partial x}{f}\\right|\\) y \\(C(y)=\\left|\\frac{y\\cdot\\partial f/\\partial y}{f}\\right|\\). ¿Bien o mal condicionado respecto a cada una?',
+    data:{real:{x:n1.e,y:n2.e}},func:fn.e,
+    answerFields:['val-cond-x','val-cond-y']};
 }
 function loadProblemToSolver(prob){
   if(!prob)return;
