@@ -640,7 +640,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
     <h3 style="color:var(--warn)">Generador de Problemas Aleatorios</h3>
     <p style="font-size:.88rem;margin-bottom:.8rem">Genera enunciados tipo practica con datos aleatorios. Resuelve el problema y comprueba tu respuesta con el resolutor.</p>
     <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem">
-      <select id="prob-type" style="padding:.4rem .6rem;border:2px solid var(--warn);border-radius:var(--r);font-size:.9rem;min-width:250px">
+      <select id="prob-type" onchange="onProbTypeChange()" style="padding:.4rem .6rem;border:2px solid var(--warn);border-radius:var(--r);font-size:.9rem;min-width:250px">
         <option value="0">Aleatorio (cualquier tipo)</option>
         <option value="1">1. EA, ER, p, t</option>
         <option value="2">2. Intervalo por p (c.d.e.)</option>
@@ -915,7 +915,14 @@ function calcPropFunc(){
   if(isNaN(xS)||isNaN(eaX))return;
   const fxs=fd.f(xS),dfxs=fd.df(xS);
   if(isNaN(fxs)||isNaN(dfxs)){document.getElementById('propfunc-result').innerHTML='<span style="color:#e74c3c">La funcion o su derivada no estan definidas en x* = '+xS+'.</span>';return}
-  const cota=Math.abs(dfxs)*eaX;
+  // Prop 21: max|f'(z)| en I=[x*-EA, x*+EA] (consistente con el resolutor)
+  let maxDf=Math.abs(dfxs),maxAt=xS;
+  const iLo=xS-eaX,iHi=xS+eaX;
+  for(let i=0;i<=20;i++){const z=iLo+(iHi-iLo)*i/20;const dz=Math.abs(fd.df(z));if(!isNaN(dz)&&isFinite(dz)&&dz>maxDf){maxDf=dz;maxAt=z;}}
+  const cota=maxDf*eaX;
+  const erF=fxs!==0?cota/Math.abs(fxs):Infinity;
+  let pF=0;while(cota<=Math.pow(10,-pF)&&pF<50)pF++;pF=Math.max(0,pF-1);
+  let tF=0;while(erF<5*Math.pow(10,-tF)&&tF<50)tF++;tF=Math.max(0,tF-1);
   const xs=[],yf=[],ydf=[],lo=xS-3,hi=xS+3;
   for(let x=lo;x<=hi;x+=.02){xs.push(x);yf.push(fd.f(x));ydf.push(Math.abs(fd.df(x)))}
   Plotly.newPlot('propfunc-plot',[
@@ -927,8 +934,9 @@ function calcPropFunc(){
   document.getElementById('propfunc-result').innerHTML=
     '<b>f(x) =</b> '+exprStr+'<br><b>f\'(x) =</b> '+fd.dexpr+'<br>'+
     'f(x*) = <span class="val">'+fxs.toFixed(8)+'</span><br>'+
-    "|f'(x*)| = <span class=\"val\">"+Math.abs(dfxs).toFixed(8)+'</span><br>'+
-    "Cota EA(f(x*)) &le; |f'(x*)| &middot; EA(x*) = <span class=\"val\">"+cota.toExponential(6)+'</span>';
+    "|f'(x*)| = "+Math.abs(dfxs).toFixed(8)+', <b>max|f\'(z)| en I</b> = <span class="val">'+maxDf.toFixed(8)+'</span><br>'+
+    "Cota EA(f) &le; max|f'(z)| &middot; EA(x*) = <span class=\"val\">"+cota.toExponential(6)+'</span><br>'+
+    'Cota ER(f) &le; '+erF.toExponential(6)+' &nbsp;|&nbsp; <b>p(f) = <span class="val">'+pF+'</span></b> c.d.e. &nbsp;|&nbsp; <b>t(f) = <span class="val">'+tF+'</span></b> c.s.';
 }
 
 // === REDONDEO ===
@@ -1865,6 +1873,13 @@ function _ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function _mkAp(r,p){const f=Math.pow(10,p);return(Math.random()>.5?Math.round(r*f):Math.trunc(r*f))/f;}
 function _validFn(num){return _fnPool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});}
 
+function onProbTypeChange(){
+  if(_currentProblem){
+    resetSolver();
+    generateProblem();
+    loadProblemToSolver(_currentProblem);
+  }
+}
 function generateProblem(){
   let tp=+document.getElementById('prob-type').value;
   if(tp===0)tp=_ri(1,7);
