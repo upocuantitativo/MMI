@@ -123,6 +123,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 .sv-in.computed.cv-x{background:#d4e6f1!important;color:#1a5276!important;border-color:#85c1e9}
 .sv-in.computed.cv-y{background:#fdebd0!important;color:#935116!important;border-color:#f0b27a}
 .sv-in.computed.cv-z{background:#e8daef!important;color:#6c3483!important;border-color:#bb8fce}
+.sv-in.answer{background:#fff9c4!important;color:#5d4037!important;border-color:#f9a825!important;font-weight:700;box-shadow:0 0 4px rgba(249,168,37,.5)}
 .st-sep{grid-column:1/-1;padding:.2rem .5rem;font-size:.65rem;font-weight:700;color:#fff;border-radius:2px;letter-spacing:.3px;margin-top:2px}
 .k-mode{font-size:.6rem;font-weight:400;cursor:pointer;display:inline-flex;align-items:center;gap:2px;margin-top:1px;color:var(--txt)}
 .k-mode input{width:12px;height:12px;cursor:pointer}
@@ -135,7 +136,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <body>
 
 <div class="header">
-  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v12</span></h1>
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v13</span></h1>
   <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
 </div>
 
@@ -633,6 +634,28 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <!-- ============ PROBLEMAS ============ -->
 <div id="tab-problems" class="tab-content">
+
+  <!-- Generador de Problemas Aleatorios -->
+  <div class="solver-card" style="border-left:4px solid var(--warn)">
+    <h3 style="color:var(--warn)">Generador de Problemas Aleatorios</h3>
+    <p style="font-size:.88rem;margin-bottom:.8rem">Genera enunciados tipo practica con datos aleatorios. Resuelve el problema y comprueba tu respuesta con el resolutor.</p>
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem">
+      <select id="prob-type" style="padding:.4rem .6rem;border:2px solid var(--warn);border-radius:var(--r);font-size:.9rem;min-width:250px">
+        <option value="0">Aleatorio (cualquier tipo)</option>
+        <option value="1">1. EA, ER, p, t</option>
+        <option value="2">2. Intervalo por p (c.d.e.)</option>
+        <option value="3">3. Intervalo por ER (c.s.)</option>
+        <option value="4">4. Propagacion directa</option>
+        <option value="5">5. Propagacion inversa</option>
+        <option value="6">6. Aritmetica de k cifras</option>
+        <option value="7">7. Condicionamiento</option>
+      </select>
+      <button class="btn btn-primary" onclick="generateProblem()" style="background:var(--warn);font-size:.95rem;padding:.5rem 1.2rem">Generar problema aleatorio</button>
+    </div>
+    <div id="problem-statement" style="display:none;background:#fef9e7;border:1px solid #f9a825;border-radius:var(--r);padding:1rem;margin-bottom:.8rem;font-size:.95rem;line-height:1.7"></div>
+    <button id="btn-load-problem" class="btn btn-success" onclick="loadProblemToSolver(_currentProblem)" style="display:none;font-size:.95rem;padding:.5rem 1.5rem">Pasar datos al resolutor</button>
+  </div>
+
   <div class="solver-card">
     <h3>Resolutor Interactivo de Problemas</h3>
     <p style="margin-bottom:.6rem;font-size:.88rem">Marca los conceptos, introduce valores conocidos (deja en blanco para calcular). Arrastra <b>&hArr;</b> para ajustar valores en tiempo real.</p>
@@ -1249,11 +1272,12 @@ document.addEventListener('touchend',function(){if(_drag){_drag.dh.classList.rem
 
 function resetCalc(){
   _pd.forEach(p=>_cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
-    if(el&&el.classList.contains('computed')){el.value='';el.classList.remove('computed')}}));
+    if(el&&el.classList.contains('computed')){el.value='';el.classList.remove('computed','answer')}}));
   document.getElementById('solver-reasoning').style.display='none';
   document.getElementById('solver-plot').style.display='none';
 }
 function resetSolver(){
+  _problemAnswerFields=null;
   _pd.forEach(p=>{document.getElementById('chk-'+p.id).checked=false;toggleRow(p.id)});
   document.getElementById('chk-func').checked=false;toggleEq();
   document.getElementById('val-func').value='';document.getElementById('eq-preview').innerHTML='';
@@ -1336,7 +1360,7 @@ function solveProblema(){
   _pd.forEach(p=>{const chkEl=document.getElementById('chk-'+p.id);
     if(chkEl&&chkEl.dataset.auto){chkEl.checked=false;delete chkEl.dataset.auto;}
     _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
-      if(el.classList.contains('computed')){el.value='';el.disabled=true;el.classList.remove('computed');}});
+      if(el.classList.contains('computed')){el.value='';el.disabled=true;el.classList.remove('computed','answer');}});
   });
   const d={},giv={},rawExpr={};
   // Leer valores de la tabla. Para la columna f, si contiene variables, guardar como funcion
@@ -1758,6 +1782,9 @@ function solveProblema(){
     const el=document.getElementById('val-'+p.id+'-'+v);
     el.value=p.isTxt?d[p.id][v]:(p.isInt?d[p.id][v]:fmt(d[p.id][v]));el.classList.add('computed');el.disabled=false;anyComp=true;}});
     if(anyComp){const chk=document.getElementById('chk-'+p.id);if(chk&&!chk.checked){chk.checked=true;chk.dataset.auto='1';}}});
+  // Answer highlighting for generated problems
+  if(_problemAnswerFields){_problemAnswerFields.forEach(id=>{const el=document.getElementById(id);if(el&&el.classList.contains('computed'))el.classList.add('answer');});
+    const _fa=document.querySelector('.sv-in.answer');if(_fa)setTimeout(()=>_fa.scrollIntoView({behavior:'smooth',block:'center'}),300);}
   // Reasoning
   const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
   if(steps.length>0){rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.4rem">Razonamiento paso a paso</h4>'+
@@ -1812,9 +1839,125 @@ function drawSolverAxis(d){
   });
 }
 
+// === PROBLEM GENERATOR ===
+let _currentProblem=null,_problemAnswerFields=null;
+const _numPool=[
+  {n:'\\pi',v:Math.PI,e:'pi'},
+  {n:'e',v:Math.E,e:'e'},
+  {n:'\\sqrt{2}',v:Math.sqrt(2),e:'sqrt(2)'},
+  {n:'\\sqrt{3}',v:Math.sqrt(3),e:'sqrt(3)'},
+  {n:'\\sqrt{5}',v:Math.sqrt(5),e:'sqrt(5)'},
+  {n:'\\sqrt{7}',v:Math.sqrt(7),e:'sqrt(7)'},
+  {n:'\\sqrt{10}',v:Math.sqrt(10),e:'sqrt(10)'},
+  {n:'\\ln(2)',v:Math.log(2),e:'ln(2)'},
+  {n:'\\varphi',v:(1+Math.sqrt(5))/2,e:'(1+sqrt(5))/2'},
+  {n:'1/7',v:1/7,e:'1/7'},
+  {n:'22/7',v:22/7,e:'22/7'}
+];
+const _fnPool=[
+  {n:'x^2',e:'x^2'},{n:'x^3',e:'x^3'},{n:'\\sqrt{x}',e:'sqrt(x)'},
+  {n:'\\ln(x)',e:'ln(x)'},{n:'\\sin(x)',e:'sin(x)'},{n:'\\cos(x)',e:'cos(x)'},
+  {n:'e^x',e:'exp(x)'},{n:'1/(1+x)',e:'1/(1+x)'},{n:'(x-1)^2',e:'(x-1)^2'},
+  {n:'x^{1/3}',e:'x^(1/3)'}
+];
+function _pk(a){return a[Math.floor(Math.random()*a.length)]}
+function _ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function _mkAp(r,p){const f=Math.pow(10,p);return(Math.random()>.5?Math.round(r*f):Math.trunc(r*f))/f;}
+function _validFn(num){return _fnPool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});}
+
+function generateProblem(){
+  let tp=+document.getElementById('prob-type').value;
+  if(tp===0)tp=_ri(1,7);
+  const g=[null,_gT1,_gT2,_gT3,_gT4,_gT5,_gT6,_gT7];
+  _currentProblem=g[tp]();_problemAnswerFields=null;
+  const sd=document.getElementById('problem-statement');
+  sd.style.display='block';
+  sd.innerHTML='<b style="color:var(--warn)">Problema (Tipo '+tp+'):</b><br>'+_currentProblem.statement;
+  renderMathInElement(sd,mathOpts);
+  document.getElementById('btn-load-problem').style.display='inline-block';
+}
+function _gT1(){
+  const nm=_pk(_numPool),p=_ri(1,5);
+  const ap=_mkAp(nm.v,p),aps=ap.toFixed(p);
+  return{type:1,
+    statement:'Sea \\(x='+nm.n+'\\) y su aproximacion \\(x^*='+aps+'\\).<br>Calcula: <b>(a)</b> \\(E_A(x^*)\\), <b>(b)</b> \\(E_R(x^*)\\), <b>(c)</b> cifras decimales exactas \\(p\\), <b>(d)</b> cifras significativas \\(t\\). Indica si es por exceso o por defecto.',
+    data:{real:{x:nm.e},aprox:{x:aps}},
+    answerFields:['val-ea-x','val-er-x','val-p-x','val-t-x']};
+}
+function _gT2(){
+  const nm=_pk(_numPool),p=_ri(1,4);
+  return{type:2,
+    statement:'Sea \\(x='+nm.n+'\\) con \\(p='+p+'\\) cifras decimales exactas.<br>Calcula: <b>(a)</b> la cota \\(\\varepsilon\\), <b>(b)</b> aprox. por defecto y exceso, <b>(c)</b> intervalos de confianza por defecto y exceso, <b>(d)</b> mayor y menor intervalo.',
+    data:{real:{x:nm.e},p:{x:p}},
+    answerFields:['val-eps-x','val-apdef-x','val-apexc-x','val-intdef-x','val-intexc-x','val-intmayor-x','val-intmenor-x']};
+}
+function _gT3(){
+  const nm=_pk(_numPool),t=_ri(1,4);
+  return{type:3,
+    statement:'Sea \\(x='+nm.n+'\\) con \\(t='+t+'\\) cifras significativas.<br>Calcula: <b>(a)</b> cota \\(E_R\\), <b>(b)</b> cota \\(\\varepsilon\\) del EA, <b>(c)</b> aprox. defecto/exceso, <b>(d)</b> intervalos de confianza.',
+    data:{real:{x:nm.e},t:{x:t}},
+    answerFields:['val-er-x','val-eps-x','val-apdef-x','val-apexc-x','val-intmayor-x']};
+}
+function _gT4(){
+  const nm=_pk(_numPool.filter(n=>n.v>0.1)),p=_ri(1,4);
+  const vf=_validFn(nm),fn=_pk(vf.length?vf:[{n:'x^2',e:'x^2'}]);
+  return{type:4,
+    statement:'Sea \\(x='+nm.n+'\\) con \\(p(x)='+p+'\\) c.d.e. y \\(f(x)='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\), <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\).',
+    data:{real:{x:nm.e},p:{x:p}},func:fn.e,
+    answerFields:['val-eps-f','val-p-f','val-t-f']};
+}
+function _gT5(){
+  const nm=_pk(_numPool.filter(n=>n.v>0.1)),pf=_ri(1,3);
+  const vf=_validFn(nm),fn=_pk(vf.length?vf:[{n:'x^2',e:'x^2'}]);
+  return{type:5,
+    statement:'Sea \\(x='+nm.n+'\\) y \\(f(x)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) minimo necesario, <b>(b)</b> \\(\\varepsilon(x)\\) necesario.',
+    data:{real:{x:nm.e},p:{f:pf}},func:fn.e,
+    answerFields:['val-p-x','val-eps-x']};
+}
+function _gT6(){
+  const n1=_pk(_numPool);let n2=_pk(_numPool);
+  while(n2.e===n1.e)n2=_pk(_numPool);
+  const k=_ri(3,5);
+  const ops=[{n:n1.n+' + '+n2.n,e:'x+y'},{n:n1.n+' - '+n2.n,e:'x-y'},{n:n1.n+' \\cdot '+n2.n,e:'x*y'}];
+  const op=_pk(ops);
+  return{type:6,
+    statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\).',
+    data:{real:{x:n1.e,y:n2.e},k:{x:k,y:k}},func:op.e,
+    answerFields:['val-rd-f','val-tr-f']};
+}
+function _gT7(){
+  const nm=_pk(_numPool.filter(n=>n.v>0.1));
+  const vf=_validFn(nm),fn=_pk(vf.length?vf:[{n:'x^2',e:'x^2'}]);
+  return{type:7,
+    statement:'Sea \\(f(x)='+fn.n+'\\) y \\(x='+nm.n+'\\).<br>Calcula \\(C(x)=\\left|\\frac{x\\cdot f\'(x)}{f(x)}\\right|\\). ¿Bien o mal condicionado?',
+    data:{real:{x:nm.e}},func:fn.e,
+    answerFields:['val-cond-x']};
+}
+function loadProblemToSolver(prob){
+  if(!prob)return;
+  resetSolver();
+  _problemAnswerFields=prob.answerFields||null;
+  // Activate rows and fill values
+  Object.keys(prob.data).forEach(pid=>{
+    const chk=document.getElementById('chk-'+pid);
+    if(chk){chk.checked=true;toggleRow(pid);}
+    Object.keys(prob.data[pid]).forEach(vid=>{
+      const el=document.getElementById('val-'+pid+'-'+vid);
+      if(el){el.disabled=false;el.value=String(prob.data[pid][vid]);}
+    });
+  });
+  // Activate function if present
+  if(prob.func){
+    document.getElementById('chk-func').checked=true;toggleEq();
+    document.getElementById('val-func').value=prob.func;previewEq();
+  }
+  // Scroll to solver
+  document.getElementById('solver-tbl').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 // === INIT ===
 document.addEventListener('DOMContentLoaded',function(){
-  console.log('MMI v12 cargado');
+  console.log('MMI v13 cargado');
   renderMathInElement(document.body,mathOpts);
   buildSolverTable();
   buildTest();
