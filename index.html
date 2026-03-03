@@ -1591,7 +1591,7 @@ function solveProblema(){
             propData.push({V,eaV,centro,lo,hi,maxdf,maxAt,pts});
             detail.push(fmt(maxdf)+'\\cdot'+fmt(eaV));}});
         if(ok){
-          const fVal=gv('real','f')??gv('aprox','f');
+          const fVal=gv('real','f');
           // Cabecera
           steps.push('<div style="background:#f0f4ff;border-left:3px solid #2980b9;padding:.5em .8em;margin:.5em 0;border-radius:4px">'+
             '<b style="color:#2980b9;font-size:1.05em">Propagacion del error (Prop. 21)</b><br>'+
@@ -1617,7 +1617,7 @@ function solveProblema(){
           // ER(f)
           if(fVal!==undefined&&fVal!==0&&gv('er','f')===undefined){
             const er=epsf/Math.abs(fVal);sv('er','f',er,'');
-            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)=\\frac{EA(f)}{|f|}=\\frac{'+fmt(epsf)+'}{'+fmt(Math.abs(fVal))+'}='+fmt(er)+'\\)');stepN++;}
+            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)=\\frac{EA(f)}{|f(real)|}=\\frac{'+fmt(epsf)+'}{'+fmt(Math.abs(fVal))+'}='+fmt(er)+'\\)');stepN++;}
           // p(f)
           if(gv('p','f')===undefined){
             let p=0;const eaf=gv('ea','f');while(eaf<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
@@ -1642,7 +1642,7 @@ function solveProblema(){
         else if((gv('p','f')!==undefined||gv('t','f')!==undefined)&&!ok){
           const pfDes=gv('p','f'),tfDes=gv('t','f');
           const usePf=pfDes!==undefined;
-          const fVal=gv('real','f')??gv('aprox','f');
+          const fVal=gv('real','f');
           // Convertir objetivo a EA(f) target
           let targetEAf;
           if(usePf){targetEAf=Math.pow(10,-pfDes);}
@@ -1725,9 +1725,9 @@ function solveProblema(){
       if(gv('ea','f')===undefined&&gv('eps','f')!==undefined&&!comp['ea-f']){
         sv('ea','f',gv('eps','f'),'<b>EA(f):</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)');}
       if(gv('ea','f')!==undefined&&gv('er','f')===undefined){
-        const denom=gv('real','f')??gv('aprox','f');
+        const denom=gv('real','f');
         if(denom!==undefined&&denom!==0){const er=gv('ea','f')/Math.abs(denom);
-          sv('er','f',er,'<b>ER(f):</b> \\(\\frac{EA(f)}{|f|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');}}
+          sv('er','f',er,'<b>ER(f):</b> \\(\\frac{EA(f)}{|f(real)|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');}}
       if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
         let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
         sv('p','f',p,'<b>p(f)='+p+':</b> \\(EA(f)\\leq10^{-'+p+'}\\) → '+p+' c.d.e.');}
