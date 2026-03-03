@@ -1616,8 +1616,9 @@ function solveProblema(){
             steps.push('<b>Paso '+stepN+'.</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(epsf)+'\\)');stepN++;}
           // ER(f)
           if(fVal!==undefined&&fVal!==0&&gv('er','f')===undefined){
-            const er=epsf/Math.abs(fVal);sv('er','f',er,'');
-            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)=\\frac{EA(f)}{|f(real)|}=\\frac{'+fmt(epsf)+'}{'+fmt(Math.abs(fVal))+'}='+fmt(er)+'\\)');stepN++;}
+            const eaReal=gv('ea','f')??epsf;
+            const er=eaReal/Math.abs(fVal);sv('er','f',er,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)=\\frac{EA(f)}{|f(real)|}=\\frac{'+fmt(eaReal)+'}{'+fmt(Math.abs(fVal))+'}='+fmt(er)+'\\)');stepN++;}
           // p(f)
           if(gv('p','f')===undefined){
             let p=0;const eaf=gv('ea','f');while(eaf<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
@@ -1711,7 +1712,8 @@ function solveProblema(){
             // p(f) y t(f) derivados
             let pfC=0;while(foundEA<=Math.pow(10,-pfC)&&pfC<50)pfC++;pfC=Math.max(0,pfC-1);
             if(gv('p','f')===undefined)sv('p','f',pfC,'');
-            if(fVal!==undefined&&fVal!==0){const erF=foundEA/Math.abs(fVal);
+            if(fVal!==undefined&&fVal!==0){const eaReal=gv('ea','f')??foundEA;
+              const erF=eaReal/Math.abs(fVal);
               let tF=0;while(erF<5*Math.pow(10,-tF)&&tF<50)tF++;tF=Math.max(0,tF-1);
               if(gv('t','f')===undefined)sv('t','f',tF,'');
               if(gv('er','f')===undefined)sv('er','f',erF,'');}
