@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Ecuaciones No Lineales - Metodos Matematicos (UPO)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='55' text-anchor='middle' fill='white' font-family='serif'>fx</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--acc:#e74c3c;--ok:#27ae60;--warn:#f39c12;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--txtl:#7f8c8d;--brd:#dce1e6;--sh:0 2px 8px rgba(0,0,0,.08);--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+.header{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;padding:1.5rem 2rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.header p{font-size:.95rem;opacity:.9}
+.header a{color:#ffd700;text-decoration:none;font-size:.85rem}
+.header a:hover{text-decoration:underline}
+.tab-bar{display:flex;background:var(--card);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#eef2f7}
+.tab-btn.active{color:var(--pri);border-bottom-color:var(--pri);background:#eef2f7}
+.tab-content{display:none;padding:1rem;max-width:1000px;margin:0 auto}
+.tab-content.active{display:block}
+.topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.topic-selector label{font-weight:600;font-size:1rem;color:var(--pri)}
+.topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri-l);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
+.topic-section{display:none}
+.topic-section.active{display:block}
+.def-box,.prop-box,.example-box,.algo-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
+.def-box{border-color:var(--pri);background:#eaf2f8}
+.prop-box{border-color:var(--ok);background:#eafaf1}
+.example-box{border-color:var(--warn);background:#fef9e7}
+.algo-box{border-color:#8e44ad;background:#f5eef8}
+.def-box strong,.prop-box strong,.example-box strong,.algo-box strong{display:block;margin-bottom:.3rem}
+.interactive-box{background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin:1rem 0}
+.interactive-box h4{color:var(--pri);margin-bottom:.7rem;font-size:.95rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.calc-grid label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-grid input,.calc-grid select{width:100%;padding:.5rem;border:1px solid var(--brd);border-radius:4px;font-size:.95rem}
+.btn{padding:.5rem 1.2rem;border:none;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--pri);color:#fff}
+.btn-primary:hover{background:var(--pri-l)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-accent{background:var(--acc);color:#fff}
+.result-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;min-height:2rem}
+.result-box .val{color:var(--pri);font-weight:700}
+.plot-container{margin:1rem 0;min-height:350px}
+table.dt{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.85rem}
+table.dt th,table.dt td{padding:.4rem .6rem;border:1px solid var(--brd);text-align:center}
+table.dt th{background:var(--pri);color:#fff;font-weight:600}
+table.dt tr:nth-child(even){background:#f8f9fb}
+.question-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.question-card h3{font-size:1rem;margin-bottom:.8rem;color:var(--pri)}
+.question-card .options label{display:block;padding:.6rem .8rem;margin:.3rem 0;border:1px solid var(--brd);border-radius:4px;cursor:pointer;transition:.2s;font-size:.9rem}
+.question-card .options label:hover{background:#eef2f7}
+.question-card .options input{margin-right:.5rem}
+.question-card .feedback{margin-top:.6rem;padding:.6rem;border-radius:4px;font-size:.9rem;display:none}
+.question-card .feedback.correct{display:block;background:#d5f5e3;color:#1e8449}
+.question-card .feedback.incorrect{display:block;background:#fadbd8;color:#c0392b}
+.problem-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);border-left:4px solid var(--warn)}
+.problem-card h3{font-size:1rem;margin-bottom:.5rem;color:var(--pri)}
+.problem-card .sol{display:none;margin-top:.8rem;padding:.8rem;background:#eafaf1;border-radius:4px;font-size:.9rem}
+.problem-card .sol.show{display:block}
+.score-bar{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);text-align:center}
+.score-bar .score{font-size:2rem;font-weight:700;color:var(--pri)}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600;margin-left:.5rem}
+.badge-easy{background:#d5f5e3;color:#1e8449}
+.badge-med{background:#fef9e7;color:#b7950b}
+.badge-hard{background:#fadbd8;color:#c0392b}
+.badge-tarea{background:#d4e6f1;color:#1a5276}
+.katex{font-size:1em!important}
+.katex-display{margin:.5em 0!important}
+p{margin:.5rem 0}
+ul,ol{margin:.5rem 0 .5rem 1.5rem}
+.iter-table{max-height:400px;overflow-y:auto}
+.method-compare{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.calc-grid{grid-template-columns:1fr}.method-compare{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Ecuaciones No Lineales</h1>
+  <p>Metodos Matematicos para la Ingenieria &mdash; Tema 2 &mdash; UPO</p>
+  <a href="../index.html">&larr; Volver al indice general</a>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
+  <button class="tab-btn" onclick="switchTab('problems')">Problemas</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test de Autoevaluacion</button>
+</div>
+
+<!-- ============ TEORIA ============ -->
+<div id="tab-theory" class="tab-content active">
+
+<div class="topic-selector">
+  <label for="topic-select">Selecciona un tema:</label>
+  <select id="topic-select" onchange="showTopic(this.value)">
+    <option value="" disabled selected>-- Elige un tema --</option>
+    <option value="t1">1. Introduccion y Existencia de Soluciones</option>
+    <option value="t2">2. Localizacion y Separacion de Raices</option>
+    <option value="t3">3. Metodo de Biseccion</option>
+    <option value="t4">4. Metodo de la Secante</option>
+    <option value="t5">5. Metodo de Regula Falsi</option>
+    <option value="t6">6. Metodo del Punto Fijo</option>
+    <option value="t7">7. Metodo de Newton-Raphson</option>
+    <option value="t8">8. Comparativa de Metodos</option>
+  </select>
+</div>
+
+<!-- T1: Introduccion -->
+<div class="topic-section" id="t1">
+<h2>1. Introduccion y Existencia de Soluciones</h2>
+
+<p>Para estudiar numericamente una ecuacion, la expresamos como \(f(x)=0\), siendo \(f:\mathbb{R}\to\mathbb{R}\). Obtener las soluciones equivale a calcular los <strong>ceros</strong> de \(f\).</p>
+
+<div class="def-box">
+  <strong>Pasos en la resolucion numerica</strong>
+  <ol>
+    <li>Determinar la <strong>existencia</strong> de solucion para \(f(x)=0\).</li>
+    <li><strong>Localizar</strong> cada solucion en un intervalo finito.</li>
+    <li><strong>Separar</strong> las soluciones en intervalos disjuntos.</li>
+    <li>Aplicar un <strong>metodo numerico</strong> iterativo a cada intervalo.</li>
+  </ol>
+</div>
+
+<div class="prop-box">
+  <strong>Teorema 1 (Bolzano)</strong>
+  Sea \(f:[a,b]\to\mathbb{R}\) continua tal que \(f(a)\cdot f(b)<0\). Entonces \(f\) se anula en algun punto del intervalo \((a,b)\).
+</div>
+
+<div class="def-box">
+  <strong>Problemas del Teorema de Bolzano</strong>
+  <ul>
+    <li>Si <strong>no hay cambio de signo</strong> en los extremos, no se puede afirmar existencia ni inexistencia.</li>
+    <li>Si <strong>hay cambio de signo</strong>, existe alguna solucion, pero no sabemos si es unica.</li>
+  </ul>
+  <strong>Solucion:</strong> Estudiar la <strong>monotonia</strong> de \(f\) (usando \(f'(x)\)) para dividir el dominio en intervalos de crecimiento/decrecimiento estricto. En cada uno, si hay cambio de signo, la raiz es unica.
+</div>
+
+<div class="def-box">
+  <strong>Partes de un metodo iterativo</strong>
+  <ol>
+    <li><strong>Aproximacion inicial \(x_0\)</strong>: su eleccion puede determinar la convergencia.</li>
+    <li><strong>Formula iterativa</strong>: genera iterados \(x_1, x_2, \ldots\) tal que \(\lim_{k\to\infty}E_A(k)=0\).</li>
+    <li><strong>Criterio de parada</strong>: detiene las iteraciones. Opciones:
+      <ul>
+        <li>\(|x_n - x_{n-1}| < \varepsilon\) (tolerancia absoluta)</li>
+        <li>\(\frac{|x_n - x_{n-1}|}{|x_n|} < \varepsilon\) (tolerancia relativa)</li>
+        <li>\(|f(x_n)| < \varepsilon\)</li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<div class="def-box">
+  <strong>Tipos de convergencia</strong>
+  <ul>
+    <li><strong>Lineal (\(\alpha=1\)):</strong> \(\lim_{k\to\infty}\frac{e_{k+1}}{e_k}=C_L\in\mathbb{R}\). Si \(C_L>1\), diverge.</li>
+    <li><strong>Superlineal (\(1<\alpha<2\)):</strong> \(\lim_{k\to\infty}\frac{e_{k+1}}{e_k}=0\) y \(\lim_{k\to\infty}\frac{e_{k+1}}{e_k^\alpha}=C_S\).</li>
+    <li><strong>Cuadratica (\(\alpha=2\)):</strong> \(\lim_{k\to\infty}\frac{e_{k+1}}{e_k}=0\) y \(\lim_{k\to\infty}\frac{e_{k+1}}{e_k^2}=C_C\).</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion: localizar ceros de una funcion</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="loc-fn" value="x*exp(x)-1" placeholder="Ej: x^3-x-2"></div>
+    <div><label>Intervalo \([a,b]\):</label><input type="text" id="loc-ab" value="-3,3" placeholder="-5,5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="plotLocalize()">Graficar y localizar</button>
+  <div id="loc-plot" class="plot-container" style="min-height:300px"></div>
+  <div class="result-box" id="loc-result"></div>
+</div>
+</div>
+
+<!-- T2: Localizacion y Separacion -->
+<div class="topic-section" id="t2">
+<h2>2. Localizacion y Separacion de Raices</h2>
+
+<p>Antes de aplicar cualquier metodo numerico, debemos localizar las raices y separarlas en intervalos disjuntos.</p>
+
+<div class="def-box">
+  <strong>Metodo grafico</strong>
+  Se representa la funcion \(f(x)\) y se observan los puntos donde corta al eje \(x\). Util como primera aproximacion, pero no garantiza encontrar todas las raices.
+</div>
+
+<div class="def-box">
+  <strong>Metodo analitico</strong>
+  <ol>
+    <li><strong>Estudio de monotonia:</strong> calcular \(f'(x)\), encontrar puntos criticos, determinar intervalos de crecimiento y decrecimiento.</li>
+    <li><strong>Cambio de signo:</strong> en cada intervalo de monotonia, comprobar si \(f\) cambia de signo en los extremos. Si es asi, existe una unica raiz.</li>
+  </ol>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo: Separar raices de \(xe^x - 1 = 0\)</strong>
+  <p>\(f(x) = xe^x - 1\), \(f'(x) = e^x + xe^x = e^x(1+x)\).</p>
+  <p>Punto critico: \(x = -1\). Como \(e^x > 0\) siempre:</p>
+  <ul>
+    <li>\(f\) decreciente en \((-\infty, -1)\), creciente en \((-1, +\infty)\).</li>
+    <li>\(f(-1) = -e^{-1} - 1 < 0\), \(\lim_{x\to-\infty}f(x) < 0\), \(\lim_{x\to+\infty}f(x) > 0\).</li>
+    <li>Solo hay cambio de signo en \((-1,+\infty)\). Como \(f(0)=-1<0\) y \(f(1)=e-1>0\), la unica raiz esta en \([0,1]\).</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Herramienta: Localizacion analitica automatica</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="sep-fn" value="x^3-x^2-4*x+6" placeholder="Ej: x^3-3*x^2-4*x+6"></div>
+    <div><label>Buscar en \([a,b]\):</label><input type="text" id="sep-ab" value="-5,5" placeholder="-10,10"></div>
+  </div>
+  <button class="btn btn-primary" onclick="autoSeparate()">Localizar y separar</button>
+  <div id="sep-plot" class="plot-container" style="min-height:300px"></div>
+  <div class="result-box" id="sep-result"></div>
+</div>
+</div>
+
+<!-- T3: Biseccion -->
+<div class="topic-section" id="t3">
+<h2>3. Metodo de Biseccion (Dicotomia)</h2>
+
+<p>Sea \(f(x)=0\) con \(f:[a,b]\to\mathbb{R}\) continua y \(f(a)\cdot f(b)<0\). Se toma como iterado el punto medio del intervalo.</p>
+
+<div class="algo-box">
+  <strong>Algoritmo: Metodo de Biseccion</strong>
+  <p><strong>Entradas:</strong> intervalo \([a,b]\), tolerancia \(\varepsilon\), maxiter.</p>
+  <p>iter=0, error=\(\frac{b-a}{2}\), \(x=\frac{a+b}{2}\).</p>
+  <p><strong>Mientras</strong> error \(>\varepsilon\) e iter &lt; maxiter:</p>
+  <ul>
+    <li>Si \(f(x)=0\): parar (raiz exacta).</li>
+    <li>Si \(f(a)\cdot f(x) > 0\): \(a = x\).</li>
+    <li>En otro caso: \(b = x\).</li>
+    <li>\(x = \frac{a+b}{2}\), error = \(\frac{\text{error}}{2}\), iter = iter+1.</li>
+  </ul>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 6: Convergencia</strong>
+  El metodo de biseccion es convergente. La cota del error absoluto es:
+  \[|x_n - s| \leq \frac{b-a}{2^n}, \quad \forall n \geq 1\]
+  La velocidad de convergencia es <strong>lineal</strong>.
+</div>
+
+<div class="prop-box">
+  <strong>Numero de iteraciones necesarias</strong>
+  Para asegurar \(p\) cifras decimales exactas (\(EA \leq 10^{-p}\)):
+  \[\frac{b-a}{2^n} < 10^{-p} \implies n > \frac{\log(b-a) + p\cdot\log(10)}{\log 2} \approx \frac{\log(b-a) + p\cdot\log(10)}{\log 2}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Biseccion</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="bis-fn" value="x^2-3" placeholder="x^2-3"></div>
+    <div><label>Intervalo \([a,b]\):</label><input type="text" id="bis-ab" value="1,2" placeholder="1,2"></div>
+    <div><label>Tolerancia \(\varepsilon\):</label><input type="text" id="bis-tol" value="1e-6" placeholder="1e-6"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="bis-max" value="50"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runBiseccion()">Ejecutar Biseccion</button>
+  <div id="bis-plot" class="plot-container" style="min-height:300px"></div>
+  <div class="iter-table"><table class="dt" id="bis-table"><thead><tr><th>n</th><th>\(a_n\)</th><th>\(b_n\)</th><th>\(x_n\)</th><th>\(f(x_n)\)</th><th>Error \(\frac{b-a}{2^n}\)</th></tr></thead><tbody></tbody></table></div>
+  <div class="result-box" id="bis-result"></div>
+</div>
+</div>
+
+<!-- T4: Secante -->
+<div class="topic-section" id="t4">
+<h2>4. Metodo de la Secante</h2>
+
+<p>Parte de dos aproximaciones iniciales \(x_1\) y \(x_2\). Se calcula la recta secante que pasa por \((x_1,f(x_1))\) y \((x_2,f(x_2))\) y se busca donde corta al eje \(x\).</p>
+
+<div class="def-box">
+  <strong>Formula iterativa</strong>
+  \[x_{n+1} = x_n - \frac{x_n - x_{n-1}}{f(x_n) - f(x_{n-1})} \cdot f(x_n) = \frac{x_{n-1}\cdot f(x_n) - x_n\cdot f(x_{n-1})}{f(x_n) - f(x_{n-1})}\]
+</div>
+
+<div class="algo-box">
+  <strong>Algoritmo: Metodo de la Secante</strong>
+  <p><strong>Entradas:</strong> \(x_1, x_2\), tolerancia \(\varepsilon\), maxiter.</p>
+  <p>iter=3, \(q_1=f(x_1)\), \(q_2=f(x_2)\), \(x=\frac{x_1\cdot q_2 - x_2\cdot q_1}{q_2-q_1}\), error=\(\frac{|x-x_2|}{|x|}\).</p>
+  <p><strong>Mientras</strong> error \(>\varepsilon\) e iter &lt; maxiter:</p>
+  <ul>
+    <li>\(x_1=x_2,\; x_2=x,\; q_1=q_2,\; q_2=f(x)\)</li>
+    <li>\(x=\frac{x_1\cdot q_2 - x_2\cdot q_1}{q_2-q_1}\), error=\(\frac{|x-x_2|}{|x|}\), iter=iter+1</li>
+  </ul>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 11: Velocidad de convergencia</strong>
+  Si \(f\in\mathcal{C}^2[a,b]\) y \(f'(s)\neq 0\), el orden de convergencia es \(\Phi=\frac{1+\sqrt{5}}{2}\approx 1.618\) (<strong>superlineal</strong>).
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de la Secante</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="sec-fn" value="cos(x)-x" placeholder="cos(x)-x"></div>
+    <div><label>\(x_1, x_2\):</label><input type="text" id="sec-x12" value="0.5,0.7854" placeholder="0.5,pi/4"></div>
+    <div><label>Tolerancia \(\varepsilon\):</label><input type="text" id="sec-tol" value="1e-10" placeholder="1e-10"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="sec-max" value="50"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runSecante()">Ejecutar Secante</button>
+  <div class="iter-table"><table class="dt" id="sec-table"><thead><tr><th>n</th><th>\(x_n\)</th><th>\(f(x_n)\)</th><th>Error relativo</th></tr></thead><tbody></tbody></table></div>
+  <div class="result-box" id="sec-result"></div>
+</div>
+</div>
+
+<!-- T5: Regula Falsi -->
+<div class="topic-section" id="t5">
+<h2>5. Metodo de Regula Falsi (Falsa Posicion)</h2>
+
+<p>Combina los metodos de biseccion y secante. Usa la formula de la secante pero, a diferencia de esta, <strong>asegura el cambio de signo</strong> en cada iteracion (como biseccion).</p>
+
+<div class="def-box">
+  <strong>Diferencia clave con la Secante</strong>
+  <ul>
+    <li>En la <strong>secante</strong>: siempre se usan los dos ultimos iterados \(x_{n-1}\) y \(x_n\).</li>
+    <li>En <strong>regula falsi</strong>: se elige el par de iterados que mantiene el cambio de signo (como biseccion).</li>
+  </ul>
+</div>
+
+<div class="algo-box">
+  <strong>Algoritmo: Metodo de Regula Falsi</strong>
+  <p><strong>Entradas:</strong> \(x_1, x_2\) con \(f(x_1)\cdot f(x_2)<0\), tolerancia \(\varepsilon\), maxiter.</p>
+  <p>iter=3, \(q_1=f(x_1)\), \(q_2=f(x_2)\), \(x=\frac{x_1\cdot q_2 - x_2\cdot q_1}{q_2-q_1}\), \(q=f(x)\), error=\(\frac{|x-x_2|}{|x|}\).</p>
+  <p><strong>Mientras</strong> error \(>\varepsilon\) e iter &lt; maxiter:</p>
+  <ul>
+    <li>Si \(f(x)=0\): parar.</li>
+    <li>Si \(q\cdot q_1 > 0\): \(x_1=x_2,\; x_2=x,\; q_1=q_2,\; q_2=q\) (cambio signo en \([x,x_2]\)... se actualiza \(x_1\)).</li>
+    <li>Sino: \(x_2=x,\; q_2=q\) (cambio signo en \([x_1,x]\)).</li>
+    <li>\(x=\frac{x_1\cdot q_2 - x_2\cdot q_1}{q_2-q_1}\), \(q=f(x)\), error, iter++.</li>
+  </ul>
+</div>
+
+<div class="prop-box">
+  <strong>Convergencia</strong>
+  La convergencia esta garantizada (por la parte de biseccion). Es superior a la secante y a la biseccion por separado.
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Regula Falsi</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="rf-fn" value="cos(x)-x" placeholder="cos(x)-x"></div>
+    <div><label>\(x_1, x_2\) (con cambio signo):</label><input type="text" id="rf-x12" value="0.5,0.7854" placeholder="0,1"></div>
+    <div><label>Tolerancia \(\varepsilon\):</label><input type="text" id="rf-tol" value="1e-10" placeholder="1e-10"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="rf-max" value="50"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runRegulaFalsi()">Ejecutar Regula Falsi</button>
+  <div class="iter-table"><table class="dt" id="rf-table"><thead><tr><th>n</th><th>\(x_n\)</th><th>\(f(x_n)\)</th><th>Error relativo</th></tr></thead><tbody></tbody></table></div>
+  <div class="result-box" id="rf-result"></div>
+</div>
+</div>
+
+<!-- T6: Punto Fijo -->
+<div class="topic-section" id="t6">
+<h2>6. Metodo del Punto Fijo</h2>
+
+<p>Dado \(f(x)=0\), se reescribe como \(g(x)=x\) (ecuacion de punto fijo). Cualquier funcion \(g\) obtenida asi se llama <strong>funcion de iteracion</strong>.</p>
+
+<div class="def-box">
+  <strong>Definicion 15: Punto fijo</strong>
+  \(s\) es un punto fijo de \(g:\mathbb{R}\to\mathbb{R}\) si \(g(s)=s\). Geometricamente, es la interseccion de \(y=g(x)\) con \(y=x\).
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 18: Existencia de punto fijo</strong>
+  Sea \(g:[a,b]\to\mathbb{R}\) continua tal que \(g(x)\in[a,b]\) para todo \(x\in[a,b]\). Entonces existe un punto fijo en \([a,b]\).
+  <br>Ademas, si \(g\) es derivable en \((a,b)\) y \(\exists\, k<1\) tal que \(|g'(x)|\leq k\) para todo \(x\in(a,b)\), el punto fijo es <strong>unico</strong>.
+</div>
+
+<div class="algo-box">
+  <strong>Algoritmo: Metodo del Punto Fijo</strong>
+  <p><strong>Entradas:</strong> \(x_0\), funcion de iteracion \(g(x)\), tolerancia \(\varepsilon\), maxiter.</p>
+  <p>iter=1, \(p=g(x_0)\), error=\(\frac{|p-x_0|}{|p|}\).</p>
+  <p><strong>Mientras</strong> error \(>\varepsilon\) e iter &lt; maxiter:</p>
+  <ul>
+    <li>pAnt = p, \(p = g(\text{pAnt})\), error=\(\frac{|p-\text{pAnt}|}{|p|}\), iter++.</li>
+  </ul>
+</div>
+
+<div class="prop-box">
+  <strong>Teorema 21: Convergencia</strong>
+  Si \(g:[a,b]\to[a,b]\) continuamente derivable con \(|g'(x)|\leq k < 1\) para todo \(x\in(a,b)\), entonces \(x_n=g(x_{n-1})\) converge al unico punto fijo \(s\).
+  <br>Cotas: \(|x_n-s|\leq k^n\cdot|x_0-s|\) y \(|x_n-s|\leq \frac{k^n}{1-k}\cdot|x_1-x_0|\).
+</div>
+
+<div class="prop-box">
+  <strong>Velocidad de convergencia</strong>
+  <ul>
+    <li>Si \(|g'(s)|>1\): los iterados <strong>no convergen</strong>.</li>
+    <li>Si \(|g'(s)|<1\): convergencia <strong>lineal</strong> con tasa \(c_L=|g'(s)|\).</li>
+    <li>Si \(g'(s)=0\): convergencia de orden superior (al menos cuadratica).</li>
+  </ul>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo: \(x^3+4x^2-10=0\) en \([1,2]\)</strong>
+  <p>Tres funciones de iteracion posibles:</p>
+  <ol>
+    <li>\(g_1(x) = x - x^3 - 4x^2 + 10\) &rarr; \(g_1(1)=6\notin[1,2]\) &rarr; <strong>Diverge</strong>.</li>
+    <li>\(g_2(x) = \frac{1}{2}(10-x^3)^{1/2}\) &rarr; \(|g_2'(x)|\leq 0.655 < 1\) en \([1,1.5]\) &rarr; <strong>Converge linealmente</strong>.</li>
+    <li>\(g_3(x) = \left(\frac{10}{4+x}\right)^{1/2}\) &rarr; \(|g_3'(x)|\leq 0.15 < 1\) en \([1,2]\) &rarr; <strong>Converge mas rapido</strong>.</li>
+  </ol>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo del Punto Fijo</h4>
+  <div class="calc-grid">
+    <div><label>\(g(x)\) (iteracion):</label><input type="text" id="pf-gx" value="sqrt(10/(4+x))" placeholder="sqrt(10/(4+x))"></div>
+    <div><label>\(x_0\) inicial:</label><input type="text" id="pf-x0" value="1.5" placeholder="1.5"></div>
+    <div><label>Tolerancia \(\varepsilon\):</label><input type="text" id="pf-tol" value="1e-8" placeholder="1e-8"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="pf-max" value="50"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runPuntoFijo()">Ejecutar Punto Fijo</button>
+  <div id="pf-plot" class="plot-container" style="min-height:300px"></div>
+  <div class="iter-table"><table class="dt" id="pf-table"><thead><tr><th>n</th><th>\(x_n\)</th><th>\(g(x_n)\)</th><th>Error relativo</th></tr></thead><tbody></tbody></table></div>
+  <div class="result-box" id="pf-result"></div>
+</div>
+</div>
+
+<!-- T7: Newton-Raphson -->
+<div class="topic-section" id="t7">
+<h2>7. Metodo de Newton-Raphson</h2>
+
+<p>Es el metodo de convergencia mas rapida. El iterado \(x_{n+1}\) es el corte de la <strong>recta tangente</strong> a \(f\) en \(x_n\) con el eje \(y=0\).</p>
+
+<div class="def-box">
+  <strong>Formula iterativa</strong>
+  \[x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}, \quad \forall n\geq 0\]
+  Se puede ver como un caso particular del punto fijo con \(g(x) = x - \frac{f(x)}{f'(x)}\).
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 29: Convergencia</strong>
+  Si \(f\in\mathcal{C}^2([a,b])\) y \(f'(s)\neq 0\), la convergencia es al menos <strong>cuadratica</strong>:
+  \[\lim_{n\to\infty}\frac{e_{n+1}}{e_n}=-\frac{f''(s)}{2f'(s)}\]
+  Cota del error: \(|s-x_n|\leq \frac{|f(x_n)|}{\min_{x\in[a,b]}|f'(x)|}\).
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 32: Regla de Fourier</strong>
+  Si \(f\in\mathcal{C}^2[a,b]\) y \(f'\), \(f''\) no se anulan en \((a,b)\), el metodo converge si:
+  \[x_0 = \begin{cases}a & \text{si } f(a)\cdot f''(a)>0 \\ b & \text{si } f(b)\cdot f''(b)>0\end{cases}\]
+</div>
+
+<div class="def-box">
+  <strong>Multiplicidad mayor que 1</strong>
+  Si la raiz \(s\) tiene multiplicidad \(k>1\) (es decir, \(f'(s)=0\)), la convergencia se degrada a lineal. Se modifica la formula:
+  \[x_{n+1} = x_n - k\cdot\frac{f(x_n)}{f'(x_n)}\]
+  para recuperar convergencia cuadratica.
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Newton-Raphson</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="nr-fn" value="x^3+4*x^2-10" placeholder="x^3+4*x^2-10"></div>
+    <div><label>\(x_0\) inicial:</label><input type="text" id="nr-x0" value="1.5" placeholder="1.5"></div>
+    <div><label>Tolerancia \(\varepsilon\):</label><input type="text" id="nr-tol" value="1e-10" placeholder="1e-10"></div>
+    <div><label>Multiplicidad \(k\):</label><input type="number" id="nr-mult" value="1" min="1"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runNewton()">Ejecutar Newton-Raphson</button>
+  <div id="nr-plot" class="plot-container" style="min-height:300px"></div>
+  <div class="iter-table"><table class="dt" id="nr-table"><thead><tr><th>n</th><th>\(x_n\)</th><th>\(f(x_n)\)</th><th>\(f'(x_n)\)</th><th>Error relativo</th></tr></thead><tbody></tbody></table></div>
+  <div class="result-box" id="nr-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Verificar Regla de Fourier</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="four-fn" value="x^3+4*x^2-10" placeholder="x^3+4*x^2-10"></div>
+    <div><label>Intervalo \([a,b]\):</label><input type="text" id="four-ab" value="1,2" placeholder="1,2"></div>
+  </div>
+  <button class="btn btn-primary" onclick="checkFourier()">Verificar Fourier</button>
+  <div class="result-box" id="four-result"></div>
+</div>
+</div>
+
+<!-- T8: Comparativa -->
+<div class="topic-section" id="t8">
+<h2>8. Comparativa de Metodos</h2>
+
+<div class="def-box">
+  <strong>Jerarquia por velocidad de convergencia</strong>
+  <table class="dt">
+    <tr><th>Metodo</th><th>Orden</th><th>Aprox. iniciales</th><th>Requiere derivada</th><th>Garantiza converg.</th></tr>
+    <tr><td>Biseccion</td><td>Lineal (\(\alpha=1\))</td><td>Intervalo \([a,b]\)</td><td>No</td><td>Si (con Bolzano)</td></tr>
+    <tr><td>Punto Fijo</td><td>Lineal (\(\alpha=1\))</td><td>\(x_0\)</td><td>No (de \(f\))</td><td>Condicional</td></tr>
+    <tr><td>Secante</td><td>Superlineal (\(\approx 1.618\))</td><td>\(x_1, x_2\)</td><td>No</td><td>Condicional</td></tr>
+    <tr><td>Regula Falsi</td><td>&gt; Secante</td><td>\(x_1, x_2\) con cambio signo</td><td>No</td><td>Si</td></tr>
+    <tr><td>Newton-Raphson</td><td>Cuadratica (\(\alpha=2\))</td><td>\(x_0\)</td><td>Si (\(f'\))</td><td>Condicional (Fourier)</td></tr>
+  </table>
+</div>
+
+<div class="interactive-box">
+  <h4>Comparar todos los metodos en una misma ecuacion</h4>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="cmp-fn" value="x^3+4*x^2-10" placeholder="x^3+4*x^2-10"></div>
+    <div><label>Intervalo/aprox \([a,b]\):</label><input type="text" id="cmp-ab" value="1,2" placeholder="1,2"></div>
+    <div><label>Tolerancia:</label><input type="text" id="cmp-tol" value="1e-8"></div>
+    <div><label>\(g(x)\) para Pto. Fijo:</label><input type="text" id="cmp-gx" value="sqrt(10/(4+x))" placeholder="sqrt(10/(4+x))"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runCompare()">Comparar metodos</button>
+  <div class="iter-table"><table class="dt" id="cmp-table"><thead><tr><th>Metodo</th><th>Iteraciones</th><th>Resultado</th><th>Error final</th><th>Orden conv.</th></tr></thead><tbody></tbody></table></div>
+  <div id="cmp-plot" class="plot-container" style="min-height:300px"></div>
+</div>
+</div>
+
+</div><!-- fin tab-theory -->
+
+<!-- ============ PROBLEMAS ============ -->
+<div id="tab-problems" class="tab-content">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Problemas Resueltos Paso a Paso</h2>
+<p style="margin-bottom:1rem;color:var(--txtl)">Cada problema incluye resolucion interactiva. Pulsa "Resolver" para ver la solucion paso a paso con calculos automaticos.</p>
+
+<!-- Problema 1: Tarea 3 - Biseccion basico -->
+<div class="problem-card">
+  <h3>Problema 1 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>La ecuacion \(x^2-3=0\) tiene una solucion positiva en \([1,2]\). Calcula los 3 primeros iterados por biseccion y el numero de iteraciones para 14 cifras decimales exactas.</p>
+  <button class="btn btn-primary" onclick="solveP(1)">Resolver paso a paso</button>
+  <div class="sol" id="sol-1"></div>
+</div>
+
+<!-- Problema 2: Tarea 3 - Localizacion y biseccion -->
+<div class="problem-card">
+  <h3>Problema 2 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
+  <p>Localiza y separa las soluciones de \(x^3-x^2-4x+6=0\). Aplica biseccion con tolerancia \(10^{-3}\) en cada intervalo.</p>
+  <button class="btn btn-primary" onclick="solveP(2)">Resolver paso a paso</button>
+  <div class="sol" id="sol-2"></div>
+</div>
+
+<!-- Problema 3: Tarea 3 - Secante -->
+<div class="problem-card">
+  <h3>Problema 3 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
+  <p>Elige un intervalo para la unica solucion positiva de \(2x=\tan(x)\). Calcula iteraciones de biseccion para 5 c.d.e. y aplica el metodo de la secante con la misma tolerancia.</p>
+  <button class="btn btn-primary" onclick="solveP(3)">Resolver paso a paso</button>
+  <div class="sol" id="sol-3"></div>
+</div>
+
+<!-- Problema 4: Tarea 4 - Biseccion ampliacion -->
+<div class="problem-card">
+  <h3>Problema 4 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
+  <p>La ecuacion \(e^{-x}+4x^3-5=0\) tiene unica solucion en \([1,2]\). Justifica que puede aplicarse biseccion, realiza 8 iteraciones y estima el numero minimo para 10 c.d.e.</p>
+  <button class="btn btn-primary" onclick="solveP(4)">Resolver paso a paso</button>
+  <div class="sol" id="sol-4"></div>
+</div>
+
+<!-- Problema 5: Tarea 4 - Localizacion y separacion -->
+<div class="problem-card">
+  <h3>Problema 5 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
+  <p>Localiza y separa las soluciones de \(x^3-3x^2-4x+6=0\). Intervalos de amplitud inferior a 0.5.</p>
+  <button class="btn btn-primary" onclick="solveP(5)">Resolver paso a paso</button>
+  <div class="sol" id="sol-5"></div>
+</div>
+
+<!-- Problema 6: Tarea 5 - Newton-Raphson -->
+<div class="problem-card">
+  <h3>Problema 6 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Demuestra que \(x\cdot e^x-1=0\) tiene unica solucion. Resuelvela por Newton-Raphson con \(x_0=0\). Justifica convergencia cuadratica.</p>
+  <button class="btn btn-primary" onclick="solveP(6)">Resolver paso a paso</button>
+  <div class="sol" id="sol-6"></div>
+</div>
+
+<!-- Problema 7: Tarea 5 - Newton con Fourier -->
+<div class="problem-card">
+  <h3>Problema 7 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>La ecuacion \(x^3+4x^2-10=0\) tiene unica solucion en \([1,2]\). Aplica Newton-Raphson con la Regla de Fourier para elegir \(x_0\). Obtener 5 cifras significativas.</p>
+  <button class="btn btn-primary" onclick="solveP(7)">Resolver paso a paso</button>
+  <div class="sol" id="sol-7"></div>
+</div>
+
+<!-- Problema 8: Tarea 5 - Newton multiplicidad -->
+<div class="problem-card">
+  <h3>Problema 8 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Obtener la solucion de \(e^x-x-1=0\) en \([-1,1]\) por Newton-Raphson. Compara convergencia normal vs. con multiplicidad \(k=2\).</p>
+  <button class="btn btn-primary" onclick="solveP(8)">Resolver paso a paso</button>
+  <div class="sol" id="sol-8"></div>
+</div>
+
+<!-- Problema 9: Punto fijo -->
+<div class="problem-card">
+  <h3>Problema 9 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-med">Media</span></h3>
+  <p>Resuelve \(x^3+4x^2-10=0\) en \([1,2]\) por punto fijo usando \(g(x)=\sqrt{\frac{10}{4+x}}\). Justifica convergencia.</p>
+  <button class="btn btn-primary" onclick="solveP(9)">Resolver paso a paso</button>
+  <div class="sol" id="sol-9"></div>
+</div>
+
+<!-- Problema 10: Regula Falsi -->
+<div class="problem-card">
+  <h3>Problema 10 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
+  <p>Aproxima la solucion de \(x=\cos(x)\) en \([0.5, \pi/4]\) por regula falsi con 10 cifras significativas.</p>
+  <button class="btn btn-primary" onclick="solveP(10)">Resolver paso a paso</button>
+  <div class="sol" id="sol-10"></div>
+</div>
+
+<!-- Problema 11: Comparativa -->
+<div class="problem-card">
+  <h3>Problema 11 <span class="badge badge-tarea">TAREA 3-5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Dada la ecuacion \(x=e^{-x}\) en \([0,1]\), aplica los 5 metodos (biseccion, secante, regula falsi, punto fijo con \(g(x)=e^{-x}\), Newton). Compara iteraciones necesarias para \(\varepsilon=10^{-6}\).</p>
+  <button class="btn btn-primary" onclick="solveP(11)">Resolver paso a paso</button>
+  <div class="sol" id="sol-11"></div>
+</div>
+
+<!-- Problema 12: Ecuacion trascendente -->
+<div class="problem-card">
+  <h3>Problema 12 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
+  <p>Resuelve \(e^x-\log(x+2)-2=0\) por biseccion y secante sabiendo que hay dos soluciones en \((-2,+\infty)\) y solo una es positiva. La solucion debe tener 5 c.d.e.</p>
+  <button class="btn btn-primary" onclick="solveP(12)">Resolver paso a paso</button>
+  <div class="sol" id="sol-12"></div>
+</div>
+
+</div><!-- fin tab-problems -->
+
+<!-- ============ TEST ============ -->
+<div id="tab-test" class="tab-content">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Test de Autoevaluacion</h2>
+<div class="score-bar"><span>Puntuacion: </span><span class="score" id="test-score">0</span><span> / <span id="test-total">20</span></span></div>
+
+<div id="test-questions"></div>
+<button class="btn btn-success" onclick="gradeTest()" style="margin-top:1rem">Corregir Test</button>
+</div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}],throwOnError:false};
+
+function switchTab(t){document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.querySelectorAll('.tab-btn')[['theory','problems','test'].indexOf(t)].classList.add('active');renderMathInElement(document.getElementById('tab-'+t),mathOpts);}
+
+function showTopic(id){document.querySelectorAll('.topic-section').forEach(e=>e.classList.remove('active'));const el=document.getElementById(id);if(el){el.classList.add('active');renderMathInElement(el,mathOpts);}}
+
+function prep(expr){return expr.replace(/ln\(/g,'log(').replace(/sen\(/g,'sin(').replace(/tg\(/g,'tan(');}
+
+function evalF(expr,x){try{const node=math.parse(prep(expr));const code=node.compile();return code.evaluate({x:x,e:Math.E,pi:Math.PI,PI:Math.PI});}catch(e){return NaN;}}
+
+function evalG(expr,x){return evalF(expr,x);}
+
+function fmt(v,d){d=d||10;if(v===undefined||v===null||isNaN(v))return'NaN';if(!isFinite(v))return v>0?'+Inf':'-Inf';if(Math.abs(v)<1e-15)return'0';return parseFloat(v.toPrecision(d));}
+
+function derivF(expr){try{const node=math.parse(prep(expr));const d=math.derivative(node,'x');return{expr:d.toString(),eval:function(x){return d.compile().evaluate({x:x,e:Math.E,pi:Math.PI,PI:Math.PI});}};}catch(e){return{expr:'?',eval:function(x){const h=1e-8;return(evalF(expr,x+h)-evalF(expr,x-h))/(2*h);}}}}
+
+function deriv2F(expr){try{const node=math.parse(prep(expr));const d1=math.derivative(node,'x');const d2=math.derivative(d1,'x');return{expr:d2.toString(),eval:function(x){return d2.compile().evaluate({x:x,e:Math.E,pi:Math.PI,PI:Math.PI});}};}catch(e){return{expr:'?',eval:function(x){const h=1e-5;return(evalF(expr,x+h)-2*evalF(expr,x)+evalF(expr,x-h))/(h*h);}}}}
+
+// === LOCALIZACION ===
+function plotLocalize(){
+  const fn=document.getElementById('loc-fn').value;
+  const ab=document.getElementById('loc-ab').value.split(',').map(Number);
+  const a=ab[0],b=ab[1],N=500;
+  const xs=[],ys=[];
+  for(let i=0;i<=N;i++){const x=a+(b-a)*i/N;xs.push(x);ys.push(evalF(fn,x));}
+  // Find sign changes
+  const roots=[];
+  for(let i=0;i<N;i++){if(ys[i]*ys[i+1]<0){const xl=xs[i],xr=xs[i+1];roots.push('['+fmt(xl,4)+', '+fmt(xr,4)+']');}}
+  Plotly.newPlot('loc-plot',[{x:xs,y:ys,type:'scatter',name:'f(x)',line:{color:'#2980b9',width:2}},{x:[a,b],y:[0,0],mode:'lines',line:{color:'#ccc',dash:'dash'},showlegend:false}],{margin:{t:30,b:40,l:50,r:20},xaxis:{title:'x'},yaxis:{title:'f(x)'},title:'Grafica de f(x)'},{responsive:true});
+  const res=document.getElementById('loc-result');
+  if(roots.length===0)res.innerHTML='No se detectan cambios de signo en el intervalo dado.';
+  else res.innerHTML='<b>Cambios de signo detectados:</b> '+roots.join(', ')+'<br>Se localizan <b>'+roots.length+'</b> raiz(ces) aproximada(s).';
+  renderMathInElement(res,mathOpts);
+}
+
+function autoSeparate(){
+  const fn=document.getElementById('sep-fn').value;
+  const ab=document.getElementById('sep-ab').value.split(',').map(Number);
+  const a=ab[0],b=ab[1],N=1000;
+  const xs=[],ys=[];
+  for(let i=0;i<=N;i++){const x=a+(b-a)*i/N;xs.push(x);ys.push(evalF(fn,x));}
+  const intervals=[];
+  for(let i=0;i<N;i++){if(ys[i]*ys[i+1]<0)intervals.push([xs[i],xs[i+1]]);}
+  Plotly.newPlot('sep-plot',[{x:xs,y:ys,type:'scatter',name:'f(x)',line:{color:'#2980b9',width:2}},{x:[a,b],y:[0,0],mode:'lines',line:{color:'#aaa',dash:'dash'},showlegend:false}],{margin:{t:30,b:40,l:50,r:20},xaxis:{title:'x'},yaxis:{title:'f(x)'}},{responsive:true});
+  let html='<b>Intervalos de separacion:</b><ul>';
+  intervals.forEach((iv,i)=>{html+='<li>Raiz '+(i+1)+': \\(['+fmt(iv[0],6)+',\\; '+fmt(iv[1],6)+']\\), \\(f('+fmt(iv[0],4)+')='+fmt(evalF(fn,iv[0]),6)+'\\), \\(f('+fmt(iv[1],4)+')='+fmt(evalF(fn,iv[1]),6)+'\\)</li>';});
+  html+='</ul>';
+  document.getElementById('sep-result').innerHTML=html;
+  renderMathInElement(document.getElementById('sep-result'),mathOpts);
+}
+
+// === BISECCION ===
+function biseccion(fn,a,b,tol,maxIter){
+  const rows=[];let iter=0,error=(b-a)/2,x=(a+b)/2;
+  rows.push({n:0,a:a,b:b,x:x,fx:evalF(fn,x),error:error});
+  while(error>tol&&iter<maxIter){
+    const fx=evalF(fn,x);
+    if(fx===0)break;
+    if(evalF(fn,a)*fx>0)a=x;else b=x;
+    x=(a+b)/2;error=error/2;iter++;
+    rows.push({n:iter,a:a,b:b,x:x,fx:evalF(fn,x),error:error});
+  }
+  return rows;
+}
+function runBiseccion(){
+  const fn=document.getElementById('bis-fn').value;
+  const ab=document.getElementById('bis-ab').value.split(',').map(Number);
+  const tol=parseFloat(document.getElementById('bis-tol').value);
+  const mx=parseInt(document.getElementById('bis-max').value);
+  const rows=biseccion(fn,ab[0],ab[1],tol,mx);
+  fillTable('bis-table',rows.map(r=>[r.n,fmt(r.a),fmt(r.b),fmt(r.x),fmt(r.fx),fmt(r.error,4)]));
+  const last=rows[rows.length-1];
+  document.getElementById('bis-result').innerHTML='<b>Resultado:</b> \\(x\\approx'+fmt(last.x)+'\\) tras '+last.n+' iteraciones. Error \\(\\leq '+fmt(last.error,4)+'\\).';
+  // Plot
+  const N=200,xa=ab[0],xb=ab[1],pad=(xb-xa)*0.1;
+  const xs=[],ys=[];for(let i=0;i<=N;i++){const v=xa-pad+(xb-xa+2*pad)*i/N;xs.push(v);ys.push(evalF(fn,v));}
+  Plotly.newPlot('bis-plot',[{x:xs,y:ys,type:'scatter',name:'f(x)',line:{color:'#2980b9'}},{x:rows.map(r=>r.x),y:rows.map(r=>r.fx),mode:'markers',name:'Iterados',marker:{color:'#e74c3c',size:6}},{x:[xa-pad,xb+pad],y:[0,0],mode:'lines',line:{color:'#aaa',dash:'dash'},showlegend:false}],{margin:{t:30,b:40,l:50,r:20},title:'Biseccion'},{responsive:true});
+  renderMathInElement(document.getElementById('bis-result'),mathOpts);
+}
+
+// === SECANTE ===
+function secante(fn,x1,x2,tol,maxIter){
+  const rows=[];
+  let q1=evalF(fn,x1),q2=evalF(fn,x2);
+  rows.push({n:1,x:x1,fx:q1,er:''});
+  rows.push({n:2,x:x2,fx:q2,er:''});
+  let x=(x1*q2-x2*q1)/(q2-q1);
+  let er=Math.abs(x-x2)/Math.abs(x||1);
+  rows.push({n:3,x:x,fx:evalF(fn,x),er:er});
+  let iter=3;
+  while(er>tol&&iter<maxIter){
+    x1=x2;x2=x;q1=q2;q2=evalF(fn,x);
+    if(q2-q1===0)break;
+    x=(x1*q2-x2*q1)/(q2-q1);
+    er=Math.abs(x-x2)/Math.abs(x||1);
+    iter++;
+    rows.push({n:iter,x:x,fx:evalF(fn,x),er:er});
+  }
+  return rows;
+}
+function runSecante(){
+  const fn=document.getElementById('sec-fn').value;
+  const x12=document.getElementById('sec-x12').value.split(',').map(s=>{try{return math.evaluate(s);}catch(e){return parseFloat(s);}});
+  const tol=parseFloat(document.getElementById('sec-tol').value);
+  const mx=parseInt(document.getElementById('sec-max').value);
+  const rows=secante(fn,x12[0],x12[1],tol,mx);
+  fillTable('sec-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.fx),r.er===''?'':fmt(r.er,4)]));
+  const last=rows[rows.length-1];
+  document.getElementById('sec-result').innerHTML='<b>Resultado:</b> \\(x\\approx'+fmt(last.x)+'\\) tras '+(last.n-2)+' iteraciones calculadas. Error relativo \\(\\approx '+fmt(last.er,4)+'\\).';
+  renderMathInElement(document.getElementById('sec-result'),mathOpts);
+}
+
+// === REGULA FALSI ===
+function regulaFalsi(fn,x1,x2,tol,maxIter){
+  const rows=[];
+  let q1=evalF(fn,x1),q2=evalF(fn,x2);
+  rows.push({n:1,x:x1,fx:q1,er:''});
+  rows.push({n:2,x:x2,fx:q2,er:''});
+  let x=(x1*q2-x2*q1)/(q2-q1);
+  let q=evalF(fn,x);
+  let er=Math.abs(x-x2)/Math.abs(x||1);
+  rows.push({n:3,x:x,fx:q,er:er});
+  let iter=3;
+  while(er>tol&&iter<maxIter){
+    if(q===0)break;
+    if(q*q1>0){x1=x2;q1=q2;x2=x;q2=q;}
+    else{x2=x;q2=q;}
+    x=(x1*q2-x2*q1)/(q2-q1);
+    q=evalF(fn,x);
+    let xprev=rows[rows.length-1].x;
+    er=Math.abs(x-xprev)/Math.abs(x||1);
+    iter++;
+    rows.push({n:iter,x:x,fx:q,er:er});
+  }
+  return rows;
+}
+function runRegulaFalsi(){
+  const fn=document.getElementById('rf-fn').value;
+  const x12=document.getElementById('rf-x12').value.split(',').map(s=>{try{return math.evaluate(s);}catch(e){return parseFloat(s);}});
+  const tol=parseFloat(document.getElementById('rf-tol').value);
+  const mx=parseInt(document.getElementById('rf-max').value);
+  const rows=regulaFalsi(fn,x12[0],x12[1],tol,mx);
+  fillTable('rf-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.fx),r.er===''?'':fmt(r.er,4)]));
+  const last=rows[rows.length-1];
+  document.getElementById('rf-result').innerHTML='<b>Resultado:</b> \\(x\\approx'+fmt(last.x)+'\\) tras '+(last.n-2)+' iteraciones. Error \\(\\approx '+fmt(last.er,4)+'\\).';
+  renderMathInElement(document.getElementById('rf-result'),mathOpts);
+}
+
+// === PUNTO FIJO ===
+function puntoFijo(gx,x0,tol,maxIter){
+  const rows=[];
+  let p=evalG(gx,x0);
+  let er=Math.abs(p-x0)/Math.abs(p||1);
+  rows.push({n:0,x:x0,gx:p,er:''});
+  rows.push({n:1,x:p,gx:evalG(gx,p),er:er});
+  let iter=1;
+  while(er>tol&&iter<maxIter){
+    const pAnt=p;
+    p=evalG(gx,pAnt);
+    if(!isFinite(p)||isNaN(p)){rows.push({n:iter+1,x:p,gx:NaN,er:NaN});break;}
+    er=Math.abs(p-pAnt)/Math.abs(p||1);
+    iter++;
+    rows.push({n:iter,x:p,gx:evalG(gx,p),er:er});
+  }
+  return rows;
+}
+function runPuntoFijo(){
+  const gx=document.getElementById('pf-gx').value;
+  const x0=parseFloat(document.getElementById('pf-x0').value);
+  const tol=parseFloat(document.getElementById('pf-tol').value);
+  const mx=parseInt(document.getElementById('pf-max').value);
+  const rows=puntoFijo(gx,x0,tol,mx);
+  fillTable('pf-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.gx),r.er===''?'':fmt(r.er,4)]));
+  const last=rows[rows.length-1];
+  document.getElementById('pf-result').innerHTML='<b>Resultado:</b> Punto fijo \\(\\approx'+fmt(last.x)+'\\) tras '+last.n+' iteraciones.';
+  // Plot g(x) and y=x
+  const vals=rows.map(r=>r.x).filter(v=>isFinite(v));
+  const mn=Math.min(...vals)-0.5,mx2=Math.max(...vals)+0.5;
+  const N=200,xs=[],yg=[],yx=[];
+  for(let i=0;i<=N;i++){const v=mn+(mx2-mn)*i/N;xs.push(v);yg.push(evalG(gx,v));yx.push(v);}
+  // Staircase
+  const sx=[],sy=[];
+  for(let i=0;i<rows.length-1;i++){const xi=rows[i].x,gi=rows[i].gx;if(!isFinite(xi)||!isFinite(gi))break;sx.push(xi,xi,gi);sy.push(0,gi,gi);}
+  Plotly.newPlot('pf-plot',[{x:xs,y:yg,name:'g(x)',line:{color:'#2980b9'}},{x:xs,y:yx,name:'y=x',line:{color:'#aaa',dash:'dash'}},{x:sx,y:sy,name:'Escalera',line:{color:'#e74c3c',width:1},mode:'lines'}],{margin:{t:30,b:40,l:50,r:20},title:'Punto Fijo'},{responsive:true});
+  renderMathInElement(document.getElementById('pf-result'),mathOpts);
+}
+
+// === NEWTON-RAPHSON ===
+function newton(fn,x0,tol,maxIter,mult){
+  const rows=[];
+  const df=derivF(fn);
+  mult=mult||1;
+  let x=x0;
+  rows.push({n:0,x:x,fx:evalF(fn,x),dfx:df.eval(x),er:''});
+  for(let i=1;i<=maxIter;i++){
+    const fx=evalF(fn,x),dfx=df.eval(x);
+    if(dfx===0){rows.push({n:i,x:NaN,fx:NaN,dfx:0,er:'f\'=0!'});break;}
+    const xnew=x-mult*fx/dfx;
+    const er=Math.abs(xnew-x)/Math.abs(xnew||1);
+    x=xnew;
+    rows.push({n:i,x:x,fx:evalF(fn,x),dfx:df.eval(x),er:er});
+    if(er<tol)break;
+  }
+  return rows;
+}
+function runNewton(){
+  const fn=document.getElementById('nr-fn').value;
+  const x0=parseFloat(document.getElementById('nr-x0').value);
+  const tol=parseFloat(document.getElementById('nr-tol').value);
+  const mult=parseInt(document.getElementById('nr-mult').value)||1;
+  const rows=newton(fn,x0,tol,100,mult);
+  fillTable('nr-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.fx),fmt(r.dfx),r.er===''?'':fmt(r.er,4)]));
+  const last=rows[rows.length-1];
+  document.getElementById('nr-result').innerHTML='<b>Resultado:</b> \\(x\\approx'+fmt(last.x)+'\\) tras '+last.n+' iteraciones (mult='+mult+').';
+  // Plot tangents
+  const df=derivF(fn);
+  const vals=rows.map(r=>r.x).filter(v=>isFinite(v));
+  const mn=Math.min(...vals)-1,mx2=Math.max(...vals)+1;
+  const N=300,xs=[],ys=[];
+  for(let i=0;i<=N;i++){const v=mn+(mx2-mn)*i/N;xs.push(v);ys.push(evalF(fn,v));}
+  const traces=[{x:xs,y:ys,name:'f(x)',line:{color:'#2980b9',width:2}},{x:[mn,mx2],y:[0,0],mode:'lines',line:{color:'#aaa',dash:'dash'},showlegend:false}];
+  // Show first 3 tangent lines
+  for(let i=0;i<Math.min(3,rows.length-1);i++){
+    const xi=rows[i].x,fi=rows[i].fx,di=rows[i].dfx;
+    if(!isFinite(xi)||!isFinite(fi)||!isFinite(di))continue;
+    const txs=[xi-0.5,xi+0.5],tys=[fi-0.5*di,fi+0.5*di];
+    traces.push({x:txs,y:tys,mode:'lines',name:'Tang. n='+i,line:{width:1,dash:'dot'}});
+  }
+  traces.push({x:rows.map(r=>r.x),y:rows.map(r=>r.fx),mode:'markers',name:'Iterados',marker:{color:'#e74c3c',size:7}});
+  Plotly.newPlot('nr-plot',traces,{margin:{t:30,b:40,l:50,r:20},title:'Newton-Raphson'},{responsive:true});
+  renderMathInElement(document.getElementById('nr-result'),mathOpts);
+}
+
+// === FOURIER ===
+function checkFourier(){
+  const fn=document.getElementById('four-fn').value;
+  const ab=document.getElementById('four-ab').value.split(',').map(Number);
+  const a=ab[0],b=ab[1];
+  const df=derivF(fn),d2f=deriv2F(fn);
+  const fa=evalF(fn,a),fb=evalF(fn,b);
+  const dfa=df.eval(a),dfb=df.eval(b);
+  const d2fa=d2f.eval(a),d2fb=d2f.eval(b);
+  // Check f' != 0 in [a,b]
+  let fpOk=true;
+  for(let i=0;i<=100;i++){const x=a+(b-a)*i/100;if(Math.abs(df.eval(x))<1e-12){fpOk=false;break;}}
+  let fppOk=true;
+  for(let i=0;i<=100;i++){const x=a+(b-a)*i/100;if(Math.abs(d2f.eval(x))<1e-12){fppOk=false;break;}}
+  let html='<b>Comprobacion Regla de Fourier en \\(['+a+','+b+']\\):</b><br>';
+  html+='\\(f('+a+')='+fmt(fa,6)+'\\), \\(f('+b+')='+fmt(fb,6)+'\\), cambio signo: '+(fa*fb<0?'<span style="color:green">Si</span>':'<span style="color:red">No</span>')+'<br>';
+  html+='\\(f\'(x)='+df.expr+'\\) &mdash; no se anula en \\([a,b]\\): '+(fpOk?'<span style="color:green">Si</span>':'<span style="color:red">No</span>')+'<br>';
+  html+='\\(f\'\'(x)='+d2f.expr+'\\) &mdash; no se anula en \\([a,b]\\): '+(fppOk?'<span style="color:green">Si</span>':'<span style="color:red">No</span>')+'<br>';
+  const prodA=fa*d2fa,prodB=fb*d2fb;
+  html+='\\(f(a)\\cdot f\'\'(a) = '+fmt(prodA,6)+'\\) '+(prodA>0?'> 0 &rarr; \\(x_0=a='+a+'\\)':'')+'<br>';
+  html+='\\(f(b)\\cdot f\'\'(b) = '+fmt(prodB,6)+'\\) '+(prodB>0?'> 0 &rarr; \\(x_0=b='+b+'\\)':'')+'<br>';
+  if(prodA>0)html+='<b style="color:green">Tomar \\(x_0='+a+'\\) por Regla de Fourier.</b>';
+  else if(prodB>0)html+='<b style="color:green">Tomar \\(x_0='+b+'\\) por Regla de Fourier.</b>';
+  else html+='<b style="color:red">La Regla de Fourier no es directamente aplicable. Intenta con un subintervalo.</b>';
+  document.getElementById('four-result').innerHTML=html;
+  renderMathInElement(document.getElementById('four-result'),mathOpts);
+}
+
+// === COMPARATIVA ===
+function runCompare(){
+  const fn=document.getElementById('cmp-fn').value;
+  const ab=document.getElementById('cmp-ab').value.split(',').map(Number);
+  const tol=parseFloat(document.getElementById('cmp-tol').value);
+  const gx=document.getElementById('cmp-gx').value;
+  const a=ab[0],b=ab[1],mid=(a+b)/2;
+  const rBis=biseccion(fn,a,b,tol,200);
+  const rSec=secante(fn,a,b,tol,200);
+  const rRF=regulaFalsi(fn,a,b,tol,200);
+  const rPF=puntoFijo(gx,mid,tol,200);
+  const rNR=newton(fn,mid,tol,200,1);
+  const data=[
+    ['Biseccion',rBis[rBis.length-1].n,fmt(rBis[rBis.length-1].x),fmt(rBis[rBis.length-1].error,4),'Lineal (1)'],
+    ['Secante',rSec[rSec.length-1].n-2,fmt(rSec[rSec.length-1].x),fmt(rSec[rSec.length-1].er,4),'Superlineal (~1.618)'],
+    ['Regula Falsi',rRF[rRF.length-1].n-2,fmt(rRF[rRF.length-1].x),fmt(rRF[rRF.length-1].er,4),'> Secante'],
+    ['Punto Fijo',rPF[rPF.length-1].n,fmt(rPF[rPF.length-1].x),fmt(rPF[rPF.length-1].er,4),'Lineal (1)'],
+    ['Newton-Raphson',rNR[rNR.length-1].n,fmt(rNR[rNR.length-1].x),fmt(rNR[rNR.length-1].er,4),'Cuadratica (2)']
+  ];
+  fillTable('cmp-table',data);
+  // Plot convergence
+  const traces=[];
+  const methods=[{name:'Biseccion',rows:rBis,key:'error',c:'#3498db'},{name:'Secante',rows:rSec,key:'er',c:'#e67e22'},{name:'Regula Falsi',rows:rRF,key:'er',c:'#2ecc71'},{name:'Punto Fijo',rows:rPF,key:'er',c:'#9b59b6'},{name:'Newton',rows:rNR,key:'er',c:'#e74c3c'}];
+  methods.forEach(m=>{
+    const xs=[],ys=[];
+    m.rows.forEach(r=>{const v=r[m.key];if(v!==''&&!isNaN(v)&&v>0){xs.push(r.n);ys.push(Math.log10(v));}});
+    if(xs.length>0)traces.push({x:xs,y:ys,name:m.name,mode:'lines+markers',line:{color:m.c},marker:{size:4}});
+  });
+  Plotly.newPlot('cmp-plot',traces,{margin:{t:30,b:40,l:60,r:20},xaxis:{title:'Iteracion'},yaxis:{title:'log10(error)'},title:'Convergencia comparada'},{responsive:true});
+}
+
+// === UTILS ===
+function fillTable(id,rows){
+  const tb=document.getElementById(id).querySelector('tbody');
+  tb.innerHTML='';
+  rows.forEach(r=>{const tr=document.createElement('tr');r.forEach(c=>{const td=document.createElement('td');td.textContent=c;tr.appendChild(td);});tb.appendChild(tr);});
+}
+
+// === PROBLEM SOLVERS ===
+function solveP(n){
+  const el=document.getElementById('sol-'+n);
+  el.classList.toggle('show');
+  if(!el.classList.contains('show'))return;
+  let html='';
+  switch(n){
+  case 1:{
+    const fn='x^2-3';const a=1,b=2;
+    html+='<b>Paso 1: Verificar Bolzano</b><br>';
+    html+='\\(f(1)=1-3=-2<0\\), \\(f(2)=4-3=1>0\\). Cambio de signo: existe raiz en \\([1,2]\\).<br>';
+    html+='\\(f\'(x)=2x>0\\) en \\([1,2]\\) &rarr; \\(f\\) estrictamente creciente &rarr; raiz unica.<br><br>';
+    html+='<b>Paso 2: Iteraciones de biseccion</b><br>';
+    const rows=biseccion(fn,1,2,1e-15,3);
+    html+='<table class="dt"><tr><th>n</th><th>\\(a\\)</th><th>\\(b\\)</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.a)+'</td><td>'+fmt(r.b)+'</td><td>'+fmt(r.x)+'</td><td>'+fmt(r.fx)+'</td><td>'+fmt(r.error,4)+'</td></tr>';});
+    html+='</table><br>';
+    html+='<b>Paso 3: Iteraciones para 14 c.d.e.</b><br>';
+    html+='\\(\\frac{b-a}{2^n}<10^{-14} \\Rightarrow \\frac{1}{2^n}<10^{-14} \\Rightarrow n>\\frac{14\\ln 10}{\\ln 2}\\approx 46.5 \\Rightarrow n\\geq 47\\).<br>';
+    break;}
+  case 2:{
+    const fn='x^3-x^2-4*x+6';
+    html+='<b>Paso 1: Localizacion</b><br>';
+    html+='\\(f(x)=x^3-x^2-4x+6\\), \\(f\'(x)=3x^2-2x-4\\).<br>';
+    html+='Raices de \\(f\'\\): \\(x=\\frac{2\\pm\\sqrt{4+48}}{6}=\\frac{2\\pm\\sqrt{52}}{6}\\approx -0.87, 1.54\\).<br>';
+    html+='Intervalos de monotonia: \\((-\\infty,-0.87)\\), \\((-0.87,1.54)\\), \\((1.54,+\\infty)\\).<br>';
+    html+='\\(f(-3)=-30+6=-24<0\\), \\(f(-0.87)\\approx 8.7>0\\) &rarr; raiz en \\([-3,-1]\\).<br>';
+    html+='\\(f(1.54)\\approx 1.37>0\\), \\(f(3)=0\\) &rarr; \\(x=3\\) es raiz exacta!<br>';
+    html+='Buscamos mejor: \\(f(-2)=-2<0,f(-1)=8>0\\) raiz en \\([-2,-1]\\). \\(f(2)=-2<0,f(3)=0\\) raiz en \\(x=3\\).<br>';
+    html+='\\(f(1)=2>0,f(2)=-2<0\\) raiz en \\([1,2]\\).<br><br>';
+    html+='<b>Paso 2: Biseccion en \\([-2,-1]\\) con \\(\\varepsilon=10^{-3}\\)</b><br>';
+    const r1=biseccion(fn,-2,-1,1e-3,50);
+    html+='Tras '+r1[r1.length-1].n+' iteraciones: \\(x\\approx'+fmt(r1[r1.length-1].x)+'\\).<br>';
+    html+='<b>Biseccion en \\([1,2]\\)</b><br>';
+    const r2=biseccion(fn,1,2,1e-3,50);
+    html+='Tras '+r2[r2.length-1].n+' iteraciones: \\(x\\approx'+fmt(r2[r2.length-1].x)+'\\).<br>';
+    break;}
+  case 3:{
+    const fn='2*x-tan(x)';
+    html+='<b>Paso 1: Localizacion</b><br>';
+    html+='\\(2x=\\tan(x) \\Leftrightarrow f(x)=2x-\\tan(x)=0\\).<br>';
+    html+='Buscamos solucion positiva en \\((0,\\pi/2)\\) (la primera no trivial). Graficamente se ve que hay una en \\([1,1.4]\\).<br>';
+    html+='\\(f(1)=2-\\tan(1)\\approx 2-1.557=0.443>0\\), \\(f(1.4)=2.8-\\tan(1.4)\\approx 2.8-5.798=-2.998<0\\).<br>';
+    html+='Cambio de signo en \\([1,1.4]\\).<br><br>';
+    html+='<b>Paso 2: Iteraciones biseccion para 5 c.d.e.</b><br>';
+    html+='\\(\\frac{0.4}{2^n}<10^{-5} \\Rightarrow n>\\frac{\\log(0.4)+5\\log 10}{\\log 2}\\approx 15.3 \\Rightarrow n\\geq 16\\).<br><br>';
+    html+='<b>Paso 3: Metodo de la secante</b><br>';
+    const rows=secante(fn,1,1.4,1e-5,50);
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error rel.</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+fmt(r.fx)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='Resultado: \\(x\\approx'+fmt(rows[rows.length-1].x)+'\\) en '+(rows[rows.length-1].n-2)+' iteraciones.<br>';
+    break;}
+  case 4:{
+    const fn='exp(-x)+4*x^3-5';
+    html+='<b>Paso 1: Verificar Bolzano</b><br>';
+    html+='\\(f(1)=e^{-1}+4-5='+fmt(evalF(fn,1))+'<0\\), \\(f(2)=e^{-2}+32-5='+fmt(evalF(fn,2))+'>0\\). Cambio signo.<br>';
+    html+='\\(f\'(x)=-e^{-x}+12x^2\\). Para \\(x\\geq 1\\), \\(12x^2\\geq 12\\) y \\(e^{-x}\\leq e^{-1}<1\\), asi que \\(f\'>0\\) &rarr; creciente &rarr; raiz unica.<br><br>';
+    html+='<b>Paso 2: 8 iteraciones de biseccion</b><br>';
+    const rows=biseccion(fn,1,2,0,8);
+    html+='<table class="dt"><tr><th>n</th><th>\\(a\\)</th><th>\\(b\\)</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.a,6)+'</td><td>'+fmt(r.b,6)+'</td><td>'+fmt(r.x,8)+'</td><td>'+fmt(r.fx,6)+'</td><td>'+fmt(r.error,6)+'</td></tr>';});
+    html+='</table><br>';
+    html+='<b>Paso 3: Iteraciones para 10 c.d.e.</b><br>';
+    html+='\\(\\frac{1}{2^n}<10^{-10} \\Rightarrow n>\\frac{10\\log 10}{\\log 2}\\approx 33.2 \\Rightarrow n\\geq 34\\).<br>';
+    break;}
+  case 5:{
+    const fn='x^3-3*x^2-4*x+6';
+    html+='<b>\\(f(x)=x^3-3x^2-4x+6\\), \\(f\'(x)=3x^2-6x-4\\).</b><br>';
+    html+='Raices de \\(f\'\\): \\(x=\\frac{6\\pm\\sqrt{36+48}}{6}=\\frac{6\\pm\\sqrt{84}}{6}\\approx -0.528, 3.528\\).<br>';
+    html+='Monotonia: crece en \\((-\\infty,-0.53)\\), decrece en \\((-0.53,3.53)\\), crece en \\((3.53,+\\infty)\\).<br>';
+    html+='\\(f(-2)=6>0\\), \\(f(-1.5)='+fmt(evalF(fn,-1.5))+'\\), \\(f(-1)=6>0\\), \\(f(0)=6>0\\), \\(f(1)=0\\)... \\(f(1)=1-3-4+6=0\\) &rarr; \\(x=1\\) es raiz!<br>';
+    html+='Factorizando: \\(x^3-3x^2-4x+6=(x-1)(x^2-2x-6)\\).<br>';
+    html+='Raices de \\(x^2-2x-6=0\\): \\(x=\\frac{2\\pm\\sqrt{28}}{2}=1\\pm\\sqrt{7}\\approx -1.646, 3.646\\).<br>';
+    html+='Intervalos de amplitud 0.5: \\([-2,-1.5]\\) y \\([3.5,4]\\). Mas \\(x=1\\) exacta.<br>';
+    break;}
+  case 6:{
+    const fn='x*exp(x)-1';
+    html+='<b>Paso 1: Unicidad</b><br>';
+    html+='\\(f(x)=xe^x-1\\), \\(f\'(x)=e^x(1+x)\\). Punto critico: \\(x=-1\\).<br>';
+    html+='\\(f\\) decrece en \\((-\\infty,-1)\\) y crece en \\((-1,+\\infty)\\). Minimo: \\(f(-1)=-e^{-1}-1<0\\).<br>';
+    html+='\\(f(0)=-1<0\\), \\(f(1)=e-1>0\\) &rarr; unica raiz en \\([0,1]\\).<br><br>';
+    html+='<b>Paso 2: Newton-Raphson con \\(x_0=0\\)</b><br>';
+    const rows=newton(fn,0,1e-12,20,1);
+    html+='Formula: \\(g(x)=x-\\frac{xe^x-1}{e^x(1+x)}=\\frac{x^2e^x+1}{e^x(1+x)}\\)<br>';
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error rel.</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+fmt(r.fx)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='<b>Convergencia cuadratica:</b> \\(f\'(s)=e^s(1+s)\\neq 0\\) (ya que \\(s\\approx 0.567>0\\)), luego por Prop. 29, convergencia es cuadratica.<br>';
+    break;}
+  case 7:{
+    const fn='x^3+4*x^2-10';
+    html+='<b>Paso 1: Verificar hipotesis de Fourier</b><br>';
+    html+='\\(f(x)=x^3+4x^2-10\\), \\(f\'(x)=3x^2+8x\\), \\(f\'\'(x)=6x+8\\).<br>';
+    html+='\\(f\'(x)=x(3x+8)\\): en \\([1,2]\\), \\(f\'>0\\) &rarr; no se anula. OK.<br>';
+    html+='\\(f\'\'(x)=6x+8\\): en \\([1,2]\\), \\(f\'\'>0\\) &rarr; no se anula. OK.<br>';
+    html+='\\(f(1)\\cdot f\'\'(1)=(-5)(14)=-70<0\\), \\(f(2)\\cdot f\'\'(2)=(10)(20)=200>0\\).<br>';
+    html+='Por Fourier: <b>\\(x_0=2\\)</b> (o bien \\(x_0=1.5\\) del subintervalo \\([1,1.5]\\)).<br><br>';
+    html+='<b>Paso 2: Newton con \\(x_0=1.5\\)</b><br>';
+    const rows=newton(fn,1.5,1e-10,20,1);
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>\\(f\'(x_n)\\)</th><th>Error rel.</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+fmt(r.fx)+'</td><td>'+fmt(r.dfx)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='Solucion exacta: \\(s\\approx 1.365230013\\). En 3 iteraciones tenemos 8 c.d.e.<br>';
+    break;}
+  case 8:{
+    const fn='exp(x)-x-1';
+    html+='<b>Paso 1: Analisis</b><br>';
+    html+='\\(f(x)=e^x-x-1\\), raiz \\(s=0\\) con multiplicidad 2 (\\(f(0)=0\\), \\(f\'(0)=e^0-1=0\\), \\(f\'\'(0)=e^0=1\\neq 0\\)).<br><br>';
+    html+='<b>Paso 2: Newton normal (\\(k=1\\))</b><br>';
+    const r1=newton(fn,1,1e-10,30,1);
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>Error rel.</th></tr>';
+    r1.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='Convergencia <b>lineal</b> (lenta).<br><br>';
+    html+='<b>Paso 3: Newton con multiplicidad \\(k=2\\)</b><br>';
+    const r2=newton(fn,1,1e-10,30,2);
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>Error rel.</th></tr>';
+    r2.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='Con \\(k=2\\): convergencia <b>cuadratica</b> recuperada.<br>';
+    break;}
+  case 9:{
+    const gx='sqrt(10/(4+x))';
+    html+='<b>Paso 1: Verificar convergencia</b><br>';
+    html+='\\(g(x)=\\sqrt{\\frac{10}{4+x}}\\), \\(g\'(x)=-\\frac{\\sqrt{10}}{2}\\cdot\\frac{1}{(4+x)^{3/2}}\\).<br>';
+    html+='En \\([1,2]\\): \\(|g\'(x)|\\leq \\frac{\\sqrt{10}}{2}\\cdot\\frac{1}{5^{3/2}}=\\frac{1}{\\sqrt{50}}\\approx 0.141 < 1\\). Converge.<br>';
+    html+='\\(g(1)=\\sqrt{2}\\approx 1.41\\), \\(g(2)=\\sqrt{10/6}\\approx 1.29\\). Ambos en \\([1,2]\\). OK.<br><br>';
+    html+='<b>Paso 2: Iteraciones con \\(x_0=1.5\\)</b><br>';
+    const rows=puntoFijo(gx,1.5,1e-10,30);
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>Error rel.</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='Convergencia lineal con tasa \\(c_L=|g\'(s)|\\approx 0.141\\).<br>';
+    break;}
+  case 10:{
+    const fn='cos(x)-x';
+    html+='<b>Paso 1: Regula Falsi con \\(x_1=0.5\\), \\(x_2=\\pi/4\\)</b><br>';
+    const rows=regulaFalsi(fn,0.5,Math.PI/4,1e-12,30);
+    html+='<table class="dt"><tr><th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error rel.</th></tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.n+'</td><td>'+fmt(r.x)+'</td><td>'+fmt(r.fx)+'</td><td>'+(r.er===''?'':fmt(r.er,4))+'</td></tr>';});
+    html+='</table>';
+    html+='Solucion: \\(x\\approx 0.7390851332\\) (punto fijo de cos).<br>';
+    break;}
+  case 11:{
+    const fn='exp(-x)-x';const gx='exp(-x)';
+    html+='<b>Ecuacion \\(e^{-x}=x\\), es decir \\(f(x)=e^{-x}-x=0\\) en \\([0,1]\\).</b><br><br>';
+    const r1=biseccion(fn,0,1,1e-6,100);
+    const r2=secante(fn,0,1,1e-6,100);
+    const r3=regulaFalsi(fn,0,1,1e-6,100);
+    const r4=puntoFijo(gx,0.5,1e-6,100);
+    const r5=newton(fn,0.5,1e-6,100,1);
+    html+='<table class="dt"><tr><th>Metodo</th><th>Iteraciones</th><th>Resultado</th></tr>';
+    html+='<tr><td>Biseccion</td><td>'+r1[r1.length-1].n+'</td><td>'+fmt(r1[r1.length-1].x)+'</td></tr>';
+    html+='<tr><td>Secante</td><td>'+(r2[r2.length-1].n-2)+'</td><td>'+fmt(r2[r2.length-1].x)+'</td></tr>';
+    html+='<tr><td>Regula Falsi</td><td>'+(r3[r3.length-1].n-2)+'</td><td>'+fmt(r3[r3.length-1].x)+'</td></tr>';
+    html+='<tr><td>Punto Fijo</td><td>'+r4[r4.length-1].n+'</td><td>'+fmt(r4[r4.length-1].x)+'</td></tr>';
+    html+='<tr><td>Newton</td><td>'+r5[r5.length-1].n+'</td><td>'+fmt(r5[r5.length-1].x)+'</td></tr>';
+    html+='</table>';
+    html+='Newton es el mas rapido, seguido de secante y regula falsi. Biseccion es el mas lento.<br>';
+    break;}
+  case 12:{
+    const fn='exp(x)-log(x+2)-2';
+    html+='<b>Paso 1: Localizar soluciones</b><br>';
+    html+='\\(f(x)=e^x-\\ln(x+2)-2\\). Dominio: \\(x>-2\\).<br>';
+    html+='\\(f(0)=1-\\ln 2-2\\approx -1.69<0\\), \\(f(1)=e-\\ln 3-2\\approx -0.38<0\\), \\(f(2)=e^2-\\ln 4-2\\approx 4.0>0\\).<br>';
+    html+='Raiz positiva en \\([1,2]\\).<br><br>';
+    html+='<b>Paso 2: Biseccion en \\([1,2]\\)</b><br>';
+    const r1=biseccion(fn,1,2,1e-5,60);
+    html+='Tras '+r1[r1.length-1].n+' iteraciones: \\(x\\approx'+fmt(r1[r1.length-1].x)+'\\).<br><br>';
+    html+='<b>Paso 3: Secante en \\([1,2]\\)</b><br>';
+    const r2=secante(fn,1,2,1e-5,50);
+    html+='Tras '+(r2[r2.length-1].n-2)+' iteraciones: \\(x\\approx'+fmt(r2[r2.length-1].x)+'\\).<br>';
+    break;}
+  }
+  el.innerHTML=html;
+  renderMathInElement(el,mathOpts);
+}
+
+// === TEST ===
+const testData=[
+  {q:'El Teorema de Bolzano requiere que la funcion sea:',o:['Derivable','Continua en [a,b] con f(a)*f(b)<0','Polinomica','Monotona'],a:1},
+  {q:'Si f(a)*f(b)>0, podemos afirmar que:',o:['No hay raices en [a,b]','Puede haber raices pero Bolzano no es aplicable','Hay exactamente 2 raices','La funcion es constante'],a:1},
+  {q:'La cota del error en biseccion tras n iteraciones es:',o:['(b-a)/n','(b-a)/2^n','2^n/(b-a)','(b-a)*2^n'],a:1},
+  {q:'La velocidad de convergencia del metodo de biseccion es:',o:['Cuadratica','Superlineal','Lineal','Cubica'],a:2},
+  {q:'En el metodo de la secante se necesitan:',o:['Una aproximacion inicial','Dos aproximaciones iniciales','La derivada de f','Un intervalo con cambio de signo obligatorio'],a:1},
+  {q:'El orden de convergencia del metodo de la secante es:',o:['1 (lineal)','phi = (1+sqrt(5))/2 (superlineal)','2 (cuadratico)','3 (cubico)'],a:1},
+  {q:'La diferencia principal entre la secante y regula falsi es:',o:['Regula falsi usa derivadas','Regula falsi asegura cambio de signo en cada iteracion','La secante converge siempre','Regula falsi solo funciona con polinomios'],a:1},
+  {q:'En el metodo del punto fijo, g(x)=x, la convergencia esta garantizada si:',o:['g es continua','g\'(s)=0','|g\'(x)|<=k<1 en (a,b) y g([a,b]) incluido en [a,b]','g es polinomica'],a:2},
+  {q:'Si |g\'(s)|>1 en el metodo de punto fijo:',o:['La convergencia es cuadratica','Los iterados convergen lentamente','Los iterados no convergen a s','La convergencia es superlineal'],a:2},
+  {q:'La formula de Newton-Raphson es:',o:['x_{n+1}=x_n-f(x_n)/f\'(x_n)','x_{n+1}=(a+b)/2','x_{n+1}=g(x_n)','x_{n+1}=x_n-f(x_n)*f\'(x_n)'],a:0},
+  {q:'La convergencia de Newton-Raphson es tipicamente:',o:['Lineal','Superlineal','Cuadratica','Cubica'],a:2},
+  {q:'La Regla de Fourier se usa para:',o:['Calcular la derivada','Elegir la aproximacion inicial x_0 en Newton','Demostrar la existencia de raiz','Calcular el error de truncamiento'],a:1},
+  {q:'Si la raiz tiene multiplicidad k>1 en Newton, la convergencia es:',o:['Cuadratica','Cubica','Lineal','No converge'],a:2},
+  {q:'Para restaurar convergencia cuadratica con multiplicidad k, se usa:',o:['x_{n+1}=x_n-k*f(x_n)/f\'(x_n)','x_{n+1}=x_n-f(x_n)/(k*f\'(x_n))','x_{n+1}=x_n+k*f(x_n)/f\'(x_n)','No es posible restaurarla'],a:0},
+  {q:'Para que biseccion alcance p cifras decimales exactas se necesitan al menos:',o:['p iteraciones','log2(10^p * (b-a)) iteraciones','10^p iteraciones','p*(b-a) iteraciones'],a:1},
+  {q:'El metodo mas rapido (mas iteraciones necesarias) es:',o:['Biseccion','Secante','Punto Fijo','Newton-Raphson (el mas rapido)'],a:3},
+  {q:'Un punto fijo de g es un valor s tal que:',o:['g(s)=0','g\'(s)=0','g(s)=s','g(s)=1'],a:2},
+  {q:'Para localizar y separar las raices de f(x)=0 se estudia:',o:['La integral de f','La monotonia de f (usando f\')','La derivada segunda solamente','El valor de f en un unico punto'],a:1},
+  {q:'El criterio de parada |x_n - x_{n-1}|/|x_n| < epsilon corresponde a:',o:['Error absoluto','Error relativo','Error de truncamiento','Error de redondeo'],a:1},
+  {q:'El metodo de regula falsi garantiza convergencia porque:',o:['Usa derivadas','Mantiene el cambio de signo (como biseccion)','Es un caso particular de Newton','Tiene orden cuadratico'],a:1}
+];
+
+function buildTest(){
+  const c=document.getElementById('test-questions');
+  document.getElementById('test-total').textContent=testData.length;
+  let html='';
+  testData.forEach((q,i)=>{
+    html+='<div class="question-card" id="qc-'+i+'"><h3>Pregunta '+(i+1)+'</h3><p>'+q.q+'</p><div class="options">';
+    q.o.forEach((o,j)=>{html+='<label><input type="radio" name="q'+i+'" value="'+j+'"> '+o+'</label>';});
+    html+='</div><div class="feedback" id="fb-'+i+'"></div></div>';
+  });
+  c.innerHTML=html;
+  renderMathInElement(c,mathOpts);
+}
+
+function gradeTest(){
+  let score=0;
+  testData.forEach((q,i)=>{
+    const sel=document.querySelector('input[name="q'+i+'"]:checked');
+    const fb=document.getElementById('fb-'+i);
+    if(!sel){fb.className='feedback incorrect';fb.textContent='No respondida. Correcta: '+q.o[q.a];return;}
+    if(parseInt(sel.value)===q.a){score++;fb.className='feedback correct';fb.textContent='Correcto!';}
+    else{fb.className='feedback incorrect';fb.textContent='Incorrecto. Correcta: '+q.o[q.a];}
+  });
+  document.getElementById('test-score').textContent=score;
+}
+
+// Init
+window.addEventListener('DOMContentLoaded',()=>{
+  buildTest();
+  renderMathInElement(document.body,mathOpts);
+});
+</script>
+</body>
+</html>

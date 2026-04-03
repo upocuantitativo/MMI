@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metodos Matematicos - UPO</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='50' text-anchor='middle' fill='white' font-family='serif'>MM</text></svg>">
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--sh:0 4px 15px rgba(0,0,0,.1);--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.header{text-align:center;padding:2rem;margin-bottom:2rem}
+.header h1{font-size:2.2rem;color:var(--pri);margin-bottom:.5rem}
+.header p{font-size:1.1rem;color:#7f8c8d}
+.header .sub{font-size:.9rem;color:#95a5a6;margin-top:.3rem}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:800px;width:90%;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);padding:2rem;box-shadow:var(--sh);text-decoration:none;color:var(--txt);transition:transform .3s,box-shadow .3s;border-top:5px solid var(--pri)}
+.card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+.card .icon{font-size:3rem;margin-bottom:1rem;display:block}
+.card h2{font-size:1.4rem;color:var(--pri);margin-bottom:.5rem}
+.card p{font-size:.95rem;color:#7f8c8d;line-height:1.5}
+.card .topics{margin-top:.8rem;font-size:.85rem;color:#95a5a6}
+.card .topics span{display:inline-block;background:#eaf2f8;color:var(--pri);padding:.2rem .5rem;border-radius:4px;margin:.2rem .2rem 0 0;font-size:.8rem}
+.card.b1{border-top-color:#27ae60}
+.card.b2{border-top-color:#2980b9}
+.footer{margin-top:3rem;text-align:center;padding:1rem;font-size:.85rem;color:#95a5a6}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.header h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Metodos Matematicos para la Ingenieria</h1>
+  <p>Ingenieria Informatica en Sistemas de Informacion</p>
+  <div class="sub">Universidad Pablo de Olavide &mdash; Area de Matematica Aplicada</div>
+</div>
+
+<div class="cards">
+  <a href="Bloque1/index.html" class="card b1">
+    <span class="icon">&#8721;&epsilon;</span>
+    <h2>Bloque 1: Teoria de Errores</h2>
+    <p>Errores, precision, exactitud, propagacion, IEEE 754, condicionamiento y estabilidad numerica.</p>
+    <div class="topics">
+      <span>Error Absoluto/Relativo</span>
+      <span>Cifras Exactas</span>
+      <span>Propagacion</span>
+      <span>IEEE 754</span>
+      <span>Condicionamiento</span>
+    </div>
+  </a>
+  <a href="Bloque2/index.html" class="card b2">
+    <span class="icon">f(x)=0</span>
+    <h2>Bloque 2: Ecuaciones No Lineales</h2>
+    <p>Localizacion de raices, biseccion, secante, regula falsi, punto fijo, Newton-Raphson y comparativa.</p>
+    <div class="topics">
+      <span>Bolzano</span>
+      <span>Biseccion</span>
+      <span>Secante</span>
+      <span>Regula Falsi</span>
+      <span>Punto Fijo</span>
+      <span>Newton-Raphson</span>
+    </div>
+  </a>
+</div>
+
+<div class="footer">
+  Metodos Matematicos &mdash; UPO &mdash; Teoria interactiva, problemas y tests de autoevaluacion
+</div>
+
+</body>
+</html>
