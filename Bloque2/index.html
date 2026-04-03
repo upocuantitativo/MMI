@@ -169,6 +169,13 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 </div>
 
 <div class="interactive-box">
+  <h4>Visualizacion: velocidad de convergencia comparada</h4>
+  <p>Observa como decrece el error en cada tipo de convergencia:</p>
+  <button class="btn btn-primary" onclick="plotConvergenceTypes()">Mostrar grafica</button>
+  <div id="convtype-plot" class="plot-container" style="min-height:320px"></div>
+</div>
+
+<div class="interactive-box">
   <h4>Visualizacion: localizar ceros de una funcion</h4>
   <div class="calc-grid">
     <div><label>Funcion \(f(x)\):</label><input type="text" id="loc-fn" value="x*exp(x)-1" placeholder="Ej: x^3-x-2"></div>
@@ -252,6 +259,17 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   <strong>Numero de iteraciones necesarias</strong>
   Para asegurar \(p\) cifras decimales exactas (\(EA \leq 10^{-p}\)):
   \[\frac{b-a}{2^n} < 10^{-p} \implies n > \frac{\log(b-a) + p\cdot\log(10)}{\log 2} \approx \frac{\log(b-a) + p\cdot\log(10)}{\log 2}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Animacion: Biseccion paso a paso</h4>
+  <p>Observa como el intervalo se reduce a la mitad en cada iteracion:</p>
+  <div class="calc-grid">
+    <div><label>Funcion:</label><input type="text" id="bisanim-fn" value="x^2-3"></div>
+    <div><label>Intervalo:</label><input type="text" id="bisanim-ab" value="1,2"></div>
+  </div>
+  <button class="btn btn-primary" onclick="animBiseccion()">Animar</button>
+  <div id="bisanim-plot" class="plot-container" style="min-height:350px"></div>
 </div>
 
 <div class="interactive-box">
@@ -453,6 +471,17 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   Si la raiz \(s\) tiene multiplicidad \(k>1\) (es decir, \(f'(s)=0\)), la convergencia se degrada a lineal. Se modifica la formula:
   \[x_{n+1} = x_n - k\cdot\frac{f(x_n)}{f'(x_n)}\]
   para recuperar convergencia cuadratica.
+</div>
+
+<div class="interactive-box">
+  <h4>Animacion: Tangentes de Newton paso a paso</h4>
+  <p>Observa como cada tangente se acerca a la raiz con convergencia cuadratica:</p>
+  <div class="calc-grid">
+    <div><label>Funcion:</label><input type="text" id="nranim-fn" value="x^3+4*x^2-10"></div>
+    <div><label>\(x_0\) inicial:</label><input type="text" id="nranim-x0" value="1.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="animNewton()">Animar tangentes</button>
+  <div id="nranim-plot" class="plot-container" style="min-height:380px"></div>
 </div>
 
 <div class="interactive-box">
@@ -1151,6 +1180,89 @@ function gradeTest(){
     else{fb.className='feedback incorrect';fb.textContent='Incorrecto. Correcta: '+q.o[q.a];}
   });
   document.getElementById('test-score').textContent=score;
+}
+
+// === ANIMACIONES ===
+function animBiseccion(){
+  const fn=document.getElementById('bisanim-fn').value;
+  const ab=document.getElementById('bisanim-ab').value.split(',').map(Number);
+  let a=ab[0],b=ab[1];
+  const N=200,pad=(b-a)*0.15;
+  const xs=[],ys=[];
+  for(let i=0;i<=N;i++){const v=a-pad+(b-a+2*pad)*i/N;xs.push(v);ys.push(evalF(fn,v));}
+  const frames=[];
+  let aa=a,bb=b;
+  for(let step=0;step<12;step++){
+    const mid=(aa+bb)/2;
+    const fmid=evalF(fn,mid);
+    const shapes=[{type:'rect',x0:aa,x1:bb,y0:-999,y1:999,fillcolor:'rgba(41,128,185,0.1)',line:{width:0}},{type:'line',x0:mid,x1:mid,y0:-999,y1:999,line:{color:'#e74c3c',width:2,dash:'dot'}}];
+    frames.push({name:'s'+step,data:[{x:xs,y:ys},{x:[mid],y:[fmid]}],layout:{shapes:shapes,title:'Iteracion '+step+': x='+fmt(mid,8)+', f(x)='+fmt(fmid,4)}});
+    if(evalF(fn,aa)*fmid>0)aa=mid;else bb=mid;
+  }
+  Plotly.newPlot('bisanim-plot',[{x:xs,y:ys,name:'f(x)',line:{color:'#2980b9',width:2}},{x:[],y:[],mode:'markers',name:'x_n',marker:{color:'#e74c3c',size:12,symbol:'diamond'}}],{margin:{t:40,b:40,l:50,r:20},xaxis:{range:[a-pad,b+pad]},yaxis:{zeroline:true},shapes:[],title:'Pulsa play'},{responsive:true}).then(()=>{
+    Plotly.addFrames('bisanim-plot',frames);
+    let i=0;const play=()=>{if(i>=frames.length)return;Plotly.animate('bisanim-plot',['s'+i],{transition:{duration:400},frame:{duration:600,redraw:true}});i++;setTimeout(play,1000);};play();
+  });
+}
+
+function animNewton(){
+  const fn=document.getElementById('nranim-fn').value;
+  const x0=parseFloat(document.getElementById('nranim-x0').value);
+  const df=derivF(fn);
+  // Compute iterates
+  const iters=[{x:x0,fx:evalF(fn,x0),dfx:df.eval(x0)}];
+  let x=x0;
+  for(let i=0;i<6;i++){
+    const fx=evalF(fn,x),dfx=df.eval(x);
+    if(dfx===0)break;
+    x=x-fx/dfx;
+    iters.push({x:x,fx:evalF(fn,x),dfx:df.eval(x)});
+  }
+  const vals=iters.map(r=>r.x);
+  const mn=Math.min(...vals)-1,mx=Math.max(...vals)+1;
+  const N=300,xs=[],ys=[];
+  for(let i=0;i<=N;i++){const v=mn+(mx-mn)*i/N;xs.push(v);ys.push(evalF(fn,v));}
+  const traces=[{x:xs,y:ys,name:'f(x)',line:{color:'#2980b9',width:2}},{x:[mn,mx],y:[0,0],mode:'lines',line:{color:'#aaa',dash:'dash'},showlegend:false}];
+  // Add tangent lines frame by frame
+  const colors=['#e74c3c','#e67e22','#27ae60','#8e44ad','#2980b9','#f39c12'];
+  const frames=[];
+  for(let i=0;i<iters.length-1;i++){
+    const xi=iters[i].x,fi=iters[i].fx,di=iters[i].dfx;
+    const xnext=iters[i+1].x;
+    const tanXs=[xi-(xi-xnext)*0.3,xnext+(xi-xnext)*0.1];
+    const tanYs=[fi-di*(xi-tanXs[0])*(-1)+di*(tanXs[0]-xi),0+di*(tanXs[1]-xnext)];
+    // simpler: tangent from xi to xnext
+    const tx=[xi,xnext],ty=[fi,0];
+    const allTangents=[];
+    for(let j=0;j<=i;j++){
+      const xj=iters[j].x,fj=iters[j].fx,dj=iters[j].dfx,xn=iters[j+1].x;
+      allTangents.push({x:[xj,xn],y:[fj,0],mode:'lines',line:{color:colors[j%6],width:2,dash:'dot'},name:'Tang. n='+j,showlegend:j===i});
+    }
+    const pts=iters.slice(0,i+2).map(r=>r.x);
+    const fpts=iters.slice(0,i+2).map(r=>r.fx);
+    frames.push({name:'n'+i,data:[{x:xs,y:ys},{x:[mn,mx],y:[0,0]},...allTangents,{x:pts,y:fpts,mode:'markers',marker:{color:'#e74c3c',size:8},name:'Iterados'}],layout:{title:'Iteracion '+i+': x_'+(i+1)+'='+fmt(iters[i+1].x,8)}});
+  }
+  Plotly.newPlot('nranim-plot',traces,{margin:{t:40,b:40,l:50,r:20},title:'Newton-Raphson animado'},{responsive:true}).then(()=>{
+    Plotly.addFrames('nranim-plot',frames);
+    let i=0;const play=()=>{if(i>=frames.length)return;Plotly.animate('nranim-plot',['n'+i],{transition:{duration:500},frame:{duration:800,redraw:true}});i++;setTimeout(play,1300);};play();
+  });
+}
+
+function plotConvergenceTypes(){
+  // Simulate convergence types
+  const n=15;
+  const linX=[],linY=[],supX=[],supY=[],cuadX=[],cuadY=[];
+  let eL=1,eS=1,eC=1;
+  for(let i=0;i<n;i++){
+    linX.push(i);linY.push(Math.log10(Math.max(eL,1e-16)));eL*=0.7;
+    supX.push(i);supY.push(Math.log10(Math.max(eS,1e-16)));eS=Math.pow(eS,1.618)*0.5;
+    cuadX.push(i);cuadY.push(Math.log10(Math.max(eC,1e-16)));eC=eC*eC*0.5;
+  }
+  Plotly.newPlot('convtype-plot',[
+    {x:linX,y:linY,name:'Lineal (biseccion, pto fijo)',mode:'lines+markers',line:{color:'#3498db'},marker:{size:5}},
+    {x:supX,y:supY,name:'Superlineal (secante, phi~1.618)',mode:'lines+markers',line:{color:'#e67e22'},marker:{size:5}},
+    {x:cuadX,y:cuadY,name:'Cuadratica (Newton)',mode:'lines+markers',line:{color:'#e74c3c'},marker:{size:5}}
+  ],{margin:{t:30,b:40,l:60,r:20},xaxis:{title:'Iteracion'},yaxis:{title:'log10(error)'},title:'Velocidad de convergencia'},{responsive:true});
 }
 
 // Init
