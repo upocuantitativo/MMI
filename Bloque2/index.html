@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Ecuaciones No Lineales - Metodos Matematicos (UPO)</title>
+<title>Ecuaciones No Lineales - Metodos Matematicos</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='55' text-anchor='middle' fill='white' font-family='serif'>fx</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -86,7 +86,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="header">
   <h1>Ecuaciones No Lineales</h1>
-  <p>Metodos Matematicos para la Ingenieria &mdash; Tema 2 &mdash; UPO</p>
+  <p>Metodos Matematicos para la Ingenieria &mdash; Tema 2</p>
   <a href="../index.html">&larr; Volver al indice general</a>
 </div>
 
@@ -541,117 +541,156 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 </div><!-- fin tab-theory -->
 
-<!-- ============ PROBLEMAS ============ -->
-<div id="tab-problems" class="tab-content">
-<h2 style="margin-bottom:1rem;color:var(--pri)">Problemas Resueltos Paso a Paso</h2>
-<p style="margin-bottom:1rem;color:var(--txtl)">Cada problema incluye resolucion interactiva. Pulsa "Resolver" para ver la solucion paso a paso con calculos automaticos.</p>
+<!-- ============ PROBLEMAS (SOLVER) ============ -->
+<div id="tab-problems" class="tab-content" style="max-width:1100px">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Solver de Ecuaciones No Lineales</h2>
+<p style="margin-bottom:1rem;color:var(--txtl)">Introduce la ecuacion y los parametros. El solver mostrara el razonamiento paso a paso.</p>
 
-<!-- Problema 1: Tarea 3 - Biseccion basico -->
-<div class="problem-card">
-  <h3>Problema 1 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-easy">Facil</span></h3>
-  <p>La ecuacion \(x^2-3=0\) tiene una solucion positiva en \([1,2]\). Calcula los 3 primeros iterados por biseccion y el numero de iteraciones para 14 cifras decimales exactas.</p>
-  <button class="btn btn-primary" onclick="solveP(1)">Resolver paso a paso</button>
-  <div class="sol" id="sol-1"></div>
+<div class="solver-card" style="background:var(--card);border-radius:var(--r);padding:1.2rem;box-shadow:var(--sh)">
+  <h3 style="color:var(--pri);margin-bottom:.8rem">Configuracion del problema</h3>
+  <div class="calc-grid">
+    <div>
+      <label>Funcion \(f(x)\):</label>
+      <input type="text" id="slv-fn" value="x^3+4*x^2-10" placeholder="x^3+4*x^2-10" style="font-family:monospace;font-size:1rem">
+      <div id="slv-preview" style="margin-top:.3rem;min-height:1.5rem;font-size:1.1rem"></div>
+    </div>
+    <div>
+      <label>Metodo:</label>
+      <select id="slv-method" onchange="updateSolverUI()" style="padding:.5rem;font-size:.95rem">
+        <option value="localize">Localizar y separar raices</option>
+        <option value="biseccion" selected>Biseccion</option>
+        <option value="secante">Secante</option>
+        <option value="regulafalsi">Regula Falsi</option>
+        <option value="puntofijo">Punto Fijo</option>
+        <option value="newton">Newton-Raphson</option>
+        <option value="compare">Comparar todos</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="slv-params">
+    <div class="calc-grid">
+      <div id="slv-p-ab"><label>Intervalo \([a,b]\) o \(x_1,x_2\):</label><input type="text" id="slv-ab" value="1,2"></div>
+      <div id="slv-p-tol"><label>Tolerancia \(\varepsilon\):</label><input type="text" id="slv-tol" value="1e-6"></div>
+      <div id="slv-p-x0" style="display:none"><label>\(x_0\) inicial:</label><input type="text" id="slv-x0" value="1.5"></div>
+      <div id="slv-p-gx" style="display:none"><label>\(g(x)\) iteracion:</label><input type="text" id="slv-gx" value="sqrt(10/(4+x))" style="font-family:monospace"></div>
+      <div id="slv-p-mult" style="display:none"><label>Multiplicidad \(k\):</label><input type="number" id="slv-mult" value="1" min="1"></div>
+      <div id="slv-p-max"><label>Max iteraciones:</label><input type="number" id="slv-maxiter" value="50"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="runSolver()" style="font-size:1rem;padding:.6rem 1.5rem">Resolver</button>
+    <button class="btn btn-success" onclick="solverLocalize()" style="font-size:.9rem">Localizar raices</button>
+    <button class="btn btn-accent" onclick="solverFourier()" style="font-size:.9rem">Verificar Fourier</button>
+    <label style="display:flex;align-items:center;gap:.3rem;font-size:.85rem;margin-left:auto"><input type="checkbox" id="slv-niter" checked> Calcular n iteraciones necesarias</label>
+  </div>
 </div>
 
-<!-- Problema 2: Tarea 3 - Localizacion y biseccion -->
-<div class="problem-card">
-  <h3>Problema 2 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
-  <p>Localiza y separa las soluciones de \(x^3-x^2-4x+6=0\). Aplica biseccion con tolerancia \(10^{-3}\) en cada intervalo.</p>
-  <button class="btn btn-primary" onclick="solveP(2)">Resolver paso a paso</button>
-  <div class="sol" id="sol-2"></div>
-</div>
-
-<!-- Problema 3: Tarea 3 - Secante -->
-<div class="problem-card">
-  <h3>Problema 3 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
-  <p>Elige un intervalo para la unica solucion positiva de \(2x=\tan(x)\). Calcula iteraciones de biseccion para 5 c.d.e. y aplica el metodo de la secante con la misma tolerancia.</p>
-  <button class="btn btn-primary" onclick="solveP(3)">Resolver paso a paso</button>
-  <div class="sol" id="sol-3"></div>
-</div>
-
-<!-- Problema 4: Tarea 4 - Biseccion ampliacion -->
-<div class="problem-card">
-  <h3>Problema 4 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
-  <p>La ecuacion \(e^{-x}+4x^3-5=0\) tiene unica solucion en \([1,2]\). Justifica que puede aplicarse biseccion, realiza 8 iteraciones y estima el numero minimo para 10 c.d.e.</p>
-  <button class="btn btn-primary" onclick="solveP(4)">Resolver paso a paso</button>
-  <div class="sol" id="sol-4"></div>
-</div>
-
-<!-- Problema 5: Tarea 4 - Localizacion y separacion -->
-<div class="problem-card">
-  <h3>Problema 5 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
-  <p>Localiza y separa las soluciones de \(x^3-3x^2-4x+6=0\). Intervalos de amplitud inferior a 0.5.</p>
-  <button class="btn btn-primary" onclick="solveP(5)">Resolver paso a paso</button>
-  <div class="sol" id="sol-5"></div>
-</div>
-
-<!-- Problema 6: Tarea 5 - Newton-Raphson -->
-<div class="problem-card">
-  <h3>Problema 6 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
-  <p>Demuestra que \(x\cdot e^x-1=0\) tiene unica solucion. Resuelvela por Newton-Raphson con \(x_0=0\). Justifica convergencia cuadratica.</p>
-  <button class="btn btn-primary" onclick="solveP(6)">Resolver paso a paso</button>
-  <div class="sol" id="sol-6"></div>
-</div>
-
-<!-- Problema 7: Tarea 5 - Newton con Fourier -->
-<div class="problem-card">
-  <h3>Problema 7 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
-  <p>La ecuacion \(x^3+4x^2-10=0\) tiene unica solucion en \([1,2]\). Aplica Newton-Raphson con la Regla de Fourier para elegir \(x_0\). Obtener 5 cifras significativas.</p>
-  <button class="btn btn-primary" onclick="solveP(7)">Resolver paso a paso</button>
-  <div class="sol" id="sol-7"></div>
-</div>
-
-<!-- Problema 8: Tarea 5 - Newton multiplicidad -->
-<div class="problem-card">
-  <h3>Problema 8 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
-  <p>Obtener la solucion de \(e^x-x-1=0\) en \([-1,1]\) por Newton-Raphson. Compara convergencia normal vs. con multiplicidad \(k=2\).</p>
-  <button class="btn btn-primary" onclick="solveP(8)">Resolver paso a paso</button>
-  <div class="sol" id="sol-8"></div>
-</div>
-
-<!-- Problema 9: Punto fijo -->
-<div class="problem-card">
-  <h3>Problema 9 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-med">Media</span></h3>
-  <p>Resuelve \(x^3+4x^2-10=0\) en \([1,2]\) por punto fijo usando \(g(x)=\sqrt{\frac{10}{4+x}}\). Justifica convergencia.</p>
-  <button class="btn btn-primary" onclick="solveP(9)">Resolver paso a paso</button>
-  <div class="sol" id="sol-9"></div>
-</div>
-
-<!-- Problema 10: Regula Falsi -->
-<div class="problem-card">
-  <h3>Problema 10 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
-  <p>Aproxima la solucion de \(x=\cos(x)\) en \([0.5, \pi/4]\) por regula falsi con 10 cifras significativas.</p>
-  <button class="btn btn-primary" onclick="solveP(10)">Resolver paso a paso</button>
-  <div class="sol" id="sol-10"></div>
-</div>
-
-<!-- Problema 11: Comparativa -->
-<div class="problem-card">
-  <h3>Problema 11 <span class="badge badge-tarea">TAREA 3-5</span> <span class="badge badge-hard">Dificil</span></h3>
-  <p>Dada la ecuacion \(x=e^{-x}\) en \([0,1]\), aplica los 5 metodos (biseccion, secante, regula falsi, punto fijo con \(g(x)=e^{-x}\), Newton). Compara iteraciones necesarias para \(\varepsilon=10^{-6}\).</p>
-  <button class="btn btn-primary" onclick="solveP(11)">Resolver paso a paso</button>
-  <div class="sol" id="sol-11"></div>
-</div>
-
-<!-- Problema 12: Ecuacion trascendente -->
-<div class="problem-card">
-  <h3>Problema 12 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
-  <p>Resuelve \(e^x-\log(x+2)-2=0\) por biseccion y secante sabiendo que hay dos soluciones en \((-2,+\infty)\) y solo una es positiva. La solucion debe tener 5 c.d.e.</p>
-  <button class="btn btn-primary" onclick="solveP(12)">Resolver paso a paso</button>
-  <div class="sol" id="sol-12"></div>
-</div>
+<div id="slv-plot" class="plot-container" style="min-height:350px"></div>
+<div class="iter-table" style="margin-top:.5rem"><table class="dt" id="slv-table"><thead><tr></tr></thead><tbody></tbody></table></div>
+<div class="reasoning-box" id="slv-reasoning" style="display:none;background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin-top:1rem;font-size:.9rem;line-height:1.7"></div>
 
 </div><!-- fin tab-problems -->
 
-<!-- ============ TEST ============ -->
+<!-- ============ TEST Y PROBLEMAS ============ -->
 <div id="tab-test" class="tab-content">
-<h2 style="margin-bottom:1rem;color:var(--pri)">Test de Autoevaluacion</h2>
-<div class="score-bar"><span>Puntuacion: </span><span class="score" id="test-score">0</span><span> / <span id="test-total">20</span></span></div>
+<h2 style="margin-bottom:1rem;color:var(--pri)">Evaluacion</h2>
 
+<div class="topic-selector" style="margin-bottom:1rem">
+  <label>Modo:</label>
+  <select id="eval-mode" onchange="switchEvalMode(this.value)" style="max-width:250px">
+    <option value="test" selected>Test de autoevaluacion</option>
+    <option value="problems">Problemas resueltos</option>
+  </select>
+</div>
+
+<!-- TEST -->
+<div id="eval-test">
+<div class="score-bar"><span>Puntuacion: </span><span class="score" id="test-score">0</span><span> / <span id="test-total">20</span></span></div>
 <div id="test-questions"></div>
 <button class="btn btn-success" onclick="gradeTest()" style="margin-top:1rem">Corregir Test</button>
 </div>
+
+<!-- PROBLEMAS RESUELTOS -->
+<div id="eval-problems" style="display:none">
+<p style="margin-bottom:1rem;color:var(--txtl)">Problemas resueltos paso a paso. Pulsa "Resolver" para ver la solucion con calculos automaticos.</p>
+
+<div class="problem-card">
+  <h3>Problema 1 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>La ecuacion \(x^2-3=0\) tiene una solucion positiva en \([1,2]\). Calcula los 3 primeros iterados por biseccion y el numero de iteraciones para 14 cifras decimales exactas.</p>
+  <button class="btn btn-primary" onclick="solveP(1)">Resolver</button>
+  <div class="sol" id="sol-1"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 2 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
+  <p>Localiza y separa las soluciones de \(x^3-x^2-4x+6=0\). Aplica biseccion con tolerancia \(10^{-3}\) en cada intervalo.</p>
+  <button class="btn btn-primary" onclick="solveP(2)">Resolver</button>
+  <div class="sol" id="sol-2"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 3 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
+  <p>Elige un intervalo para la unica solucion positiva de \(2x=\tan(x)\). Calcula iteraciones de biseccion para 5 c.d.e. y aplica la secante.</p>
+  <button class="btn btn-primary" onclick="solveP(3)">Resolver</button>
+  <div class="sol" id="sol-3"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 4 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
+  <p>La ecuacion \(e^{-x}+4x^3-5=0\) tiene unica solucion en \([1,2]\). Justifica biseccion, realiza 8 iteraciones, estima n para 10 c.d.e.</p>
+  <button class="btn btn-primary" onclick="solveP(4)">Resolver</button>
+  <div class="sol" id="sol-4"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 5 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
+  <p>Localiza y separa las soluciones de \(x^3-3x^2-4x+6=0\). Intervalos de amplitud inferior a 0.5.</p>
+  <button class="btn btn-primary" onclick="solveP(5)">Resolver</button>
+  <div class="sol" id="sol-5"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 6 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Demuestra que \(x\cdot e^x-1=0\) tiene unica solucion. Resuelvela por Newton-Raphson con \(x_0=0\).</p>
+  <button class="btn btn-primary" onclick="solveP(6)">Resolver</button>
+  <div class="sol" id="sol-6"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 7 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>\(x^3+4x^2-10=0\) en \([1,2]\). Newton-Raphson con Regla de Fourier. Obtener 5 cifras significativas.</p>
+  <button class="btn btn-primary" onclick="solveP(7)">Resolver</button>
+  <div class="sol" id="sol-7"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 8 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>\(e^x-x-1=0\) en \([-1,1]\). Compara Newton normal vs. multiplicidad \(k=2\).</p>
+  <button class="btn btn-primary" onclick="solveP(8)">Resolver</button>
+  <div class="sol" id="sol-8"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 9 <span class="badge badge-tarea">TAREA 5</span> <span class="badge badge-med">Media</span></h3>
+  <p>\(x^3+4x^2-10=0\) en \([1,2]\) por punto fijo con \(g(x)=\sqrt{10/(4+x)}\).</p>
+  <button class="btn btn-primary" onclick="solveP(9)">Resolver</button>
+  <div class="sol" id="sol-9"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 10 <span class="badge badge-tarea">TAREA 3</span> <span class="badge badge-med">Media</span></h3>
+  <p>\(x=\cos(x)\) en \([0.5, \pi/4]\) por regula falsi con 10 cifras significativas.</p>
+  <button class="btn btn-primary" onclick="solveP(10)">Resolver</button>
+  <div class="sol" id="sol-10"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 11 <span class="badge badge-tarea">TAREA 3-5</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>\(x=e^{-x}\) en \([0,1]\): compara los 5 metodos con \(\varepsilon=10^{-6}\).</p>
+  <button class="btn btn-primary" onclick="solveP(11)">Resolver</button>
+  <div class="sol" id="sol-11"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 12 <span class="badge badge-tarea">TAREA 4</span> <span class="badge badge-med">Media</span></h3>
+  <p>\(e^x-\ln(x+2)-2=0\) por biseccion y secante, 5 c.d.e.</p>
+  <button class="btn btn-primary" onclick="solveP(12)">Resolver</button>
+  <div class="sol" id="sol-12"></div>
+</div>
+
+</div><!-- fin eval-problems -->
+</div><!-- fin tab-test -->
 
 <!-- ============ JAVASCRIPT ============ -->
 <script>
@@ -1180,6 +1219,189 @@ function gradeTest(){
     else{fb.className='feedback incorrect';fb.textContent='Incorrecto. Correcta: '+q.o[q.a];}
   });
   document.getElementById('test-score').textContent=score;
+}
+
+// === SOLVER ===
+function switchEvalMode(mode){
+  document.getElementById('eval-test').style.display=mode==='test'?'block':'none';
+  document.getElementById('eval-problems').style.display=mode==='problems'?'block':'none';
+  if(mode==='problems')renderMathInElement(document.getElementById('eval-problems'),mathOpts);
+}
+
+function updateSolverUI(){
+  const m=document.getElementById('slv-method').value;
+  document.getElementById('slv-p-ab').style.display=['localize','biseccion','secante','regulafalsi','compare'].includes(m)?'':'none';
+  document.getElementById('slv-p-x0').style.display=['puntofijo','newton'].includes(m)?'':'none';
+  document.getElementById('slv-p-gx').style.display=m==='puntofijo'?'':'none';
+  document.getElementById('slv-p-mult').style.display=m==='newton'?'':'none';
+  document.getElementById('slv-p-tol').style.display=m!=='localize'?'':'none';
+  document.getElementById('slv-p-max').style.display=m!=='localize'?'':'none';
+}
+
+function previewSolverFn(){
+  const fn=document.getElementById('slv-fn').value;
+  try{const node=math.parse(prep(fn));
+    katex.render('f(x)='+node.toTex(),document.getElementById('slv-preview'));}
+  catch(e){document.getElementById('slv-preview').textContent=fn;}
+}
+
+function solverLocalize(){
+  const fn=document.getElementById('slv-fn').value;
+  const ab=document.getElementById('slv-ab').value.split(',').map(Number);
+  const a=ab[0]||(-10),b=ab[1]||(10);
+  const N=500,xs=[],ys=[];
+  for(let i=0;i<=N;i++){const x=a+(b-a)*i/N;xs.push(x);ys.push(evalF(fn,x));}
+  const roots=[];
+  for(let i=0;i<N;i++){if(ys[i]*ys[i+1]<0)roots.push([xs[i],xs[i+1]]);}
+  Plotly.newPlot('slv-plot',[{x:xs,y:ys,name:'f(x)',line:{color:'#2980b9',width:2}},{x:[a,b],y:[0,0],mode:'lines',line:{color:'#aaa',dash:'dash'},showlegend:false}],{margin:{t:30,b:40,l:50,r:20},xaxis:{title:'x'},yaxis:{title:'f(x)'},title:'Localizacion de raices'},{responsive:true});
+  let html='<h4 style="color:var(--pri)">Localizacion de raices</h4>';
+  if(roots.length===0)html+='<p>No se detectan cambios de signo.</p>';
+  else{html+='<p>Se detectan <b>'+roots.length+'</b> raiz(ces):</p><ul>';
+    roots.forEach((r,i)=>{html+='<li>Raiz '+(i+1)+': \\(['+fmt(r[0],6)+','+fmt(r[1],6)+']\\), \\(f(a)='+fmt(evalF(fn,r[0]),6)+'\\), \\(f(b)='+fmt(evalF(fn,r[1]),6)+'\\)</li>';});
+    html+='</ul>';}
+  // Derivada y monotonia
+  const df=derivF(fn);
+  html+='<p><b>Derivada:</b> \\(f\'(x)='+df.expr+'\\)</p>';
+  const rBox=document.getElementById('slv-reasoning');rBox.style.display='block';rBox.innerHTML=html;
+  renderMathInElement(rBox,mathOpts);
+}
+
+function solverFourier(){
+  const fn=document.getElementById('slv-fn').value;
+  const ab=document.getElementById('slv-ab').value.split(',').map(Number);
+  const a=ab[0],b=ab[1];
+  const df=derivF(fn),d2f=deriv2F(fn);
+  const fa=evalF(fn,a),fb=evalF(fn,b);
+  const d2fa=d2f.eval(a),d2fb=d2f.eval(b);
+  let fpOk=true,fppOk=true;
+  for(let i=0;i<=100;i++){const x=a+(b-a)*i/100;if(Math.abs(df.eval(x))<1e-12)fpOk=false;if(Math.abs(d2f.eval(x))<1e-12)fppOk=false;}
+  let html='<h4 style="color:var(--pri)">Regla de Fourier en \\(['+a+','+b+']\\)</h4>';
+  html+='<div class="step">\\(f('+a+')='+fmt(fa)+',\\; f('+b+')='+fmt(fb)+'\\). Cambio signo: '+(fa*fb<0?'<b style="color:green">Si</b>':'<b style="color:red">No</b>')+'</div>';
+  html+='<div class="step">\\(f\'(x)='+df.expr+'\\). No se anula: '+(fpOk?'<b style="color:green">OK</b>':'<b style="color:red">Falla</b>')+'</div>';
+  html+='<div class="step">\\(f\'\'(x)='+d2f.expr+'\\). No se anula: '+(fppOk?'<b style="color:green">OK</b>':'<b style="color:red">Falla</b>')+'</div>';
+  const pA=fa*d2fa,pB=fb*d2fb;
+  html+='<div class="step">\\(f(a)\\cdot f\'\'(a)='+fmt(pA)+'\\) '+(pA>0?'> 0':'')+'</div>';
+  html+='<div class="step">\\(f(b)\\cdot f\'\'(b)='+fmt(pB)+'\\) '+(pB>0?'> 0':'')+'</div>';
+  if(pA>0)html+='<div class="step"><b style="color:green">Tomar \\(x_0='+a+'\\)</b></div>';
+  else if(pB>0)html+='<div class="step"><b style="color:green">Tomar \\(x_0='+b+'\\)</b></div>';
+  else html+='<div class="step"><b style="color:red">Fourier no aplicable directamente.</b></div>';
+  const rBox=document.getElementById('slv-reasoning');rBox.style.display='block';rBox.innerHTML=html;
+  renderMathInElement(rBox,mathOpts);
+}
+
+function runSolver(){
+  const fn=document.getElementById('slv-fn').value;
+  const method=document.getElementById('slv-method').value;
+  const tol=parseFloat(document.getElementById('slv-tol').value)||1e-6;
+  const mx=parseInt(document.getElementById('slv-maxiter').value)||50;
+  const ab=document.getElementById('slv-ab').value.split(',').map(s=>{try{return math.evaluate(s);}catch(e){return parseFloat(s);}});
+  const x0=parseFloat(document.getElementById('slv-x0').value)||1.5;
+  const gx=document.getElementById('slv-gx').value;
+  const mult=parseInt(document.getElementById('slv-mult').value)||1;
+  const calcN=document.getElementById('slv-niter').checked;
+  const steps=[];
+  let rows,headers,result;
+  const df=derivF(fn);
+  steps.push('<h4 style="color:var(--pri)">Resolucion paso a paso</h4>');
+  try{const node=math.parse(prep(fn));steps.push('<div class="step"><b>Funcion:</b> \\(f(x)='+node.toTex()+'\\)</div>');}catch(e){}
+  steps.push('<div class="step"><b>Derivada:</b> \\(f\'(x)='+df.expr+'\\)</div>');
+  steps.push('<div class="step"><b>Metodo:</b> '+method+'</div>');
+
+  if(method==='localize'){solverLocalize();return;}
+
+  if(method==='biseccion'){
+    const a=ab[0],b=ab[1];
+    steps.push('<div class="step">\\(f('+a+')='+fmt(evalF(fn,a))+'\\), \\(f('+b+')='+fmt(evalF(fn,b))+'\\). Cambio signo: '+(evalF(fn,a)*evalF(fn,b)<0?'<b style="color:green">Si</b>':'<b style="color:red">No</b>')+'</div>');
+    if(calcN){const nIter=Math.ceil((Math.log(b-a)+Math.log(Math.pow(10,Math.round(-Math.log10(tol)))))/Math.log(2));
+      steps.push('<div class="step"><b>Iteraciones minimas:</b> \\(\\frac{b-a}{2^n}<'+tol+'\\Rightarrow n\\geq '+nIter+'\\)</div>');}
+    rows=biseccion(fn,a,b,tol,mx);
+    headers=['n','a','b','x_n','f(x_n)','Error'];
+    fillTable('slv-table',rows.map(r=>[r.n,fmt(r.a),fmt(r.b),fmt(r.x),fmt(r.fx),fmt(r.error,4)]));
+    document.getElementById('slv-table').querySelector('thead tr').innerHTML='<th>n</th><th>\\(a_n\\)</th><th>\\(b_n\\)</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error</th>';
+    result=rows[rows.length-1];
+    steps.push('<div class="step"><b>Resultado:</b> \\(x\\approx'+fmt(result.x)+'\\) tras '+result.n+' iteraciones. Error \\(\\leq'+fmt(result.error,4)+'\\)</div>');
+    // Plot
+    plotSolverFn(fn,ab[0],ab[1],rows.map(r=>({x:r.x,y:r.fx})));
+  }
+  else if(method==='secante'){
+    rows=secante(fn,ab[0],ab[1],tol,mx);
+    fillTable('slv-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.fx),r.er===''?'':fmt(r.er,4)]));
+    document.getElementById('slv-table').querySelector('thead tr').innerHTML='<th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error rel.</th>';
+    result=rows[rows.length-1];
+    steps.push('<div class="step">Orden de convergencia: \\(\\Phi=\\frac{1+\\sqrt{5}}{2}\\approx 1.618\\) (superlineal)</div>');
+    steps.push('<div class="step"><b>Resultado:</b> \\(x\\approx'+fmt(result.x)+'\\) en '+(result.n-2)+' iteraciones.</div>');
+    plotSolverFn(fn,ab[0],ab[1],rows.map(r=>({x:r.x,y:r.fx})));
+  }
+  else if(method==='regulafalsi'){
+    rows=regulaFalsi(fn,ab[0],ab[1],tol,mx);
+    fillTable('slv-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.fx),r.er===''?'':fmt(r.er,4)]));
+    document.getElementById('slv-table').querySelector('thead tr').innerHTML='<th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>Error rel.</th>';
+    result=rows[rows.length-1];
+    steps.push('<div class="step"><b>Resultado:</b> \\(x\\approx'+fmt(result.x)+'\\) en '+(result.n-2)+' iteraciones.</div>');
+    plotSolverFn(fn,ab[0],ab[1],rows.map(r=>({x:r.x,y:r.fx})));
+  }
+  else if(method==='puntofijo'){
+    // Check convergence
+    steps.push('<div class="step"><b>Funcion iteracion:</b> \\(g(x)='+gx+'\\), \\(x_0='+x0+'\\)</div>');
+    rows=puntoFijo(gx,x0,tol,mx);
+    fillTable('slv-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.gx),r.er===''?'':fmt(r.er,4)]));
+    document.getElementById('slv-table').querySelector('thead tr').innerHTML='<th>n</th><th>\\(x_n\\)</th><th>\\(g(x_n)\\)</th><th>Error rel.</th>';
+    result=rows[rows.length-1];
+    steps.push('<div class="step"><b>Resultado:</b> \\(x\\approx'+fmt(result.x)+'\\) en '+result.n+' iteraciones.</div>');
+    plotSolverPF(gx,rows);
+  }
+  else if(method==='newton'){
+    steps.push('<div class="step">\\(x_0='+x0+'\\), multiplicidad \\(k='+mult+'\\)</div>');
+    rows=newton(fn,x0,tol,mx,mult);
+    fillTable('slv-table',rows.map(r=>[r.n,fmt(r.x),fmt(r.fx),fmt(r.dfx),r.er===''?'':fmt(r.er,4)]));
+    document.getElementById('slv-table').querySelector('thead tr').innerHTML='<th>n</th><th>\\(x_n\\)</th><th>\\(f(x_n)\\)</th><th>\\(f\'(x_n)\\)</th><th>Error rel.</th>';
+    result=rows[rows.length-1];
+    steps.push('<div class="step">Convergencia: '+(mult>1?'cuadratica restaurada (k='+mult+')':'cuadratica si f\'(s)!=0')+'</div>');
+    steps.push('<div class="step"><b>Resultado:</b> \\(x\\approx'+fmt(result.x)+'\\) en '+result.n+' iteraciones.</div>');
+    plotSolverFn(fn,x0-2,x0+2,rows.map(r=>({x:r.x,y:r.fx})));
+  }
+  else if(method==='compare'){
+    const a=ab[0],b=ab[1],mid=(a+b)/2;
+    const rB=biseccion(fn,a,b,tol,200);
+    const rS=secante(fn,a,b,tol,200);
+    const rR=regulaFalsi(fn,a,b,tol,200);
+    const rN=newton(fn,mid,tol,200,1);
+    const data=[
+      ['Biseccion',rB[rB.length-1].n,fmt(rB[rB.length-1].x),fmt(rB[rB.length-1].error,4),'Lineal'],
+      ['Secante',rS[rS.length-1].n-2,fmt(rS[rS.length-1].x),fmt(rS[rS.length-1].er,4),'Superlineal'],
+      ['Regula Falsi',rR[rR.length-1].n-2,fmt(rR[rR.length-1].x),fmt(rR[rR.length-1].er,4),'>Secante'],
+      ['Newton',rN[rN.length-1].n,fmt(rN[rN.length-1].x),fmt(rN[rN.length-1].er,4),'Cuadratica']
+    ];
+    fillTable('slv-table',data);
+    document.getElementById('slv-table').querySelector('thead tr').innerHTML='<th>Metodo</th><th>Iter.</th><th>Resultado</th><th>Error</th><th>Orden</th>';
+    steps.push('<div class="step"><b>Newton es el mas rapido, seguido de secante/regula falsi. Biseccion el mas lento.</b></div>');
+    // Convergence plot
+    const traces=[];
+    [{n:'Biseccion',r:rB,k:'error',c:'#3498db'},{n:'Secante',r:rS,k:'er',c:'#e67e22'},{n:'Regula Falsi',r:rR,k:'er',c:'#2ecc71'},{n:'Newton',r:rN,k:'er',c:'#e74c3c'}].forEach(m=>{
+      const xs=[],ys=[];m.r.forEach(r=>{const v=r[m.k];if(v!==''&&!isNaN(v)&&v>0){xs.push(r.n);ys.push(Math.log10(v));}});
+      if(xs.length>0)traces.push({x:xs,y:ys,name:m.n,mode:'lines+markers',line:{color:m.c},marker:{size:4}});
+    });
+    Plotly.newPlot('slv-plot',traces,{margin:{t:30,b:40,l:60,r:20},xaxis:{title:'Iteracion'},yaxis:{title:'log10(error)'},title:'Convergencia comparada'},{responsive:true});
+  }
+
+  const rBox=document.getElementById('slv-reasoning');rBox.style.display='block';rBox.innerHTML=steps.join('');
+  renderMathInElement(rBox,mathOpts);
+  renderMathInElement(document.getElementById('slv-table'),mathOpts);
+}
+
+function plotSolverFn(fn,a,b,pts){
+  const pad=(b-a)*0.2||1;const N=300,xs=[],ys=[];
+  for(let i=0;i<=N;i++){const v=a-pad+(b-a+2*pad)*i/N;xs.push(v);ys.push(evalF(fn,v));}
+  Plotly.newPlot('slv-plot',[{x:xs,y:ys,name:'f(x)',line:{color:'#2980b9',width:2}},{x:[a-pad,b+pad],y:[0,0],mode:'lines',line:{color:'#aaa',dash:'dash'},showlegend:false},{x:pts.map(p=>p.x),y:pts.map(p=>p.y),mode:'markers',name:'Iterados',marker:{color:'#e74c3c',size:7}}],{margin:{t:30,b:40,l:50,r:20}},{responsive:true});
+}
+function plotSolverPF(gx,rows){
+  const vals=rows.map(r=>r.x).filter(v=>isFinite(v));
+  const mn=Math.min(...vals)-0.5,mx=Math.max(...vals)+0.5;
+  const N=200,xs=[],yg=[],yx=[];
+  for(let i=0;i<=N;i++){const v=mn+(mx-mn)*i/N;xs.push(v);yg.push(evalG(gx,v));yx.push(v);}
+  const sx=[],sy=[];
+  for(let i=0;i<rows.length-1;i++){const xi=rows[i].x,gi=rows[i].gx;if(!isFinite(xi)||!isFinite(gi))break;sx.push(xi,xi,gi);sy.push(0,gi,gi);}
+  Plotly.newPlot('slv-plot',[{x:xs,y:yg,name:'g(x)',line:{color:'#2980b9'}},{x:xs,y:yx,name:'y=x',line:{color:'#aaa',dash:'dash'}},{x:sx,y:sy,name:'Escalera',line:{color:'#e74c3c',width:1},mode:'lines'}],{margin:{t:30,b:40,l:50,r:20},title:'Punto Fijo'},{responsive:true});
 }
 
 // === ANIMACIONES ===
