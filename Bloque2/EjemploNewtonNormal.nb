@@ -1,0 +1,261 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[      7648,        251]
+NotebookOptionsPosition[      6391,        205]
+NotebookOutlinePosition[      6734,        220]
+CellTagsIndexPosition[      6691,        217]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Resolvemos", " ", "la", " ", "ecuaci\[OAcute]n", " ", 
+      RowBox[{"x", "^", "3"}]}], "+", 
+     RowBox[{"4", 
+      RowBox[{"x", "^", "2"}]}], "-", "10"}], "=", 
+    RowBox[{
+     RowBox[{
+     "0", " ", "usando", " ", "el", " ", "m\[EAcute]todo", " ", "de", " ", 
+      "Newton"}], "-", 
+     RowBox[{"Raphson", " ", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+        "caso", " ", "particular", " ", "del", " ", "punto", " ", "fijo"}], 
+        ")"}], ".", " ", "Primero"}], " ", "construimos", " ", "la", " ", 
+      "funci\[OAcute]n", " ", "f", " ", "asociada", " ", "a", " ", "la", " ", 
+      "ecuaci\[OAcute]n", " ", "y", " ", "la", " ", "funci\[OAcute]n", " ", 
+      "de", " ", "iteraci\[OAcute]n", " ", 
+      RowBox[{"g", ":"}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"f", "[", "x_", "]"}], "=", 
+    RowBox[{
+     RowBox[{"-", "10"}], "+", 
+     RowBox[{"4", " ", 
+      SuperscriptBox["x", "2"]}], "+", 
+     SuperscriptBox["x", "3"]}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"g", "[", "x_", "]"}], ":=", 
+    RowBox[{"x", "-", 
+     RowBox[{
+      RowBox[{"f", "[", "x", "]"}], "/", 
+      RowBox[{
+       RowBox[{"f", "'"}], "[", "x", "]"}]}]}]}]}]}]], "Input",
+ CellChangeTimes->{{3.507826704421875*^9, 3.507826802484375*^9}, {
+  3.507826938140625*^9, 3.507826966984375*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "10"}], "+", 
+  RowBox[{"4", " ", 
+   SuperscriptBox["x", "2"]}], "+", 
+  SuperscriptBox["x", "3"]}]], "Output",
+ CellChangeTimes->{3.5078269675625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Introducimos", " ", "el", " ", "dato", " ", "inicial", " ", "x0", " ", 
+    "y", " ", "una", " ", "tolerancia", " ", "para", " ", "el", " ", "error", 
+    " ", 
+    RowBox[{"absoluto", ":"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"x0", "=", "1.5`20"}], "\[IndentingNewLine]", 
+   RowBox[{"tol", "=", 
+    RowBox[{"10", "^", 
+     RowBox[{"(", 
+      RowBox[{"-", "7"}], ")"}]}]}]}]}]], "Input",
+ CellChangeTimes->{{3.507826982375*^9, 3.507827013375*^9}}],
+
+Cell[BoxData["1.5`20."], "Output",
+ CellChangeTimes->{3.5078270158125*^9}],
+
+Cell[BoxData[
+ FractionBox["1", "10000000"]], "Output",
+ CellChangeTimes->{3.5078270158125*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Aplicamos", " ", "el", " ", "m\[EAcute]todo", " ", "de", " ", "Newton"}],
+     "-", 
+    RowBox[{"Raphson", ":"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"x1", "=", 
+    RowBox[{"g", "[", "x0", "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"ea", "=", 
+    RowBox[{"Abs", "[", 
+     RowBox[{"x1", "-", "x0"}], " ", "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"ea", "<", "tol"}]}]}]], "Input",
+ CellChangeTimes->{{3.507827225984375*^9, 3.50782722921875*^9}, {
+  3.50782746190625*^9, 3.507827466765625*^9}, {3.507827498671875*^9, 
+  3.507827570640625*^9}}],
+
+Cell[BoxData["1.37333333333333333333333333333333333333`19.636406273527296"], \
+"Output",
+ CellChangeTimes->{3.507827571359375*^9}],
+
+Cell[BoxData["0.12666666666666666666666666666666666667`18.43313472000239"], \
+"Output",
+ CellChangeTimes->{3.507827571359375*^9}],
+
+Cell[BoxData["False"], "Output",
+ CellChangeTimes->{3.507827571359375*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"x2", "=", 
+  RowBox[{"g", "[", "x1", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ea", "=", 
+  RowBox[{"Abs", "[", 
+   RowBox[{"x2", "-", "x1"}], " ", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ea", "<", "tol"}]}], "Input",
+ CellChangeTimes->{{3.507827581328125*^9, 3.507827586625*^9}}],
+
+Cell[BoxData["1.3652620148746266212381755975`19.33110964169238"], "Output",
+ CellChangeTimes->{3.50782758834375*^9}],
+
+Cell[BoxData["0.00807131845870671209515773583`16.927315007570172"], "Output",
+ CellChangeTimes->{3.50782758834375*^9}],
+
+Cell[BoxData["False"], "Output",
+ CellChangeTimes->{3.50782758834375*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"x3", "=", 
+  RowBox[{"g", "[", "x2", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ea", "=", 
+  RowBox[{"Abs", "[", 
+   RowBox[{"x3", "-", "x2"}], " ", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ea", "<", "tol"}]}], "Input",
+ CellChangeTimes->{{3.50782759253125*^9, 3.507827597484375*^9}}],
+
+Cell[BoxData["1.36523001391614664929109615286`19.03006265306933"], "Output",
+ CellChangeTimes->{3.5078276*^9}],
+
+Cell[BoxData["0.00003200095847997194707944464`14.223930823943398"], "Output",
+ CellChangeTimes->{3.507827600015625*^9}],
+
+Cell[BoxData["False"], "Output",
+ CellChangeTimes->{3.507827600015625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"x4", "=", 
+  RowBox[{"g", "[", "x3", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ea", "=", 
+  RowBox[{"Abs", "[", 
+   RowBox[{"x4", "-", "x3"}], " ", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ea", "<", "tol"}]}], "Input",
+ CellChangeTimes->{{3.507827603828125*^9, 3.507827608734375*^9}}],
+
+Cell[BoxData["1.36523001341409684588437624613`18.72903265713875"], "Output",
+ CellChangeTimes->{3.507827609984375*^9}],
+
+Cell[BoxData["5.0204980340671990673`9.11848237216636*^-10"], "Output",
+ CellChangeTimes->{3.507827609984375*^9}],
+
+Cell[BoxData["True"], "Output",
+ CellChangeTimes->{3.50782761*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{"Por", " ", "tanto"}], ",", " ", 
+   RowBox[{
+   "en", " ", "4", " ", "iteraciones", " ", "se", " ", "obtiene", " ", "una", 
+    " ", "soluci\[OAcute]n", " ", "con", " ", "no", " ", "solo", " ", "7", 
+    " ", "cifras", " ", "decimales", " ", "exactas"}], ",", " ", 
+   RowBox[{"sino", " ", "con", " ", "9."}]}], "*)"}]], "Input",
+ CellChangeTimes->{{3.507827613828125*^9, 3.50782765396875*^9}}]
+},
+WindowSize->{616, 537},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (November 10, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[567, 22, 1429, 39, 132, "Input"],
+Cell[1999, 63, 191, 6, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2227, 74, 529, 14, 92, "Input"],
+Cell[2759, 90, 74, 1, 30, "Output"],
+Cell[2836, 93, 95, 2, 47, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2968, 100, 639, 17, 92, "Input"],
+Cell[3610, 119, 130, 2, 30, "Output"],
+Cell[3743, 123, 129, 2, 30, "Output"],
+Cell[3875, 127, 74, 1, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3986, 133, 309, 7, 72, "Input"],
+Cell[4298, 142, 116, 1, 30, "Output"],
+Cell[4417, 145, 118, 1, 30, "Output"],
+Cell[4538, 148, 73, 1, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4648, 154, 311, 7, 72, "Input"],
+Cell[4962, 163, 110, 1, 30, "Output"],
+Cell[5075, 166, 119, 1, 30, "Output"],
+Cell[5197, 169, 74, 1, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5308, 175, 312, 7, 72, "Input"],
+Cell[5623, 184, 118, 1, 30, "Output"],
+Cell[5744, 187, 112, 1, 30, "Output"],
+Cell[5859, 190, 66, 1, 30, "Output"]
+}, Open  ]],
+Cell[5940, 194, 447, 9, 72, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

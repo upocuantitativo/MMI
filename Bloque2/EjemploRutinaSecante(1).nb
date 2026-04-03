@@ -1,0 +1,256 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      8906,        247]
+NotebookOptionsPosition[      8256,        220]
+NotebookOutlinePosition[      8598,        235]
+CellTagsIndexPosition[      8555,        232]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Clear", "[", 
+  RowBox[{"x1", ",", "x2", ",", "q1", ",", "q2"}], "]"}]], "Input",
+ CellChangeTimes->{{3.577512986050934*^9, 3.5775129943884106`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"f", "[", "x_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"E", "^", 
+    RowBox[{"-", "x"}]}], "-", "x"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"x1", ":=", "0`30"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Debes", " ", "meter", " ", "precision", " ", "a", " ", "los", " ", 
+    "datos", " ", "x0", " ", "y", " ", "x1", " ", "para", " ", "evitar", " ", 
+    "falsas", " ", "cancelaciones"}], "*)"}]}], "\n", 
+ RowBox[{"x2", ":=", "1`30"}], "\n", 
+ RowBox[{
+  RowBox[{"q1", "=", 
+   RowBox[{"f", "[", "x1", "]"}]}], " ", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+     "Estos", " ", "dos", " ", "q1", " ", "y", " ", "q2", " ", "no", " ", 
+      "pueden", " ", "ir", " ", "con"}], " ", ":=", " ", 
+     RowBox[{"que", " ", "es", " ", "definici\[OAcute]n"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"sino", " ", "con"}], " ", "=", " ", 
+     RowBox[{"que", " ", "es", " ", "asignaci\[OAcute]n"}]}]}], 
+   "*)"}]}], "\n", 
+ RowBox[{"q2", "=", 
+  RowBox[{"f", "[", "x2", "]"}]}], "\n", 
+ RowBox[{"x", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"x1", "*", "q2"}], "-", 
+     RowBox[{"x2", "*", "q1"}]}], ")"}], "/", 
+   RowBox[{"(", 
+    RowBox[{"q2", "-", "q1"}], ")"}]}]}], "\n", 
+ RowBox[{
+  RowBox[{"error", ":=", 
+   RowBox[{"Abs", "[", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"x", "-", "x2"}], ")"}], "/", "x"}], "]"}]}], " ", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Faltaba", " ", "el", " ", "valor", " ", "absoltuo"}], ",", " ", 
+    RowBox[{
+    "porque", " ", "el", " ", "error", " ", "es", " ", "sin", " ", "signo", 
+     " ", "y", " ", "si", " ", "no", " ", "lo", " ", "pones", " ", "puedes", 
+     " ", "considerar", " ", "el", " ", "error", " ", "con", " ", "signo"}], 
+    ",", " ", 
+    RowBox[{
+    "salir", " ", "negativo", " ", "y", " ", "ya", " ", 
+     "autom\[AAcute]ticamente", " ", "es", " ", "menor", " ", "que", " ", 
+     "la", " ", "tolerancia"}]}], "*)"}]}], "\n", 
+ RowBox[{"tol", ":=", "0.001"}], "\n", 
+ RowBox[{"maxiter", ":=", "10"}], "\n", 
+ RowBox[{"iter", ":=", "4"}], "\n", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Voy", " ", "a", " ", "ejecutar", " ", "el", " ", "c\[OAcute]digo"}], 
+   "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.577512284623814*^9, 3.577512324890117*^9}, {
+   3.577512401016472*^9, 3.577512412226113*^9}, {3.5775125293118095`*^9, 
+   3.5775125698861303`*^9}, {3.577512639276099*^9, 3.577512682169553*^9}, 
+   3.577512737794734*^9, 3.577512783602354*^9, 3.5775128317371073`*^9, 
+   3.577512911076645*^9, {3.577512967713885*^9, 3.577512970529046*^9}, {
+   3.5775130172637186`*^9, 3.5775130673305826`*^9}, {3.5995482098420477`*^9, 
+   3.5995482118471627`*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{
+  3.5775130363898125`*^9, {3.577513075924074*^9, 3.5775130838215256`*^9}, {
+   3.5775132601366105`*^9, 3.5775132733393655`*^9}, 3.5995482150903482`*^9}],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  "0.6321205588285576784044762298385391325541888689682321654401`29.\
+664752093091355"}]], "Output",
+ CellChangeTimes->{
+  3.5775130363898125`*^9, {3.577513075924074*^9, 3.5775130838215256`*^9}, {
+   3.5775132601366105`*^9, 3.5775132733393655`*^9}, 3.5995482150953484`*^9}],
+
+Cell[BoxData["0.6126998367802820394830955846444311692804345141769967000004`29.\
+73563098064193"], "Output",
+ CellChangeTimes->{
+  3.5775130363898125`*^9, {3.577513075924074*^9, 3.5775130838215256`*^9}, {
+   3.5775132601366105`*^9, 3.5775132733393655`*^9}, 3.599548215099349*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"While", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"error", ">", "tol"}], "&&", 
+    RowBox[{"iter", "<", "maxiter"}]}], ",", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"x1", "=", "x2"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"x2", "=", "x"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"q1", "=", "q2"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"q2", "=", 
+     RowBox[{"f", "[", "x", "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"x", "=", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"x1", "*", "q2"}], "-", 
+        RowBox[{"x2", "*", "q1"}]}], ")"}], "/", 
+      RowBox[{"(", 
+       RowBox[{"q2", "-", "q1"}], ")"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"error", "=", 
+     RowBox[{"Abs", "[", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"x", "-", "x2"}], ")"}], "/", "x"}], "]"}]}], ";", 
+    RowBox[{"(*", 
+     RowBox[{"Valor", " ", "absoltuo"}], "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Aproximado \>\"", ",", "iter", ",", "\"\< es \>\"", ",", "x", ",", 
+      " ", "\"\<con error relativo \>\"", ",", " ", "error"}], "]"}], ";", 
+    RowBox[{"(*", 
+     RowBox[{
+     "no", " ", "te", " ", "olvides", " ", "de", " ", "indicar", " ", "el", 
+      " ", "error", " ", "relativo"}], "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"iter", "++"}]}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.5775124367285137`*^9, 3.577512515892042*^9}, {
+   3.577512593017453*^9, 3.577512611253496*^9}, 3.5775127165735207`*^9, {
+   3.5775131012645235`*^9, 3.577513145641062*^9}, {3.5775131811790943`*^9, 
+   3.5775132240385456`*^9}, {3.5775132698931684`*^9, 3.5775132701901855`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Aproximado \"\>", "\[InvisibleSpace]", "4", 
+   "\[InvisibleSpace]", "\<\" es \"\>", "\[InvisibleSpace]", 
+   "0.5638383891610742252422638696305526312590917336152679074143`28.\
+792134355872268", "\[InvisibleSpace]", "\<\"con error relativo \"\>", 
+   "\[InvisibleSpace]", 
+   "0.0866586038809949614128246430244603972247424431207109441428`27.\
+647008797662515"}],
+  SequenceForm[
+  "Aproximado ", 4, " es ", 
+   0.5638383891610742252422638696305526312590917336152679074143`28.\
+792134355872268, "con error relativo ", 
+   0.0866586038809949614128246430244603972247424431207109441428`27.\
+647008797662515],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.5775132741094093`*^9, 3.599548216078405*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Aproximado \"\>", "\[InvisibleSpace]", "5", 
+   "\[InvisibleSpace]", "\<\" es \"\>", "\[InvisibleSpace]", 
+   "0.5671703584197446449004541569896455065798357304105804106397`27.\
+345370845263865", "\[InvisibleSpace]", "\<\"con error relativo \"\>", 
+   "\[InvisibleSpace]", 
+   "0.0058747238976909575409541843673073446374632997539740690353`25.\
+096735950764238"}],
+  SequenceForm[
+  "Aproximado ", 5, " es ", 
+   0.5671703584197446449004541569896455065798357304105804106397`27.\
+345370845263865, "con error relativo ", 
+   0.0058747238976909575409541843673073446374632997539740690353`25.\
+096735950764238],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.5775132741094093`*^9, 3.599548216084405*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Aproximado \"\>", "\[InvisibleSpace]", "6", 
+   "\[InvisibleSpace]", "\<\" es \"\>", "\[InvisibleSpace]", 
+   "0.5671433066049632503223011366488106907284061782479761035088`24.\
+79840539710082", "\[InvisibleSpace]", "\<\"con error relativo \"\>", 
+   "\[InvisibleSpace]", 
+   "0.0000476983761711520817446170833621048996530142871324976797`20.\
+475657431956787"}],
+  SequenceForm[
+  "Aproximado ", 6, " es ", 
+   0.5671433066049632503223011366488106907284061782479761035088`24.\
+79840539710082, "con error relativo ", 
+   0.0000476983761711520817446170833621048996530142871324976797`20.\
+475657431956787],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.5775132741094093`*^9, 3.5995482160934057`*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{701, 616},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (November 7, 2010)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 173, 3, 31, "Input"],
+Cell[CellGroupData[{
+Cell[755, 27, 2687, 70, 312, "Input"],
+Cell[3445, 99, 201, 3, 30, "Output"],
+Cell[3649, 104, 301, 6, 30, "Output"],
+Cell[3953, 112, 278, 4, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4268, 121, 1682, 39, 212, "Input"],
+Cell[CellGroupData[{
+Cell[5975, 164, 749, 16, 43, "Print"],
+Cell[6727, 182, 749, 16, 43, "Print"],
+Cell[7479, 200, 749, 16, 43, "Print"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

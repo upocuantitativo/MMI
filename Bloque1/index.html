@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Teoria de Errores - Metodos Matematicos (UPO)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%232c3e50'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='white' font-family='serif'>∑ε</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--acc:#e74c3c;--ok:#27ae60;--warn:#f39c12;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--txtl:#7f8c8d;--brd:#dce1e6;--sh:0 2px 8px rgba(0,0,0,.08);--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+.header{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;padding:1.5rem 2rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.header p{font-size:.95rem;opacity:.9}
+.tab-bar{display:flex;background:var(--card);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#eef2f7}
+.tab-btn.active{color:var(--pri);border-bottom-color:var(--pri);background:#eef2f7}
+.tab-content{display:none;padding:1rem;max-width:960px;margin:0 auto}
+.tab-content.active{display:block}
+.topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.topic-selector label{font-weight:600;font-size:1rem;color:var(--pri)}
+.topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri-l);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
+.topic-section{display:none}
+.topic-section.active{display:block}
+.def-box,.prop-box,.example-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
+.def-box{border-color:var(--pri);background:#eaf2f8}
+.prop-box{border-color:var(--ok);background:#eafaf1}
+.example-box{border-color:var(--warn);background:#fef9e7}
+.def-box strong,.prop-box strong,.example-box strong{display:block;margin-bottom:.3rem}
+.interactive-box{background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin:1rem 0}
+.interactive-box h4{color:var(--pri);margin-bottom:.7rem;font-size:.95rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.calc-grid label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-grid input,.calc-grid select{width:100%;padding:.5rem;border:1px solid var(--brd);border-radius:4px;font-size:.95rem}
+.btn{padding:.5rem 1.2rem;border:none;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--pri);color:#fff}
+.btn-primary:hover{background:var(--pri-l)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-accent{background:var(--acc);color:#fff}
+.result-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;min-height:2rem}
+.result-box .val{color:var(--pri);font-weight:700}
+.plot-container{margin:1rem 0;min-height:300px}
+.slider-group{display:flex;align-items:center;gap:1rem;margin:.5rem 0}
+.slider-group label{font-size:.9rem;min-width:80px}
+.slider-group input[type=range]{flex:1}
+.slider-group .sv{background:var(--pri);color:#fff;padding:.2rem .6rem;border-radius:4px;font-size:.85rem;min-width:40px;text-align:center}
+.target-svg{display:block;margin:0 auto}
+.scenario-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin:.8rem 0}
+.scenario-btns .btn{font-size:.8rem;padding:.4rem .8rem}
+.scenario-btns .btn.asc{outline:3px solid var(--warn)}
+.question-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.question-card h3{font-size:1rem;margin-bottom:.8rem;color:var(--pri)}
+.question-card .options label{display:block;padding:.6rem .8rem;margin:.3rem 0;border:1px solid var(--brd);border-radius:4px;cursor:pointer;transition:.2s;font-size:.9rem}
+.question-card .options label:hover{background:#eef2f7}
+.question-card .options input{margin-right:.5rem}
+.question-card .feedback{margin-top:.6rem;padding:.6rem;border-radius:4px;font-size:.9rem;display:none}
+.question-card .feedback.correct{display:block;background:#d5f5e3;color:#1e8449}
+.question-card .feedback.incorrect{display:block;background:#fadbd8;color:#c0392b}
+.problem-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);border-left:4px solid var(--warn)}
+.problem-card h3{font-size:1rem;margin-bottom:.5rem;color:var(--pri)}
+.problem-card .sol{display:none;margin-top:.8rem;padding:.8rem;background:#eafaf1;border-radius:4px;font-size:.9rem}
+.problem-card .sol.show{display:block}
+.score-bar{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);text-align:center}
+.score-bar .score{font-size:2rem;font-weight:700;color:var(--pri)}
+.bits-display{font-family:'Courier New',monospace;font-size:.85rem;margin:.5rem 0;word-break:break-all}
+.bits-display .sign{color:#e74c3c;font-weight:bold}
+.bits-display .exponent{color:#2980b9;font-weight:bold}
+.bits-display .mantissa{color:#27ae60;font-weight:bold}
+.bit-label{font-size:.75rem;color:var(--txtl)}
+table.dt{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.9rem}
+table.dt th,table.dt td{padding:.5rem .8rem;border:1px solid var(--brd);text-align:center}
+table.dt th{background:var(--pri);color:#fff;font-weight:600}
+table.dt tr:nth-child(even){background:#f8f9fb}
+.katex{font-size:1em!important}
+.katex-display{margin:.5em 0!important}
+p{margin:.5rem 0}
+ul,ol{margin:.5rem 0 .5rem 1.5rem}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600;margin-left:.5rem}
+.badge-easy{background:#d5f5e3;color:#1e8449}
+.badge-med{background:#fef9e7;color:#b7950b}
+.badge-hard{background:#fadbd8;color:#c0392b}
+/* Solver */
+.solver-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.solver-card h3{color:var(--pri);margin-bottom:.8rem}
+.param-row{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap}
+.param-row:last-child{border-bottom:none}
+.param-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;flex-shrink:0}
+.param-row .param-label{min-width:200px;font-size:.9rem;font-weight:600}
+.param-row .param-sub{font-size:.75rem;color:var(--txtl);display:block}
+.param-row input[type=text],.param-row input[type=number]{width:140px;padding:.35rem .5rem;border:1px solid var(--brd);border-radius:4px;font-size:.9rem}
+.param-row input:disabled{background:#f0f0f0;color:#aaa}
+.spin-btn{width:28px;height:28px;border:1px solid var(--brd);border-radius:4px;background:var(--card);cursor:pointer;font-size:1rem;font-weight:700;color:var(--pri);display:flex;align-items:center;justify-content:center}
+.spin-btn:hover{background:#eef2f7}
+.eq-editor{margin-top:.5rem;padding:.8rem;background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r)}
+.eq-editor input{width:100%;padding:.5rem;font-size:1rem;border:1px solid var(--brd);border-radius:4px;font-family:'Courier New',monospace}
+.eq-preview{margin-top:.3rem;min-height:1.5rem;font-size:1.1rem}
+.reasoning-box{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin-top:1rem;font-size:.9rem;line-height:1.7}
+.reasoning-box .step{margin:.5rem 0;padding:.4rem .6rem;border-left:3px solid var(--pri-l);background:#f8f9fb;border-radius:0 4px 4px 0}
+.reasoning-box .step b{color:var(--pri)}
+#tab-problems{max-width:1400px}
+.solver-grid{display:grid;grid-template-columns:3fr 2fr;gap:1.2rem;align-items:start}
+.solver-left,.solver-right{min-width:0}
+.solver-right{position:sticky;top:60px}
+.solver-tbl{display:grid;grid-template-columns:26px minmax(100px,160px) repeat(4,1fr);gap:1px;background:var(--brd);border-radius:var(--r);overflow:hidden}
+.solver-tbl>div{background:var(--card);padding:.2rem .3rem;display:flex;align-items:center;min-height:30px}
+.st-hdr{background:var(--pri)!important;color:#fff;font-weight:600;justify-content:center;font-size:.75rem;padding:.3rem .2rem}
+.st-hl{justify-content:flex-start!important;padding-left:.3rem}
+.st-h0{background:var(--pri)!important}
+.st-chk{justify-content:center}.st-chk input{width:15px;height:15px;cursor:pointer}
+.st-lbl{font-weight:600;font-size:.75rem;flex-direction:column;align-items:flex-start!important;line-height:1.15}
+.st-val{gap:1px}.sv-in{width:100%;padding:.15rem .2rem;border:1px solid var(--brd);border-radius:3px;font-size:.78rem;min-width:0}
+.sv-in:disabled{background:#f5f5f5;color:#bbb;border-color:#eee}
+.sv-in.computed{background:#d5f5e3!important;color:#1e8449!important;border-color:#a3d9b1}
+.sv-in.computed.cv-x{background:#d4e6f1!important;color:#1a5276!important;border-color:#85c1e9}
+.sv-in.computed.cv-y{background:#fdebd0!important;color:#935116!important;border-color:#f0b27a}
+.sv-in.computed.cv-z{background:#e8daef!important;color:#6c3483!important;border-color:#bb8fce}
+.sv-in.answer{background:#fff9c4!important;color:#5d4037!important;border-color:#f9a825!important;font-weight:700;box-shadow:0 0 4px rgba(249,168,37,.5)}
+.st-sep{grid-column:1/-1;padding:.2rem .5rem;font-size:.65rem;font-weight:700;color:#fff;border-radius:2px;letter-spacing:.3px;margin-top:2px}
+.k-mode{font-size:.6rem;font-weight:400;cursor:pointer;display:inline-flex;align-items:center;gap:2px;margin-top:1px;color:var(--txt)}
+.k-mode input{width:12px;height:12px;cursor:pointer}
+.drag-h{cursor:ns-resize;color:var(--pri);font-size:.65rem;user-select:none;padding:0 1px;flex-shrink:0;opacity:.5;transition:.2s}
+.drag-h::after{content:'\u21D5'}.drag-h:hover,.drag-h.dragging{opacity:1;color:var(--acc)}
+@media(max-width:900px){.solver-grid{grid-template-columns:1fr}.solver-right{position:static}.solver-tbl{grid-template-columns:24px 1fr repeat(4,1fr)}}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}.topic-selector{flex-direction:column}.solver-tbl{font-size:.7rem;grid-template-columns:22px 80px repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Teoria de Errores <span style="font-size:.5rem;color:#aaa;font-weight:400">v17</span></h1>
+  <p>Metodos Matematicos para la Ingenier&iacute;a &mdash; Tema 1 &mdash; UPO</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
+  <button class="tab-btn" onclick="switchTab('problems')">Problemas</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test de Autoevaluacion</button>
+</div>
+
+<!-- ============ TEORIA ============ -->
+<div id="tab-theory" class="tab-content active">
+
+<div class="topic-selector">
+  <label for="topic-select">Selecciona un tema:</label>
+  <select id="topic-select" onchange="showTopic(this.value)">
+    <option value="" disabled selected>-- Elige un tema --</option>
+    <option value="t1">1. Tipos de Errores</option>
+    <option value="t2">2. Exactitud y Precision</option>
+    <option value="t3">3. Error Absoluto y Relativo</option>
+    <option value="t4">4. Cota Superior del Error</option>
+    <option value="t5">5. Intervalos de Confianza</option>
+    <option value="t6">6. Propagacion del Error</option>
+    <option value="t7">7. Error de Redondeo</option>
+    <option value="t8">8. Representacion en Numero Flotante (IEEE 754)</option>
+    <option value="t9">9. Estabilidad y Condicionamiento</option>
+  </select>
+</div>
+
+<!-- ===== T1: Tipos de Errores ===== -->
+<div class="topic-section" id="t1">
+<h2>1. Tipos de Errores</h2>
+<p>En todo calculo numerico se cometen errores de diversa naturaleza. Se distinguen <strong>cuatro fuentes principales</strong>:</p>
+
+<div class="def-box">
+  <strong>1. Error Experimental</strong>
+  Proviene de los datos de partida, obtenidos por mediciones con instrumentos de precision limitada.<br>
+  <em>Ejemplo:</em> Al medir la longitud de una barra con una regla graduada en milimetros, el valor obtenido siempre tendra una incertidumbre de al menos &plusmn;0.5 mm. La determinacion empirica de constantes como \(\pi\), \(e\) o la constante de Planck tambien conlleva este tipo de error.
+</div>
+<div class="def-box">
+  <strong>2. Error de Modelizacion</strong>
+  Diferencia entre el modelo matematico y la realidad. Ningun modelo captura al 100% la complejidad del fenomeno real.<br>
+  <em>Ejemplo:</em> Al modelar la caida libre de un objeto con \(h = \frac{1}{2}gt^2\), se ignoran factores como la resistencia del aire, la variacion de \(g\) con la altitud, la rotacion terrestre, etc. El modelo de Bohr del atomo de hidrogeno es otro ejemplo clasico: funciona bien para H pero falla para atomos mas complejos.
+</div>
+<div class="def-box">
+  <strong>3. Error de Truncamiento</strong>
+  Se produce al aproximar un proceso infinito (serie, integral, derivada) por uno finito.<br>
+  <em>Ejemplo:</em> Calcular \(\sin(x)\) usando solo los primeros \(n\) terminos de su serie de Taylor: \(\sin(x) \approx x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots\). Cuantos mas terminos, menor error, pero nunca sera cero con un numero finito.
+</div>
+<div class="def-box">
+  <strong>4. Error de Redondeo</strong>
+  Imposibilidad de trabajar con infinitas cifras decimales. Se acumula con las operaciones realizadas.<br>
+  <em>Ejemplo:</em> \(1/3 = 0.333...\) Cualquier representacion finita (0.33, 0.333, 0.3333) introduce un error. Tras miles de operaciones con estos valores, los errores acumulados pueden ser significativos.
+</div>
+
+<div class="prop-box">
+  <strong>Clave</strong>
+  Solo los errores de <strong>truncamiento</strong> y <strong>redondeo</strong> son controlables por el calculista: el primero aumentando iteraciones/terminos, el segundo aumentando el numero de cifras.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo adicional: las 4 fuentes en un mismo problema</strong>
+  <p>Supongamos que queremos calcular la velocidad de un proyectil:</p>
+  <ol>
+    <li><strong>Experimental:</strong> El cronometro tiene precision de 0.01 s y la cinta metrica de 1 mm.</li>
+    <li><strong>Modelizacion:</strong> Usamos \(v = d/t\) asumiendo velocidad constante (modelo simplificado).</li>
+    <li><strong>Truncamiento:</strong> Si usamos un metodo iterativo para resolver la ecuacion diferencial del movimiento, paramos tras \(n\) pasos.</li>
+    <li><strong>Redondeo:</strong> El computador almacena \(d = 15.3\) m y \(t = 2.17\) s con precision finita; \(d/t = 7.050691...\) se almacena truncado.</li>
+  </ol>
+</div>
+
+<div class="interactive-box">
+  <h4>Ejemplo interactivo: Truncamiento de la serie de Taylor de \(e^x\)</h4>
+  <p>\(\displaystyle e^x = \sum_{k=0}^{\infty}\frac{x^k}{k!}\). Al truncar a \(n\) terminos obtenemos una aproximacion con error de truncamiento.</p>
+  <div class="slider-group">
+    <label>Terminos \(n\):</label>
+    <input type="range" id="taylor-n" min="1" max="15" value="3" oninput="updateTaylor()">
+    <span class="sv" id="taylor-n-val">3</span>
+  </div>
+  <div id="taylor-plot" class="plot-container"></div>
+  <div class="result-box" id="taylor-result"></div>
+</div>
+</div>
+
+<!-- ===== T2: Exactitud y Precision ===== -->
+<div class="topic-section" id="t2">
+<h2>2. Exactitud y Precision</h2>
+
+<p>Es fundamental distinguir entre <strong>exactitud</strong> y <strong>precision</strong>. Aunque en lenguaje coloquial parecen sinonimos, en el contexto numerico tienen significados muy distintos:</p>
+
+<div class="def-box">
+  <strong>Exactitud (Accuracy)</strong>
+  Una medida es <em>exacta</em> si esta cercana al <strong>valor verdadero</strong>. Se cuantifica mediante el <strong>error absoluto</strong>.<br>
+  Analogia: un arquero es exacto si sus flechas caen cerca del centro de la diana.
+</div>
+<div class="def-box">
+  <strong>Precision (Precision)</strong>
+  Las medidas son <em>precisas</em> si estan <strong>agrupadas entre si</strong> (baja dispersion), independientemente de si estan cerca del valor verdadero. Se relaciona con el <strong>error relativo</strong> y las cifras significativas.<br>
+  Analogia: un arquero es preciso si sus flechas caen siempre en la misma zona, aunque no sea el centro.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo: Mediciones de la gravedad</strong>
+  <p>Tres laboratorios miden \(g\) (valor real \(\approx 9.80665\) m/s&sup2;):</p>
+  <ul>
+    <li><strong>Lab A:</strong> 9.81, 9.80, 9.81, 9.80 &rarr; <em>Exacto y preciso</em> (cerca del valor real, agrupados)</li>
+    <li><strong>Lab B:</strong> 9.50, 10.10, 9.70, 10.00 &rarr; <em>Exacto pero impreciso</em> (media &asymp; 9.83, pero dispersos)</li>
+    <li><strong>Lab C:</strong> 10.50, 10.51, 10.49, 10.50 &rarr; <em>Inexacto pero preciso</em> (lejos del real, pero agrupados: sesgo sistematico)</li>
+    <li><strong>Lab D:</strong> 8.50, 11.20, 7.90, 12.00 &rarr; <em>Ni exacto ni preciso</em></li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Diagrama de diana: Exactitud vs Precision</h4>
+  <p>Selecciona un escenario y observa la distribucion de "disparos":</p>
+  <div class="scenario-btns" id="target-btns">
+    <button class="btn btn-primary asc" onclick="drawTarget('high','high',this)">Alta Exactitud + Alta Precision</button>
+    <button class="btn btn-primary" onclick="drawTarget('high','low',this)">Alta Exactitud + Baja Precision</button>
+    <button class="btn btn-primary" onclick="drawTarget('low','high',this)">Baja Exactitud + Alta Precision</button>
+    <button class="btn btn-primary" onclick="drawTarget('low','low',this)">Baja Exactitud + Baja Precision</button>
+  </div>
+  <svg id="target-svg" class="target-svg" width="300" height="300" viewBox="0 0 300 300"></svg>
+  <p id="target-desc" style="text-align:center;font-size:.9rem;margin-top:.5rem;"></p>
+</div>
+</div>
+
+<!-- ===== T3: Error Absoluto y Relativo ===== -->
+<div class="topic-section" id="t3">
+<h2>3. Error Absoluto y Relativo (Cifras Exactas y Significativas)</h2>
+
+<div class="def-box">
+  <strong>Definicion 1 &mdash; Error Absoluto</strong>
+  Si \(x^*\) es una aproximacion de \(x\), el error absoluto es:
+  \[E_A(x^*) = |x - x^*|\]
+</div>
+
+<div class="def-box">
+  <strong>Error absoluto con signo y aproximacion por exceso/defecto</strong>
+  El error absoluto <em>con signo</em> se define como \(E'_A(x^*) = x - x^*\):
+  <ul>
+    <li>Si \(E'_A(x^*) < 0\) entonces \(x^* > x\): la aproximacion es <strong>por exceso</strong>.</li>
+    <li>Si \(E'_A(x^*) > 0\) entonces \(x^* < x\): la aproximacion es <strong>por defecto</strong>.</li>
+  </ul>
+</div>
+
+<div class="def-box">
+  <strong>Definicion 4 &mdash; Cifras Decimales Exactas</strong>
+  La aproximacion \(x^*\) tiene \(p\) cifras decimales exactas si:
+  \[E_A(x^*) \leq 10^{-p}\]
+</div>
+<div class="def-box">
+  <strong>Definicion 6 &mdash; Error Relativo</strong>
+  \[E_R(x^*) = \frac{|x - x^*|}{|x|}\]
+</div>
+<div class="def-box">
+  <strong>Definicion 9 &mdash; Cifras Significativas</strong>
+  La aproximacion \(x^*\) tiene \(t\) cifras significativas si \(t\) es el mayor entero no negativo tal que:
+  \[E_R(x^*) < 5 \times 10^{-t}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Error Absoluto y Relativo</h4>
+  <div class="calc-grid">
+    <div><label>Valor exacto \(x\):</label><input type="text" id="ea-x" value="3.14159265" placeholder="Ej: pi, 3.14159265"></div>
+    <div><label>Aproximacion \(x^*\):</label><input type="text" id="ea-xs" value="3.1416" placeholder="Ej: 22/7, 3.1416"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcError()">Calcular</button>
+  <div class="result-box" id="ea-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion: Error Absoluto vs Relativo</h4>
+  <p>Compara dos aproximaciones. Observa que un mismo error absoluto puede significar cosas muy distintas segun la magnitud del numero:</p>
+  <div class="calc-grid">
+    <div><label>Numero 1 (\(x_1\)):</label><input type="text" id="vis-x1" value="3.14159" placeholder="pi"></div>
+    <div><label>Error absoluto 1:</label><input type="number" id="vis-ea1" value="1" step="any"></div>
+    <div><label>Numero 2 (\(x_2\)):</label><input type="text" id="vis-x2" value="6.022e23" placeholder="Avogadro"></div>
+    <div><label>Error absoluto 2:</label><input type="number" id="vis-ea2" value="1" step="any"></div>
+  </div>
+  <button class="btn btn-primary" onclick="visCompare()">Comparar</button>
+  <div id="vis-compare-plot" class="plot-container" style="min-height:250px"></div>
+  <div class="result-box" id="vis-compare-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 5 &mdash; Comparacion de exactitud</strong>
+  <p>\(x^* = 6.2\) aproxima a \(x = 6\) y \(y^* = 6198\) aproxima a \(y = 6000\):</p>
+  <ul>
+    <li>\(E_A(6.2) = |6 - 6.2| = 0.2\) &rarr; Mas exacta (menor EA)</li>
+    <li>\(E_A(6198) = |6000 - 6198| = 198\)</li>
+    <li>Pero \(E_R(6.2) = 0.2/6 \approx 0.033\) y \(E_R(6198) = 198/6000 = 0.033\)</li>
+    <li>Ambas tienen la misma precision relativa (2 cifras significativas).</li>
+  </ul>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 10 &mdash; \(\pi\) vs Avogadro con el mismo EA</strong>
+  <p>Si ambas tienen \(E_A = 1\):</p>
+  <ul>
+    <li>\(E_R(\pi^*) = 1/\pi \approx 0.318\) &rarr; 1 cifra significativa</li>
+    <li>\(E_R(N_A^*) = 1/(6.022\times10^{23}) \approx 1.66\times10^{-24}\) &rarr; 25 cifras significativas</li>
+  </ul>
+  <p><strong>Conclusion:</strong> El error absoluto solo, sin contexto, no dice nada. El error relativo da la medida real de calidad de una aproximacion.</p>
+</div>
+</div>
+
+<!-- ===== T4: Cota Superior del Error ===== -->
+<div class="topic-section" id="t4">
+<h2>4. Cota Superior del Error Absoluto y Relativo</h2>
+
+<div class="def-box">
+  <strong>Definicion 12 &mdash; Cota Superior (Limite superior del error)</strong>
+  Se dice que \(\varepsilon > 0\) es una cota superior del error absoluto si:
+  \[E_A(x^*) \leq \varepsilon\]
+  Analogamente para el error relativo: \(E_R(x^*) \leq \varepsilon\).
+  <p>La cota no es el error exacto, sino un <em>limite superior garantizado</em>. El error real puede ser menor.</p>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 14 &mdash; Cota del Error Relativo a partir de cifras decimales exactas</strong>
+  Si \(x^*\) tiene \(p\) cifras decimales exactas y \(d_1\) es su primera cifra significativa:
+  \[\varepsilon_{rel} = \frac{1}{d_1 \cdot 10^{p-1}}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Cotas</h4>
+  <div class="calc-grid">
+    <div><label>Aproximacion \(x^*\):</label><input type="text" id="cota-xs" value="3.1416" placeholder="Ej: 3.1416"></div>
+    <div><label>Cota del EA (\(\varepsilon\)):</label><input type="text" id="cota-eps" value="0.0001" placeholder="Ej: 0.0001"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcCota()">Calcular Cotas</button>
+  <div class="result-box" id="cota-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion: Concepto de Cota</h4>
+  <p>El error real esta <em>en algun lugar</em> por debajo de la cota. Introduce distintos valores y observa:</p>
+  <div class="calc-grid">
+    <div><label>Valor exacto \(x\):</label><input type="number" id="cota-vis-x" value="3.14159265" step="any"></div>
+    <div><label>Aproximacion \(x^*\):</label><input type="number" id="cota-vis-xs" value="3.1416" step="any"></div>
+    <div><label>Cota \(\varepsilon\):</label><input type="number" id="cota-vis-eps" value="0.001" step="any" min="0"></div>
+  </div>
+  <button class="btn btn-primary" onclick="visCota()">Visualizar</button>
+  <div id="cota-vis-plot" class="plot-container" style="min-height:200px"></div>
+  <div class="result-box" id="cota-vis-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo: Cotas con distintas aproximaciones de \(\pi\)</strong>
+  <table class="dt">
+    <tr><th>Aproximacion \(x^*\)</th><th>\(E_A\)</th><th>Cota \(\varepsilon\) valida</th><th>\(E_A \leq \varepsilon\)?</th></tr>
+    <tr><td>3.14</td><td>0.00159...</td><td>0.005</td><td>Si</td></tr>
+    <tr><td>22/7 &asymp; 3.14286</td><td>0.00127...</td><td>0.002</td><td>Si</td></tr>
+    <tr><td>3.1416</td><td>0.0000073...</td><td>0.0001</td><td>Si</td></tr>
+    <tr><td>355/113 &asymp; 3.14159292</td><td>2.67&times;10<sup>-7</sup></td><td>10<sup>-6</sup></td><td>Si</td></tr>
+  </table>
+</div>
+</div>
+
+<!-- ===== T5: Intervalos de Confianza ===== -->
+<div class="topic-section" id="t5">
+<h2>5. Intervalos de Confianza</h2>
+
+<div class="def-box">
+  <strong>Definicion 15 &mdash; Intervalo de Confianza</strong>
+  Sea \(x^*\) una aproximacion de \(x\) y \(\varepsilon\) una cota superior de \(E_A(x^*)\). El intervalo de confianza para \(x\) es:
+  \[[x^* - \varepsilon,\; x^* + \varepsilon]\]
+  El valor exacto \(x\) esta <strong>garantizado</strong> dentro de este intervalo.
+</div>
+
+<div class="def-box">
+  <strong>Aproximacion por exceso y por defecto</strong>
+  <p>Sea \(E'_A(x^*) = x - x^*\) el error con signo:</p>
+  <ul>
+    <li>Si \(x^* > x\) (es decir \(E'_A < 0\)): aproximacion <strong>por exceso</strong>. El valor real esta a la <em>izquierda</em> de \(x^*\).</li>
+    <li>Si \(x^* < x\) (es decir \(E'_A > 0\)): aproximacion <strong>por defecto</strong>. El valor real esta a la <em>derecha</em> de \(x^*\).</li>
+  </ul>
+  <p>El intervalo de confianza cubre ambos casos: siempre contiene a \(x\), ya sea por exceso o por defecto.</p>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 17</strong>
+  Si \([a, b] \subset \mathbb{R}\) es un intervalo de confianza para \(x\), la mejor aproximacion es:
+  \[x^* = \frac{a+b}{2} \quad \text{con cota} \quad E_A(x^*) \leq \frac{b-a}{2}\]
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion de Intervalo de Confianza (con exceso/defecto)</h4>
+  <div class="calc-grid">
+    <div><label>Aproximacion \(x^*\):</label><input type="number" id="ic-xs" value="3.1416" step="any"></div>
+    <div><label>Cota \(\varepsilon\):</label><input type="number" id="ic-eps" value="0.001" step="any" min="0.00001"></div>
+    <div><label>Valor exacto \(x\) (opcional, para ver exceso/defecto):</label><input type="number" id="ic-real" value="3.14159265" step="any"></div>
+  </div>
+  <button class="btn btn-primary" onclick="drawInterval()">Visualizar</button>
+  <div id="interval-plot" class="plot-container" style="min-height:200px"></div>
+  <div class="result-box" id="ic-result"></div>
+</div>
+
+<div class="interactive-box">
+  <h4>Dado un intervalo [a, b], calcula la mejor aproximacion</h4>
+  <div class="calc-grid">
+    <div><label>Extremo inferior \(a\):</label><input type="number" id="ic-a" value="3.140" step="any"></div>
+    <div><label>Extremo superior \(b\):</label><input type="number" id="ic-b" value="3.143" step="any"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcFromInterval()">Calcular</button>
+  <div class="result-box" id="ic-ab-result"></div>
+</div>
+</div>
+
+<!-- ===== T6: Propagacion del Error ===== -->
+<div class="topic-section" id="t6">
+<h2>6. Propagacion del Error</h2>
+
+<div class="prop-box">
+  <strong>Proposicion 18 &mdash; Propagacion en operaciones basicas</strong>
+  Sean \(x, y\) numeros reales con aproximaciones \(x^*, y^*\):
+  \[E_A(x^* \pm y^*) \leq E_A(x^*) + E_A(y^*)\]
+  \[E_R(x^* \cdot y^*) \leq E_R(x^*) + E_R(y^*)\]
+  \[E_R(x^*/y^*) \leq E_R(x^*) + E_R(y^*)\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Propagacion del Error</h4>
+  <div class="calc-grid">
+    <div><label>Valor exacto \(x\):</label><input type="text" id="prop-x" value="1" placeholder="Ej: 1"></div>
+    <div><label>Aproximacion \(x^*\):</label><input type="text" id="prop-xs" value="1.10" placeholder="Ej: 1.10"></div>
+    <div><label>Valor exacto \(y\):</label><input type="text" id="prop-y" value="1/7" placeholder="Ej: 1/7"></div>
+    <div><label>Aproximacion \(y^*\):</label><input type="text" id="prop-ys" value="0.14" placeholder="Ej: 0.14"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcPropagacion()">Calcular Propagacion</button>
+  <div class="result-box" id="prop-result"></div>
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 21 &mdash; Transferencia del error (funciones)</strong>
+  Sea \(f \in C^1(\mathbb{R})\) y \(x^*\) aproximacion de \(x\):
+  \[E_A(f(x^*)) \leq \max_{z \in I} |f'(z)| \cdot E_A(x^*)\]
+  donde \(I\) es el intervalo cerrado con extremos \(x\) y \(x^*\).
+</div>
+
+<div class="interactive-box">
+  <h4>Propagacion del error en funciones</h4>
+  <p style="font-size:.85rem;color:var(--txtl)">Puedes escribir tu propia funcion usando sintaxis matematica: sin(x), cos(x), exp(x), log(x), sqrt(x), x^2, x^3, (x-1)^2, etc.</p>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="prop-func" value="sin(x)" placeholder="Ej: x^3 - 2*x + 1, exp(-x^2)"></div>
+    <div><label>Punto \(x^*\):</label><input type="number" id="prop-func-x" value="1" step="any"></div>
+    <div><label>\(E_A(x^*)\):</label><input type="number" id="prop-func-ea" value="0.1" step="any" min="0"></div>
+  </div>
+  <div style="font-size:.8rem;color:var(--txtl);margin-bottom:.5rem">Funciones disponibles: sin, cos, tan, exp, log (ln), sqrt, abs, asin, acos, atan, sinh, cosh. Operadores: +, -, *, /, ^ (potencia)</div>
+  <button class="btn btn-primary" onclick="calcPropFunc()">Calcular y Graficar</button>
+  <div id="propfunc-plot" class="plot-container"></div>
+  <div class="result-box" id="propfunc-result"></div>
+</div>
+</div>
+
+<!-- ===== T7: Error de Redondeo ===== -->
+<div class="topic-section" id="t7">
+<h2>7. Error de Redondeo</h2>
+
+<div class="prop-box">
+  <strong>Proposicion 27 &mdash; Cotas del error de redondeo</strong>
+  Si \(x_t\) es la aproximacion por truncamiento y \(x_r\) por redondeo con \(k\) cifras decimales:
+  \[E_A(x_t) \leq 10^{-k} \qquad E_A(x_r) \leq \frac{1}{2} \cdot 10^{-k}\]
+  El redondeo siempre produce un error menor o igual que el truncamiento.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 26 &mdash; Aproximaciones del numero \(e = 2.71828182845...\)</strong>
+  <table class="dt">
+    <tr><th>\(k\)</th><th>Redondeo</th><th>Truncamiento</th><th>EA redondeo</th><th>EA truncamiento</th></tr>
+    <tr><td>1</td><td>2.7</td><td>2.7</td><td>0.01828...</td><td>0.01828...</td></tr>
+    <tr><td>2</td><td>2.72</td><td>2.71</td><td>0.00172...</td><td>0.00828...</td></tr>
+    <tr><td>3</td><td>2.718</td><td>2.718</td><td>0.00028...</td><td>0.00028...</td></tr>
+    <tr><td>4</td><td>2.7183</td><td>2.7182</td><td>0.00002...</td><td>0.00008...</td></tr>
+  </table>
+</div>
+
+<div class="interactive-box">
+  <h4>Simulador: Truncamiento vs Redondeo</h4>
+  <div class="calc-grid">
+    <div><label>Numero:</label><input type="text" id="round-num" value="2.71828182845" placeholder="Ej: 2.71828182845"></div>
+    <div><label>Cifras decimales \(k\):</label><input type="number" id="round-k" value="4" min="0" max="15"></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcRedondeo()">Calcular</button>
+  <div class="result-box" id="round-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 34 &mdash; Aritmetica de 5 cifras significativas</strong>
+  <p>Calcular \(\sqrt{3} + \frac{1}{6} - \frac{2}{5}\) con aritmetica de 5 cifras significativas:</p>
+  <ul>
+    <li><strong>Redondeo:</strong> \(1.7321 + 0.16667 = 1.8988\); \(1.8988 - 0.40000 = 1.4988\)</li>
+    <li><strong>Truncamiento:</strong> \(1.7320 + 0.16666 = 1.8986\); \(1.8986 - 0.40000 = 1.4986\)</li>
+    <li>Valor real: \(\approx 1.49872...\)</li>
+  </ul>
+</div>
+</div>
+
+<!-- ===== T8: IEEE 754 ===== -->
+<div class="topic-section" id="t8">
+<h2>8. Representacion en Numero Flotante (IEEE 754)</h2>
+
+<p>El estandar IEEE 754 define como los computadores almacenan numeros reales en formato binario.</p>
+
+<div class="def-box">
+  <strong>Precision simple (32 bits)</strong>
+  <p><span class="bits-display"><span class="sign">S (1 bit)</span> | <span class="exponent">Exponente (8 bits)</span> | <span class="mantissa">Mantisa (23 bits)</span></span></p>
+  \[(-1)^s \times 2^{c-128} \times (1 + m)\]
+  <p>Rango: \(\approx \pm 3.4 \times 10^{38}\). Epsilon: \(2^{-23} \approx 1.19 \times 10^{-7}\)</p>
+  <p><em>Nota: el sesgo del exponente en el PDF del curso es 128. El estandar IEEE 754 usa 127, pero seguimos la convencion del material.</em></p>
+</div>
+<div class="def-box">
+  <strong>Precision doble (64 bits)</strong>
+  <p><span class="bits-display"><span class="sign">S (1 bit)</span> | <span class="exponent">Exponente (11 bits)</span> | <span class="mantissa">Mantisa (52 bits)</span></span></p>
+  \[(-1)^s \times 2^{c-1024} \times (1 + m)\]
+  <p>Rango: \(\approx \pm 1.8 \times 10^{308}\). Epsilon: \(2^{-52} \approx 2.22 \times 10^{-16}\)</p>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizador IEEE 754</h4>
+  <div class="calc-grid">
+    <div><label>Numero decimal:</label><input type="number" id="ieee-num" value="5.5" step="any"></div>
+    <div><label>Precision:</label><select id="ieee-prec"><option value="32">Simple (32 bits)</option><option value="64" selected>Doble (64 bits)</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="calcIEEE()">Representar</button>
+  <div class="result-box" id="ieee-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 31 &mdash; Representacion de 5.5</strong>
+  <p>\(5.5 = (101.1)_2 = (1.011)_2 \times 2^2\)</p>
+  <p>32 bits: <span class="bits-display"><span class="sign">0</span> <span class="exponent">10000001</span> <span class="mantissa">01100000000000000000000</span></span></p>
+</div>
+<div class="example-box">
+  <strong>Ejemplo 32 &mdash; 0.1 no es exacto en binario</strong>
+  <p>\(0.1 = (0.0\overline{0011})_2\) &mdash; periodico. Esto explica por que \(0.1 + 0.2 \neq 0.3\) en los computadores.</p>
+</div>
+<div class="example-box">
+  <strong>Ejemplo 35 &mdash; Cancelacion catastrofica</strong>
+  <p>Resolver \(x^2 - 10^6 x + 1 = 0\): la formula directa da cancelacion. Formula estable: \(x_2 = \frac{2}{10^6 + \sqrt{10^{12}-4}}\).</p>
+</div>
+</div>
+
+<!-- ===== T9: Estabilidad y Condicionamiento ===== -->
+<div class="topic-section" id="t9">
+<h2>9. Estabilidad y Condicionamiento</h2>
+
+<div class="def-box">
+  <strong>Definicion 39 &mdash; Numero de condicion</strong>
+  \[C(x^*) = \left|\frac{x^* \cdot f'(x^*)}{f(x^*)}\right|\]
+</div>
+<ul>
+  <li>\(C < 1\): <strong>bien condicionado</strong> &mdash; errores se reducen.</li>
+  <li>\(C > 1\): <strong>mal condicionado</strong> &mdash; errores se amplifican.</li>
+  <li>\(C \to \infty\): problema <strong>muy inestable</strong> en ese punto.</li>
+</ul>
+
+<div class="interactive-box">
+  <h4>Calculadora y grafica del numero de condicion</h4>
+  <p style="font-size:.85rem;color:var(--txtl)">Escribe cualquier funcion. Se calculara automaticamente \(f'(x)\) y \(C(x) = |x \cdot f'(x)/f(x)|\).</p>
+  <div class="calc-grid">
+    <div><label>Funcion \(f(x)\):</label><input type="text" id="cond-func" value="sqrt(x)" placeholder="Ej: x^2-1, (x-1)*sqrt(x)"></div>
+    <div><label>Rango de \(x\):</label><div style="display:flex;gap:.3rem"><input type="number" id="cond-a" value="0.1" step="any" style="width:48%"><input type="number" id="cond-b" value="5" step="any" style="width:48%"></div></div>
+  </div>
+  <div style="font-size:.8rem;color:var(--txtl);margin-bottom:.5rem">Ejemplos: sqrt(x), x^2-1, (x-1)^2, sin(x), log(x), exp(x), tan(x), (x-1)*sqrt(x)</div>
+  <button class="btn btn-primary" onclick="calcCondicion()">Graficar</button>
+  <div id="cond-plot" class="plot-container"></div>
+  <div class="result-box" id="cond-result"></div>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo 41: \(f(x)=\sqrt{x}\) &rarr; \(C(x)=1/2\) (siempre bien condicionado)</strong>
+</div>
+<div class="example-box">
+  <strong>Ejemplo 42: \(f(x)=x^2-1\) &rarr; \(C(x)=|2x^2/(x^2-1)|\) (mal condicionado cerca de \(x=\pm 1\))</strong>
+</div>
+</div>
+
+</div>
+
+<!-- ============ TEST ============ -->
+<div id="tab-test" class="tab-content">
+  <div class="score-bar" id="score-bar" style="display:none">
+    <p>Puntuacion (preguntas tipo test):</p>
+    <div class="score" id="score-value">0 / 0</div>
+    <button class="btn btn-accent" onclick="resetTest()" style="margin-top:.5rem">Reiniciar Test</button>
+  </div>
+  <h2 style="margin:1rem 0 .5rem">Preguntas Tipo Test</h2>
+  <div id="test-container"></div>
+  <div style="text-align:center;margin:1rem 0">
+    <button class="btn btn-success" onclick="gradeTest()" style="font-size:1.1rem;padding:.8rem 2rem">Corregir Test</button>
+  </div>
+  <h2 style="margin:2rem 0 .5rem">Problemas Conceptuales</h2>
+  <div id="problems-container"></div>
+</div>
+
+<!-- ============ PROBLEMAS ============ -->
+<div id="tab-problems" class="tab-content">
+
+  <!-- Generador de Problemas Aleatorios -->
+  <div class="solver-card" style="border-left:4px solid var(--warn)">
+    <h3 style="color:var(--warn)">Generador de Problemas Aleatorios</h3>
+    <p style="font-size:.88rem;margin-bottom:.8rem">Genera enunciados tipo practica con datos aleatorios. Resuelve el problema y comprueba tu respuesta con el resolutor.</p>
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem">
+      <select id="prob-type" onchange="onProbTypeChange()" style="padding:.4rem .6rem;border:2px solid var(--warn);border-radius:var(--r);font-size:.9rem;min-width:250px">
+        <option value="0">Aleatorio (cualquier tipo)</option>
+        <option value="1">1. EA, ER, p, t</option>
+        <option value="2">2. Intervalo por p (c.d.e.)</option>
+        <option value="3">3. Intervalo por ER (c.s.)</option>
+        <option value="4">4. Propagacion directa</option>
+        <option value="5">5. Propagacion inversa</option>
+        <option value="6">6. Aritmetica de k cifras</option>
+        <option value="7">7. Condicionamiento</option>
+      </select>
+      <select id="prob-diff" style="padding:.4rem .6rem;border:2px solid var(--warn);border-radius:var(--r);font-size:.9rem">
+        <option value="baja">Baja</option>
+        <option value="media" selected>Media</option>
+        <option value="alta">Alta</option>
+      </select>
+      <button class="btn btn-primary" onclick="generateProblem()" style="background:var(--warn);font-size:.95rem;padding:.5rem 1.2rem">Generar problema aleatorio</button>
+    </div>
+    <div id="problem-statement" style="display:none;background:#fef9e7;border:1px solid #f9a825;border-radius:var(--r);padding:1rem;margin-bottom:.8rem;font-size:.95rem;line-height:1.7"></div>
+    <button id="btn-load-problem" class="btn btn-success" onclick="loadProblemToSolver(_currentProblem)" style="display:none;font-size:.95rem;padding:.5rem 1.5rem">Pasar datos al resolutor</button>
+  </div>
+
+  <div class="solver-card">
+    <h3>Resolutor Interactivo de Problemas</h3>
+    <p style="margin-bottom:.6rem;font-size:.88rem">Marca los conceptos, introduce valores conocidos (deja en blanco para calcular). Arrastra <b>&hArr;</b> para ajustar valores en tiempo real.</p>
+
+    <div class="solver-grid">
+    <div class="solver-left">
+
+    <div class="solver-tbl" id="solver-tbl"></div>
+
+    <div style="display:flex;align-items:center;gap:.6rem;margin:.5rem 0;flex-wrap:wrap">
+      <label style="font-size:.82rem;font-weight:600">Tipo aprox.:</label>
+      <select id="val-tipo" style="padding:.25rem;border-radius:4px;border:1px solid var(--brd);font-size:.8rem">
+        <option value="">Sin especificar</option>
+        <option value="redondeo">Por redondeo</option>
+        <option value="truncamiento">Por truncamiento</option>
+      </select>
+    </div>
+
+    <div style="padding:.5rem;background:#f0f4f8;border-radius:var(--r);margin:.4rem 0">
+      <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-weight:600;font-size:.88rem">
+        <input type="checkbox" id="chk-func" onchange="toggleEq()"> Ecuacion f(x,y,z)
+      </label>
+      <div id="eq-editor-box" style="display:none;margin-top:.3rem">
+        <p style="font-size:.75rem;color:var(--txtl);margin-bottom:.2rem">
+          sqrt(x), x^2, ln(x), exp(x), x*y, x+y+z, sin(x), 1/x, x^(1/3)...
+        </p>
+        <input type="text" id="val-func" placeholder="ej: x*y, sqrt(x)+ln(y), x^2+y^2+z^2" style="width:100%;padding:.4rem;font-size:.95rem;font-family:'Courier New',monospace;border:1px solid var(--brd);border-radius:4px" oninput="previewEq()">
+        <div id="eq-preview" style="margin-top:.3rem;min-height:1.3rem;font-size:1rem"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin:.8rem 0">
+      <button class="btn btn-primary" onclick="solveProblema()" style="font-size:1rem;padding:.6rem 2rem">Resolver</button>
+      <button class="btn btn-primary" onclick="resetCalc()" style="margin-left:.4rem;background:var(--warn);font-size:.82rem">Limpiar calculos</button>
+      <button class="btn btn-accent" onclick="resetSolver()" style="margin-left:.4rem;font-size:.82rem">Resetear todo</button>
+    </div>
+
+    </div><!-- /solver-left -->
+    <div class="solver-right">
+    <div class="reasoning-box" id="solver-reasoning" style="display:none"></div>
+    <div id="solver-plot" class="plot-container" style="display:none"></div>
+    </div><!-- /solver-right -->
+    </div><!-- /solver-grid -->
+  </div>
+</div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+// === TABS ===
+function switchTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  const idx={theory:0,problems:1,test:2};
+  document.querySelectorAll('.tab-btn')[idx[t]||0].classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+// === TOPIC SELECTOR ===
+function showTopic(id){
+  document.querySelectorAll('.topic-section').forEach(s=>s.classList.remove('active'));
+  if(id){
+    const el=document.getElementById(id);
+    el.classList.add('active');
+    renderMathInElement(el,mathOpts);
+    // trigger init if needed
+    if(id==='t1'&&!window._taylorInit){updateTaylor();window._taylorInit=true}
+    if(id==='t2'&&!window._targetInit){drawTarget('high','high',document.querySelector('#target-btns .btn'));window._targetInit=true}
+  }
+}
+
+// === MATH RENDER OPTIONS ===
+const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false};
+
+// === TAYLOR ===
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function taylorExp(x,n){let s=0;for(let k=0;k<n;k++)s+=Math.pow(x,k)/factorial(k);return s}
+function updateTaylor(){
+  const n=+document.getElementById('taylor-n').value;
+  document.getElementById('taylor-n-val').textContent=n;
+  const xs=[],yR=[],yA=[];
+  for(let x=-2;x<=3;x+=.05){xs.push(x);yR.push(Math.exp(x));yA.push(taylorExp(x,n))}
+  const v2=taylorExp(2,n),e2=Math.abs(Math.exp(2)-v2);
+  Plotly.newPlot('taylor-plot',[
+    {x:xs,y:yR,name:'e^x (exacta)',line:{color:'#2980b9',width:3}},
+    {x:xs,y:yA,name:'Taylor (n='+n+')',line:{color:'#e74c3c',width:2,dash:'dash'}}
+  ],{margin:{t:30,r:20,b:40,l:50},xaxis:{title:'x',range:[-2,3]},yaxis:{title:'f(x)',range:[-1,20]},legend:{x:.02,y:.98},height:320},{responsive:true});
+  document.getElementById('taylor-result').innerHTML=
+    'En <span class="val">x=2</span>: e^2 = <span class="val">'+Math.exp(2).toFixed(8)+'</span>, Taylor('+n+') = <span class="val">'+v2.toFixed(8)+'</span>, Error = <span class="val">'+e2.toExponential(4)+'</span>';
+}
+
+// === TARGET ===
+function drawTarget(ex,pr,btn){
+  document.querySelectorAll('#target-btns .btn').forEach(b=>b.classList.remove('asc'));
+  if(btn)btn.classList.add('asc');
+  const svg=document.getElementById('target-svg'),cx=150,cy=150;
+  let h='';
+  for(let r=120;r>0;r-=30){const c=r>90?'#fadbd8':r>60?'#fdebd0':r>30?'#d5f5e3':'#abebc6';h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}" stroke="#bbb" stroke-width="1"/>`}
+  h+=`<line x1="${cx}" y1="${cy-125}" x2="${cx}" y2="${cy+125}" stroke="#ccc" stroke-width=".5"/>`;
+  h+=`<line x1="${cx-125}" y1="${cy}" x2="${cx+125}" y2="${cy}" stroke="#ccc" stroke-width=".5"/>`;
+  const bx=ex==='high'?0:60,by=ex==='high'?0:-50,sp=pr==='high'?12:55;
+  for(let i=0;i<20;i++){const a=Math.random()*2*Math.PI,d=(Math.random()+Math.random())/2*sp;
+    h+=`<circle cx="${(cx+bx+Math.cos(a)*d).toFixed(1)}" cy="${(cy+by+Math.sin(a)*d).toFixed(1)}" r="4" fill="#c0392b" stroke="#922b21" stroke-width="1" opacity=".85"/>`}
+  h+=`<circle cx="${cx}" cy="${cy}" r="3" fill="#2c3e50"/>`;
+  svg.innerHTML=h;
+  const ds={'high-high':'Alta exactitud + Alta precision: agrupados y cerca del centro.',
+    'high-low':'Alta exactitud + Baja precision: dispersos pero centrados en el valor real.',
+    'low-high':'Baja exactitud + Alta precision: agrupados pero lejos del centro (sesgo sistematico).',
+    'low-low':'Baja exactitud + Baja precision: dispersos y lejos del centro.'};
+  document.getElementById('target-desc').textContent=ds[ex+'-'+pr];
+}
+
+// === SAFE EVAL ===
+function sEval(e){e=prepExpr(e);try{return math.evaluate(e)}catch(x){try{return Function('"use strict";return('+e+')')()}catch(x2){return NaN}}}
+
+// === ERROR CALCULATOR ===
+function calcError(){
+  const x=sEval(document.getElementById('ea-x').value),xs=sEval(document.getElementById('ea-xs').value);
+  if(isNaN(x)||isNaN(xs)){document.getElementById('ea-result').innerHTML='Introduce valores validos.';return}
+  const ea=Math.abs(x-xs),er=x?Math.abs(x-xs)/Math.abs(x):Infinity;
+  let p=0;while(ea<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+  let t=0;while(er<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+  const sign=x-xs;
+  const tipo=sign<0?'por exceso (x* > x)':sign>0?'por defecto (x* < x)':'exacta';
+  document.getElementById('ea-result').innerHTML=
+    '<b>Error Absoluto:</b> <span class="val">'+ea.toExponential(6)+'</span><br>'+
+    '<b>Error Relativo:</b> <span class="val">'+er.toExponential(6)+'</span><br>'+
+    '<b>Tipo:</b> Aproximacion <span class="val">'+tipo+'</span> (E\'_A = '+sign.toExponential(4)+')<br>'+
+    '<b>Cifras decimales exactas:</b> <span class="val">p = '+p+'</span><br>'+
+    '<b>Cifras significativas:</b> <span class="val">t = '+t+'</span>';
+}
+
+// === VISUAL COMPARE EA vs ER ===
+function visCompare(){
+  const x1=sEval(document.getElementById('vis-x1').value),ea1=+document.getElementById('vis-ea1').value;
+  const x2=sEval(document.getElementById('vis-x2').value),ea2=+document.getElementById('vis-ea2').value;
+  if([x1,x2,ea1,ea2].some(isNaN))return;
+  const er1=ea1/Math.abs(x1),er2=ea2/Math.abs(x2);
+  Plotly.newPlot('vis-compare-plot',[
+    {x:['Numero 1','Numero 2'],y:[ea1,ea2],type:'bar',name:'Error Absoluto',marker:{color:'#2980b9'}},
+    {x:['Numero 1','Numero 2'],y:[er1,er2],type:'bar',name:'Error Relativo',marker:{color:'#e74c3c'},yaxis:'y2'}
+  ],{margin:{t:30,r:60,b:40,l:60},height:250,yaxis:{title:'EA',side:'left'},yaxis2:{title:'ER',overlaying:'y',side:'right',showgrid:false},barmode:'group',legend:{orientation:'h',y:1.15}},{responsive:true});
+  let t1=0;while(er1<5*Math.pow(10,-t1)&&t1<50)t1++;t1=Math.max(0,t1-1);
+  let t2=0;while(er2<5*Math.pow(10,-t2)&&t2<50)t2++;t2=Math.max(0,t2-1);
+  document.getElementById('vis-compare-result').innerHTML=
+    '<b>Numero 1:</b> |x| = '+Math.abs(x1).toExponential(3)+', EA = '+ea1+', ER = <span class="val">'+er1.toExponential(4)+'</span>, '+t1+' cifras significativas<br>'+
+    '<b>Numero 2:</b> |x| = '+Math.abs(x2).toExponential(3)+', EA = '+ea2+', ER = <span class="val">'+er2.toExponential(4)+'</span>, '+t2+' cifras significativas<br>'+
+    '<em>Mismo EA, pero el ER (y por tanto la calidad) puede ser radicalmente distinto.</em>';
+}
+
+// === COTAS ===
+function calcCota(){
+  const xs=sEval(document.getElementById('cota-xs').value),eps=sEval(document.getElementById('cota-eps').value);
+  if(isNaN(xs)||isNaN(eps)||eps<=0){document.getElementById('cota-result').innerHTML='Valores no validos.';return}
+  const cotaER=xs?eps/Math.abs(xs):Infinity;
+  let p=0;while(eps<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+  const d1=parseInt(Math.abs(xs).toExponential().charAt(0));
+  const cotaProp14=d1>0&&p>0?1/(d1*Math.pow(10,p-1)):null;
+  document.getElementById('cota-result').innerHTML=
+    '<b>Intervalo de confianza:</b> <span class="val">['+(xs-eps)+', '+(xs+eps)+']</span><br>'+
+    '<b>Cota ER:</b> <span class="val">&epsilon;/|x*| = '+cotaER.toExponential(6)+'</span><br>'+
+    '<b>Cifras decimales exactas garantizadas:</b> <span class="val">p = '+p+'</span>'+
+    (cotaProp14?'<br><b>Cota ER (Prop 14):</b> <span class="val">1/('+d1+'&middot;10^'+(p-1)+') = '+cotaProp14.toExponential(4)+'</span>':'');
+}
+
+function visCota(){
+  const x=+document.getElementById('cota-vis-x').value,xs=+document.getElementById('cota-vis-xs').value,eps=+document.getElementById('cota-vis-eps').value;
+  if(isNaN(x)||isNaN(xs)||isNaN(eps))return;
+  const ea=Math.abs(x-xs);
+  Plotly.newPlot('cota-vis-plot',[
+    {x:[xs-eps,xs+eps],y:[0,0],mode:'lines',line:{color:'#2980b9',width:10},name:'Intervalo [x*-e, x*+e]',hoverinfo:'x'},
+    {x:[xs],y:[0],mode:'markers',marker:{size:14,color:'#e74c3c',symbol:'diamond'},name:'x* (aprox)',hoverinfo:'x'},
+    {x:[x],y:[0],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:'x (exacto)',hoverinfo:'x'},
+    {x:[xs-eps,xs-eps],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false},
+    {x:[xs+eps,xs+eps],y:[-.3,.3],mode:'lines',line:{color:'#2980b9',width:2,dash:'dot'},showlegend:false}
+  ],{margin:{t:20,b:50,l:40,r:40},yaxis:{visible:false,range:[-.5,.5]},xaxis:{title:'x'},height:180,legend:{orientation:'h',y:1.2}},{responsive:true});
+  const dentro=ea<=eps;
+  document.getElementById('cota-vis-result').innerHTML=
+    'EA real = <span class="val">'+ea.toExponential(4)+'</span>, Cota &epsilon; = <span class="val">'+eps+'</span><br>'+
+    (dentro?'<span style="color:#27ae60"><b>EA &le; &epsilon;</b>: la cota es valida, x esta dentro del intervalo.</span>':
+    '<span style="color:#e74c3c"><b>EA > &epsilon;</b>: la cota NO es valida, x queda fuera del intervalo.</span>');
+}
+
+// === INTERVALOS ===
+function drawInterval(){
+  const xs=+document.getElementById('ic-xs').value,eps=+document.getElementById('ic-eps').value;
+  const xReal=document.getElementById('ic-real').value?+document.getElementById('ic-real').value:null;
+  if(isNaN(xs)||isNaN(eps))return;
+  const a=xs-eps,b=xs+eps;
+  const traces=[
+    {x:[a,b],y:[0,0],mode:'lines',line:{color:'#2980b9',width:8},name:'Intervalo',hoverinfo:'x'},
+    {x:[xs],y:[0],mode:'markers',marker:{size:14,color:'#e74c3c',symbol:'diamond'},name:'x*',hoverinfo:'x'},
+    {x:[a],y:[0],mode:'markers+text',marker:{size:10,color:'#2980b9'},text:[a.toFixed(6)],textposition:'bottom center',showlegend:false,hoverinfo:'x'},
+    {x:[b],y:[0],mode:'markers+text',marker:{size:10,color:'#2980b9'},text:[b.toFixed(6)],textposition:'bottom center',showlegend:false,hoverinfo:'x'}
+  ];
+  if(xReal!==null&&!isNaN(xReal)){
+    traces.push({x:[xReal],y:[0],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:'x (exacto)',hoverinfo:'x'});
+  }
+  Plotly.newPlot('interval-plot',traces,{margin:{t:20,b:50,l:40,r:40},yaxis:{visible:false,range:[-.5,.5]},xaxis:{title:'x',range:[a-eps,b+eps]},height:180,legend:{orientation:'h',y:1.15}},{responsive:true});
+  let html='Intervalo de confianza: <span class="val">['+a.toFixed(6)+', '+b.toFixed(6)+']</span>';
+  if(xReal!==null&&!isNaN(xReal)){
+    const ea=Math.abs(xReal-xs);
+    const tipo=(xReal-xs)<0?'por exceso (x* > x)':(xReal-xs)>0?'por defecto (x* < x)':'exacta';
+    const dentro=ea<=eps+1e-15;
+    html+='<br>x = '+xReal+', EA = <span class="val">'+ea.toExponential(4)+'</span>, Aprox. <span class="val">'+tipo+'</span>';
+    html+='<br>'+(dentro?'<span style="color:#27ae60">x esta dentro del intervalo.</span>':'<span style="color:#e74c3c">x NO esta dentro (la cota epsilon es insuficiente).</span>');
+  }
+  document.getElementById('ic-result').innerHTML=html;
+}
+
+function calcFromInterval(){
+  const a=+document.getElementById('ic-a').value,b=+document.getElementById('ic-b').value;
+  if(isNaN(a)||isNaN(b)||a>=b){document.getElementById('ic-ab-result').innerHTML='Introduce a < b.';return}
+  const xs=(a+b)/2,eps=(b-a)/2;
+  document.getElementById('ic-ab-result').innerHTML=
+    'Mejor aproximacion: <span class="val">x* = ('+a+'+'+b+')/2 = '+xs+'</span><br>'+
+    'Cota del error: <span class="val">&epsilon; = ('+b+'-'+a+')/2 = '+eps+'</span><br>'+
+    'Intervalo: <span class="val">['+a+', '+b+']</span>';
+}
+
+// === PROPAGACION ===
+function calcPropagacion(){
+  const x=sEval(document.getElementById('prop-x').value),xs=sEval(document.getElementById('prop-xs').value);
+  const y=sEval(document.getElementById('prop-y').value),ys=sEval(document.getElementById('prop-ys').value);
+  if([x,xs,y,ys].some(isNaN)){document.getElementById('prop-result').innerHTML='Valores no validos.';return}
+  const eax=Math.abs(x-xs),eay=Math.abs(y-ys);
+  const erx=x?eax/Math.abs(x):Infinity,ery=y?eay/Math.abs(y):Infinity;
+  const eaSum=Math.abs((x+y)-(xs+ys)),erProd=x*y?Math.abs(x*y-xs*ys)/Math.abs(x*y):Infinity;
+  const erDiv=y&&x/y?Math.abs(x/y-xs/ys)/Math.abs(x/y):Infinity;
+  document.getElementById('prop-result').innerHTML=
+    '<b>Errores individuales:</b><br>EA(x*)=<span class="val">'+eax.toExponential(4)+'</span>, EA(y*)=<span class="val">'+eay.toExponential(4)+'</span><br>'+
+    'ER(x*)=<span class="val">'+erx.toExponential(4)+'</span>, ER(y*)=<span class="val">'+ery.toExponential(4)+'</span><br><br>'+
+    '<b>Suma:</b> EA(x*+y*) = <span class="val">'+eaSum.toExponential(4)+'</span> &le; '+(eax+eay).toExponential(4)+' = EA(x*)+EA(y*) &#10003;<br>'+
+    '<b>Producto:</b> ER(x*&middot;y*) = <span class="val">'+erProd.toExponential(4)+'</span> &le; '+(erx+ery).toExponential(4)+' = ER(x*)+ER(y*) &#10003;<br>'+
+    '<b>Cociente:</b> ER(x*/y*) = <span class="val">'+erDiv.toExponential(4)+'</span> &le; '+(erx+ery).toExponential(4)+' = ER(x*)+ER(y*) &#10003;';
+}
+
+// === PARSE USER FORMULA WITH MATH.JS ===
+function parseFunc(expr){
+  try{
+    const node=math.parse(expr);
+    const compiled=node.compile();
+    const f=x=>{try{return compiled.evaluate({x:x})}catch(e){return NaN}};
+    // Compute derivative symbolically
+    const dnode=math.derivative(node,'x');
+    const dcompiled=dnode.compile();
+    const df=x=>{try{return dcompiled.evaluate({x:x})}catch(e){return NaN}};
+    return {f,df,expr:node.toString(),dexpr:dnode.toString()};
+  }catch(e){return null}
+}
+
+// === PROPAGACION FUNCIONES ===
+function calcPropFunc(){
+  const exprStr=document.getElementById('prop-func').value.trim();
+  const fd=parseFunc(exprStr);
+  if(!fd){document.getElementById('propfunc-result').innerHTML='<span style="color:#e74c3c">Error al interpretar la funcion. Revisa la sintaxis.</span>';return}
+  const xS=+document.getElementById('prop-func-x').value,eaX=+document.getElementById('prop-func-ea').value;
+  if(isNaN(xS)||isNaN(eaX))return;
+  const fxs=fd.f(xS),dfxs=fd.df(xS);
+  if(isNaN(fxs)||isNaN(dfxs)){document.getElementById('propfunc-result').innerHTML='<span style="color:#e74c3c">La funcion o su derivada no estan definidas en x* = '+xS+'.</span>';return}
+  // Prop 21: max|f'(z)| en I=[x*-EA, x*+EA] (consistente con el resolutor)
+  let maxDf=Math.abs(dfxs),maxAt=xS;
+  const iLo=xS-eaX,iHi=xS+eaX;
+  for(let i=0;i<=20;i++){const z=iLo+(iHi-iLo)*i/20;const dz=Math.abs(fd.df(z));if(!isNaN(dz)&&isFinite(dz)&&dz>maxDf){maxDf=dz;maxAt=z;}}
+  const cota=maxDf*eaX;
+  const erF=fxs!==0?cota/Math.abs(fxs):Infinity;
+  let pF=0;while(cota<=Math.pow(10,-pF)&&pF<50)pF++;pF=Math.max(0,pF-1);
+  let tF=0;while(erF<5*Math.pow(10,-tF)&&tF<50)tF++;tF=Math.max(0,tF-1);
+  const xs=[],yf=[],ydf=[],lo=xS-3,hi=xS+3;
+  for(let x=lo;x<=hi;x+=.02){xs.push(x);yf.push(fd.f(x));ydf.push(Math.abs(fd.df(x)))}
+  Plotly.newPlot('propfunc-plot',[
+    {x:xs,y:yf,name:'f(x) = '+exprStr,line:{color:'#2980b9',width:2}},
+    {x:xs,y:ydf,name:"|f'(x)| = |"+fd.dexpr+"|",line:{color:'#e74c3c',width:2,dash:'dash'},yaxis:'y2'},
+    {x:[xS],y:[fxs],mode:'markers',marker:{size:10,color:'#e74c3c'},name:'x*',showlegend:false}
+  ],{margin:{t:30,r:60,b:40,l:50},height:320,xaxis:{title:'x'},yaxis:{title:'f(x)'},yaxis2:{title:"|f'(x)|",overlaying:'y',side:'right',showgrid:false},
+    shapes:[{type:'rect',x0:xS-eaX,x1:xS+eaX,y0:fxs-cota,y1:fxs+cota,fillcolor:'rgba(231,76,60,.15)',line:{color:'#e74c3c',dash:'dot'}}]},{responsive:true});
+  document.getElementById('propfunc-result').innerHTML=
+    '<b>f(x) =</b> '+exprStr+'<br><b>f\'(x) =</b> '+fd.dexpr+'<br>'+
+    'f(x*) = <span class="val">'+fxs.toFixed(8)+'</span><br>'+
+    "|f'(x*)| = "+Math.abs(dfxs).toFixed(8)+', <b>max|f\'(z)| en I</b> = <span class="val">'+maxDf.toFixed(8)+'</span><br>'+
+    "Cota EA(f) &le; max|f'(z)| &middot; EA(x*) = <span class=\"val\">"+cota.toExponential(6)+'</span><br>'+
+    'Cota ER(f) &le; '+erF.toExponential(6)+' &nbsp;|&nbsp; <b>p(f) = <span class="val">'+pF+'</span></b> c.d.e. &nbsp;|&nbsp; <b>t(f) = <span class="val">'+tF+'</span></b> c.s.';
+}
+
+// === REDONDEO ===
+function calcRedondeo(){
+  const num=parseFloat(document.getElementById('round-num').value),k=+document.getElementById('round-k').value;
+  if(isNaN(num)||isNaN(k)||k<0){document.getElementById('round-result').innerHTML='Valores no validos.';return}
+  const f=Math.pow(10,k),tr=Math.trunc(num*f)/f,rd=Math.round(num*f)/f;
+  const eat=Math.abs(num-tr),ear=Math.abs(num-rd);
+  document.getElementById('round-result').innerHTML=
+    '<b>Original:</b> '+num+'<br>'+
+    '<b>Truncamiento ('+k+' cifras):</b> <span class="val">'+tr.toFixed(k)+'</span> &nbsp; EA = '+eat.toExponential(4)+' &le; '+Math.pow(10,-k).toExponential(1)+'<br>'+
+    '<b>Redondeo ('+k+' cifras):</b> <span class="val">'+rd.toFixed(k)+'</span> &nbsp; EA = '+ear.toExponential(4)+' &le; '+(0.5*Math.pow(10,-k)).toExponential(1);
+}
+
+// === IEEE 754 ===
+function calcIEEE(){
+  const num=+document.getElementById('ieee-num').value,bits=+document.getElementById('ieee-prec').value;
+  if(isNaN(num)){document.getElementById('ieee-result').innerHTML='Numero no valido.';return}
+  let r='';
+  if(bits===32){const buf=new ArrayBuffer(4);new Float32Array(buf)[0]=num;const iv=new Uint32Array(buf)[0];
+    const s=(iv>>>31)&1,e=(iv>>>23)&0xFF,m=iv&0x7FFFFF;
+    r='<b>Simple (32 bits):</b><br><span class="bits-display"><span class="sign">'+s+'</span> <span class="exponent">'+e.toString(2).padStart(8,'0')+'</span> <span class="mantissa">'+m.toString(2).padStart(23,'0')+'</span></span><br>'+
+      '<span class="bit-label"><span class="sign">Signo</span> <span class="exponent">Exp (c='+e+', e='+(e-127)+')</span> <span class="mantissa">Mantisa</span></span><br>Valor: <span class="val">'+new Float32Array(buf)[0]+'</span>'}
+  else{const buf=new ArrayBuffer(8);new Float64Array(buf)[0]=num;const ia=new Uint32Array(buf),hi=ia[1],lo=ia[0];
+    const s=(hi>>>31)&1,e=(hi>>>20)&0x7FF,mh=hi&0xFFFFF;
+    r='<b>Doble (64 bits):</b><br><span class="bits-display"><span class="sign">'+s+'</span> <span class="exponent">'+e.toString(2).padStart(11,'0')+'</span> <span class="mantissa">'+mh.toString(2).padStart(20,'0')+lo.toString(2).padStart(32,'0')+'</span></span><br>'+
+      '<span class="bit-label"><span class="sign">Signo</span> <span class="exponent">Exp (c='+e+', e='+(e-1023)+')</span> <span class="mantissa">Mantisa (52 bits)</span></span><br>Valor: <span class="val">'+new Float64Array(buf)[0]+'</span>'}
+  document.getElementById('ieee-result').innerHTML=r;
+}
+
+// === CONDICIONAMIENTO ===
+function calcCondicion(){
+  const exprStr=document.getElementById('cond-func').value.trim();
+  const fd=parseFunc(exprStr);
+  if(!fd){document.getElementById('cond-result').innerHTML='<span style="color:#e74c3c">Error al interpretar la funcion. Revisa la sintaxis.</span>';return}
+  const a=+document.getElementById('cond-a').value,b=+document.getElementById('cond-b').value;
+  if(isNaN(a)||isNaN(b)||a>=b)return;
+  const xs=[],yC=[],yF=[],st=(b-a)/500;
+  for(let x=a;x<=b;x+=st){const fv=fd.f(x),dv=fd.df(x),c=fv?Math.abs(x*dv/fv):NaN;
+    if(isFinite(c)&&c<100){xs.push(x);yC.push(c);yF.push(fv)}}
+  Plotly.newPlot('cond-plot',[
+    {x:xs,y:yF,name:'f(x) = '+exprStr,line:{color:'#2980b9',width:2}},
+    {x:xs,y:yC,name:'C(x)',line:{color:'#e74c3c',width:2,dash:'dash'},yaxis:'y2'},
+    {x:[a,b],y:[1,1],mode:'lines',line:{color:'#7f8c8d',width:1,dash:'dot'},name:'C=1',yaxis:'y2',showlegend:false}
+  ],{margin:{t:30,r:60,b:40,l:50},height:350,xaxis:{title:'x'},yaxis:{title:'f(x)'},yaxis2:{title:'C(x)',overlaying:'y',side:'right',showgrid:false,rangemode:'tozero'}},{responsive:true});
+  const mid=(a+b)/2,fmid=fd.f(mid),dfmid=fd.df(mid),cm=fmid?Math.abs(mid*dfmid/fmid):NaN;
+  document.getElementById('cond-result').innerHTML=
+    '<b>f(x) =</b> '+exprStr+' &nbsp; <b>f\'(x) =</b> '+fd.dexpr+'<br>'+
+    'En x='+(mid.toFixed(2))+': C(x) = <span class="val">'+(cm.toFixed(4))+'</span> &rarr; <b>'+(cm<1?'Bien condicionado':'Mal condicionado')+'</b><br>'+
+    '<em>Zonas donde la linea roja C(x) > 1 indican mal condicionamiento.</em>';
+}
+
+// === TEST ===
+const questions=[
+{q:'Los unicos tipos de error controlables en el analisis numerico son:',
+ opts:['Experimental y de modelizacion','De truncamiento y de redondeo','Experimental y de redondeo','De modelizacion y de truncamiento'],ans:1,d:'bajo',
+ expl:'El material indica que los errores que "podemos analizar y controlar" son truncamiento (aumentando iteraciones) y redondeo (aumentando cifras).',
+ why:['<b>A) Incorrecta.</b> Los errores experimental y de modelizacion son inherentes al problema fisico y a las simplificaciones del modelo. No los controla el calculista.','<b>B) Correcta.</b> El truncamiento se controla aumentando el numero de terminos/iteraciones; el redondeo se controla aumentando las cifras decimales. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t1\');document.getElementById(\'topic-select\').value=\'t1\';return false">Ver Tema 1: Tipos de Errores</a>','<b>C) Incorrecta.</b> El error experimental no es controlable por el calculista (depende de los instrumentos de medida).','<b>D) Incorrecta.</b> El error de modelizacion depende de la eleccion del modelo matematico, no del calculo numerico.']},
+{q:'La asociacion mas coherente con la distincion "exactitud vs precision" es:',
+ opts:['Exactitud = dispersion entre aproximaciones; Precision = distancia al valor exacto',
+       'Exactitud = distancia al valor exacto; Precision = dispersion/consistencia entre aproximaciones',
+       'Exactitud = numero de iteraciones; Precision = coste computacional',
+       'Exactitud = error relativo; Precision = error absoluto'],ans:1,d:'medio',
+ expl:'Exactitud = cercania al valor exacto (error absoluto). Precision = baja dispersion entre aproximaciones (error relativo/cifras significativas).',
+ why:['<b>A) Incorrecta.</b> Esta al reves: la dispersion mide precision, no exactitud.','<b>B) Correcta.</b> Exactitud = cercanía al valor real (EA bajo). Precision = reproducibilidad/agrupacion (ER bajo). <a href="#" onclick="switchTab(\'theory\');showTopic(\'t2\');document.getElementById(\'topic-select\').value=\'t2\';return false">Ver Tema 2: Exactitud y Precision</a>','<b>C) Incorrecta.</b> Iteraciones y coste no definen estos conceptos.','<b>D) Incorrecta.</b> Esta invertido: exactitud se relaciona con EA, precision con ER.']},
+{q:'Si el error absoluto con signo es \\(E\'_A(x^*) = x - x^*\\), y \\(E\'_A(x^*) < 0\\), entonces:',
+ opts:['La aproximacion es por defecto','La aproximacion es por exceso y por defecto simultaneamente',
+       'La aproximacion es por exceso','El signo no aporta informacion'],ans:2,d:'medio',
+ expl:'Si E\'_A = x - x* < 0, entonces x* > x, es decir, la aproximacion supera al valor real: es por exceso.',
+ why:['<b>A) Incorrecta.</b> Por defecto seria x* < x, es decir E\'_A > 0.','<b>B) Incorrecta.</b> No puede ser ambas a la vez.','<b>C) Correcta.</b> Si x - x* < 0, entonces x* > x: la aproximacion "se pasa" del valor real, es por exceso. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t5\');document.getElementById(\'topic-select\').value=\'t5\';return false">Ver Tema 5: Intervalos (exceso/defecto)</a>','<b>D) Incorrecta.</b> El signo si aporta informacion: indica si nos pasamos o nos quedamos cortos.']},
+{q:'La definicion correcta de error relativo para una aproximacion \\(x^*\\) de \\(x\\) es:',
+ opts:['\\(E_R(x^*) = |x-x^*|\\)','\\(E_R(x^*) = \\frac{|x-x^*|}{|x|}\\)',
+       '\\(E_R(x^*) = \\frac{|x|}{|x-x^*|}\\)','\\(E_R(x^*) = |x|\\cdot|x-x^*|\\)'],ans:1,d:'bajo',
+ expl:'El error relativo es el cociente entre el error absoluto y la magnitud del valor exacto.',
+ why:['<b>A) Incorrecta.</b> Eso es el error absoluto EA, no el relativo.','<b>B) Correcta.</b> ER = EA/|x| = |x-x*|/|x|. Definicion 6 del material. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t3\');document.getElementById(\'topic-select\').value=\'t3\';return false">Ver Tema 3: Calculadora de errores</a>','<b>C) Incorrecta.</b> La fraccion esta invertida.','<b>D) Incorrecta.</b> Es un producto, no un cociente; dimensionalmente no tiene sentido como error "relativo".']},
+{q:'Una aproximacion \\(x^*\\) tiene \\(p\\) cifras decimales exactas si:',
+ opts:['\\(E_A(x^*) \\le 5\\times 10^{-p}\\)','\\(E_A(x^*) \\le 10^{-p}\\)',
+       '\\(E_R(x^*) \\le 10^{-p}\\)','\\(E_R(x^*) \\le 5\\times 10^{-p}\\)'],ans:1,d:'medio',
+ expl:'El criterio de cifras decimales exactas usa una cota del error absoluto de la forma 10^(-p).',
+ why:['<b>A) Incorrecta.</b> El factor 5 aparece en cifras significativas, no decimales exactas.','<b>B) Correcta.</b> Definicion 4: p cifras decimales exactas si EA(x*) &le; 10^(-p). <a href="#" onclick="switchTab(\'theory\');showTopic(\'t3\');document.getElementById(\'topic-select\').value=\'t3\';return false">Probarlo en la calculadora</a>','<b>C) Incorrecta.</b> Cifras decimales exactas usan EA, no ER.','<b>D) Incorrecta.</b> Esta formula (con ER y factor 5) corresponde a cifras significativas (Def. 9).']},
+{q:'\\(x^*\\) tiene \\(t\\) cifras significativas si \\(t\\) es el mayor entero no negativo tal que:',
+ opts:['\\(E_A(x^*) < 5\\times 10^{-t}\\)','\\(E_R(x^*) < 10^{-t}\\)',
+       '\\(E_R(x^*) < 5\\times 10^{-t}\\)','\\(E_A(x^*) < 10^{-t}\\)'],ans:2,d:'alto',
+ expl:'Las cifras significativas se formulan con el error relativo y cota 5 * 10^(-t).',
+ why:['<b>A) Incorrecta.</b> Usa EA en vez de ER. Cifras significativas son un concepto relativo.','<b>B) Incorrecta.</b> Falta el factor 5. Sin el, seria una definicion demasiado estricta.','<b>C) Correcta.</b> Definicion 9: t es el mayor entero con ER(x*) < 5&times;10^(-t). Combina ER (relativo) con el factor 5.','<b>D) Incorrecta.</b> Usa EA y sin factor 5: eso son cifras decimales exactas (Def. 4).']},
+{q:'Para aproximar con \\(k\\) cifras decimales, las cotas del error absoluto son:',
+ opts:['Truncamiento: EA &le; 1/2 &middot; 10^(-k); Redondeo: EA &le; 10^(-k)',
+       'Truncamiento: EA &le; 10^(-k); Redondeo: EA &le; 1/2 &middot; 10^(-k)',
+       'Ambos cumplen la misma cota EA &le; 10^(-k)',
+       'Truncamiento: EA &le; 5 &middot; 10^(-k); Redondeo: EA &le; 10^(-k)'],ans:1,d:'medio',
+ expl:'Truncamiento: cota 10^(-k). Redondeo: cota (1/2)*10^(-k). El redondeo siempre es mejor o igual.',
+ why:['<b>A) Incorrecta.</b> Las cotas estan intercambiadas: truncamiento tiene la cota mayor, no menor.','<b>B) Correcta.</b> Proposicion 27: truncamiento &le; 10^(-k), redondeo &le; (1/2)&middot;10^(-k). El redondeo es siempre mejor. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t7\');document.getElementById(\'topic-select\').value=\'t7\';return false">Probarlo en el simulador</a>','<b>C) Incorrecta.</b> Las cotas son distintas; el redondeo tiene cota mas ajustada.','<b>D) Incorrecta.</b> El factor 5 no aparece en estas cotas.']},
+{q:'El intervalo de confianza para \\(x\\) con aproximacion \\(x^*\\) y cota \\(\\varepsilon\\) es:',
+ opts:['[x*, x*+&epsilon;]','[x*-&epsilon;, x*+&epsilon;]','[x-&epsilon;, x+&epsilon;]','[x*-&epsilon;/2, x*+&epsilon;/2]'],ans:1,d:'medio',
+ expl:'Definicion 15: el intervalo de confianza es [x*-epsilon, x*+epsilon], centrado en la aproximacion.',
+ why:['<b>A) Incorrecta.</b> Solo cubre un lado; x podria estar por debajo de x*.','<b>B) Correcta.</b> El intervalo se centra en x* con radio epsilon. x puede estar tanto por exceso como por defecto. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t5\');document.getElementById(\'topic-select\').value=\'t5\';return false">Ver visualizacion interactiva</a>','<b>C) Incorrecta.</b> No conocemos x (es lo que buscamos), asi que no podemos centrar en x.','<b>D) Incorrecta.</b> El radio es epsilon completo, no epsilon/2.']},
+{q:'La cota de propagacion del error para la suma/resta es:',
+ opts:['\\(E_A(x^*\\pm y^*) \\le E_A(x^*) + E_A(y^*)\\)',
+       '\\(E_A(x^*\\cdot y^*) \\le E_A(x^*) + E_A(y^*)\\)',
+       '\\(E_R(x^*\\pm y^*) \\le E_R(x^*) + E_R(y^*)\\)',
+       '\\(E_R(x^*/y^*) \\le E_R(x^*) - E_R(y^*)\\)'],ans:0,d:'alto',
+ expl:'Para suma/resta se acota el error absoluto por suma de errores absolutos. Para producto/cociente se usan errores relativos.',
+ why:['<b>A) Correcta.</b> Proposicion 18: para suma/resta, la cota es en error absoluto. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t6\');document.getElementById(\'topic-select\').value=\'t6\';return false">Ver calculadora de propagacion</a>','<b>B) Incorrecta.</b> Para el producto se usa error relativo, no absoluto.','<b>C) Incorrecta.</b> Para suma/resta la cota natural es en EA, no en ER.','<b>D) Incorrecta.</b> Para cociente es suma de ER, no diferencia.']},
+{q:'En Mathematica, N[numero, cifras] devuelve:',
+ opts:['El numero exacto con "cifras" decimales',
+       'Una aproximacion numerica con tantas cifras significativas como se indique',
+       'Una simplificacion simbolica','Un redondeo a "cifras" decimales (no significativas)'],ans:1,d:'bajo',
+ expl:'N convierte a aproximacion numerica con control de cifras significativas; si se omite el segundo argumento, usa un valor por defecto.',
+ why:['<b>A) Incorrecta.</b> N produce una aproximacion, no el valor exacto; ademas controla cifras significativas, no decimales.','<b>B) Correcta.</b> N[expr, p] da una aproximacion con p cifras significativas. Sin segundo argumento usa MachinePrecision.','<b>C) Incorrecta.</b> N es para evaluacion numerica, no simplificacion simbolica (eso seria Simplify).','<b>D) Incorrecta.</b> Controla cifras significativas, no decimales.']},
+{q:'Sobre Precision[x] en Mathematica:',
+ opts:['Todo entero tiene precision MachinePrecision',
+       'Los numeros exactos tienen precision Infinity; los numeros maquina usan $MachinePrecision',
+       'Precision[x] devuelve siempre el numero de decimales exactos',
+       'Un numero con coma decimal es siempre exacto'],ans:1,d:'medio',
+ expl:'Los numeros exactos (enteros, fracciones) tienen precision Infinity. Los numeros maquina se asocian a MachinePrecision.',
+ why:['<b>A) Incorrecta.</b> Los enteros son exactos y tienen precision Infinity, no MachinePrecision.','<b>B) Correcta.</b> Numeros exactos (1, 1/3, Pi) tienen Precision = Infinity. Los de maquina (1.0, 3.14) usan $MachinePrecision.','<b>C) Incorrecta.</b> Precision mide cifras significativas, no decimales exactos (eso seria Accuracy).','<b>D) Incorrecta.</b> Un numero con punto decimal (ej: 1.5) es inexacto en Mathematica.']},
+{q:'La relacion entre Accuracy y Precision en Mathematica para un numero no exacto \\(x\\) es:',
+ opts:['Accuracy[x] = Precision[x] + Log[10, Abs[x]]',
+       'Accuracy[x] = Precision[x] - Log[10, Abs[x]]',
+       'Accuracy[x] = Precision[x] &middot; Log[10, Abs[x]]',
+       'Accuracy[x] no depende del tamano de x'],ans:1,d:'alto',
+ expl:'El material establece: Accuracy[x] = Precision[x] - log10(|x|) para numeros de precision finita.',
+ why:['<b>A) Incorrecta.</b> El signo es menos, no mas.','<b>B) Correcta.</b> Accuracy = Precision - log10(|x|). Esto refleja que para numeros grandes, la misma precision da menos cifras decimales exactas.','<b>C) Incorrecta.</b> Es una resta, no un producto.','<b>D) Incorrecta.</b> Si depende: la magnitud del numero afecta a cuantas cifras decimales exactas tiene.']},
+{q:'Sobre la notacion con backticks en Mathematica:',
+ opts:['numero`p fija la exactitud a p; numero``s fija la precision a s',
+       'numero`p fija la precision a p; numero``s introduce exactitud s',
+       'numero``s fuerza que el numero sea exacto (Infinity)',
+       'numero``p y numero`s son equivalentes siempre'],ans:1,d:'medio',
+ expl:'Se distingue: `p fija precision, ``s fija exactitud, y ` solo da precision de maquina.',
+ why:['<b>A) Incorrecta.</b> Esta al reves: ` fija precision, `` fija exactitud.','<b>B) Correcta.</b> Un backtick (`) fija precision (cifras significativas), dos (``) fijan exactitud (cifras decimales exactas). Solo ` sin numero da precision de maquina.','<b>C) Incorrecta.</b> `` fija exactitud a un valor finito, no infinito.','<b>D) Incorrecta.</b> Son conceptos diferentes: precision &ne; exactitud.']},
+{q:'Sobre representacion en base en Mathematica:',
+ opts:['IntegerDigits[n,b] devuelve los digitos de n en base b, y FromDigits[lista,b] reconstruye el numero',
+       'IntegerDigits solo funciona en base 10',
+       'FromDigits solo reconstruye en base 2',
+       'BaseForm[0.1,2] siempre produce expansion finita'],ans:0,d:'medio',
+ expl:'IntegerDigits con base opcional y FromDigits como inverso. 0.1 en base 2 NO es finito.',
+ why:['<b>A) Correcta.</b> IntegerDigits[n,b] da lista de digitos en base b; FromDigits[lista,b] es la operacion inversa.','<b>B) Incorrecta.</b> IntegerDigits acepta cualquier base como segundo argumento.','<b>C) Incorrecta.</b> FromDigits funciona con cualquier base.','<b>D) Incorrecta.</b> 0.1 en base 2 es periodico (0.000110011...), NO finito. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Ejemplo 32</a>']},
+{q:'Sobre limites numericos y epsilon de maquina en Mathematica:',
+ opts:['$MaxMachineNumber y $MaxNumber son el mismo limite',
+       '$MachineEpsilon es la diferencia entre 1.0 y el siguiente numero maquina mayor que 1.0',
+       '$MinNumber es siempre 0',
+       'Overflow y underflow solo ocurren en enteros exactos'],ans:1,d:'alto',
+ expl:'$MachineEpsilon es el incremento minimo a partir de 1.0 en precision de maquina. $MaxNumber y $MaxMachineNumber son limites diferentes.',
+ why:['<b>A) Incorrecta.</b> Son limites distintos: $MaxMachineNumber es para precision de maquina, $MaxNumber para precision arbitraria (mucho mayor).','<b>B) Correcta.</b> $MachineEpsilon es el menor e tal que 1.0 + e &ne; 1.0 en aritmetica de maquina. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Tema 8: IEEE 754</a>','<b>C) Incorrecta.</b> $MinNumber es un valor positivo muy pequeno, no cero.','<b>D) Incorrecta.</b> Overflow/underflow ocurren en numeros de punto flotante, no en enteros exactos.']},
+{q:'El numero de condicion \\(C(x)\\) de \\(f(x) = \\sqrt{x}\\) es:',
+ opts:['1','2','1/2','x'],ans:2,d:'medio',
+ expl:'C(x) = |x * (1/(2sqrt(x))) / sqrt(x)| = 1/2. Siempre bien condicionado.',
+ why:['<b>A) Incorrecta.</b> El resultado del calculo es 1/2, no 1.','<b>B) Incorrecta.</b> Es 1/2, no 2.','<b>C) Correcta.</b> C(x) = |x &middot; f\'(x)/f(x)| = |x/(2x)| = 1/2. Como C < 1, sqrt es siempre bien condicionada. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t9\');document.getElementById(\'topic-select\').value=\'t9\';return false">Graficarlo</a>','<b>D) Incorrecta.</b> C es constante para sqrt, no depende de x.']},
+{q:'Un problema esta mal condicionado cuando:',
+ opts:['C(x) = 0','C(x) < 1','C(x) > 1','C(x) = 1/2'],ans:2,d:'bajo',
+ expl:'C(x) > 1 significa que los errores relativos se amplifican.',
+ why:['<b>A) Incorrecta.</b> C = 0 significaria que f es localmente constante; no es "mal condicionado".','<b>B) Incorrecta.</b> C < 1 es bien condicionado (los errores se reducen).','<b>C) Correcta.</b> Cuando C > 1, un error relativo en x se amplifica al calcular f(x). Cuanto mayor C, peor. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t9\');document.getElementById(\'topic-select\').value=\'t9\';return false">Ver graficas de condicion</a>','<b>D) Incorrecta.</b> C = 1/2 < 1, seria bien condicionado.']},
+{q:'Para \\(x^2 - 10^6x + 1 = 0\\), la raiz pequena se calcula establemente usando:',
+ opts:['La formula cuadratica directa','Racionalizacion: 2/(10^6 + sqrt(10^12 - 4))',
+       'Iteracion de Newton','Division sintetica'],ans:1,d:'medio',
+ expl:'La formula directa produce cancelacion catastrofica. Racionalizando se evita la resta de numeros casi iguales.',
+ why:['<b>A) Incorrecta.</b> La formula directa hace 10^6 - sqrt(10^12-4), restando numeros casi iguales &rarr; cancelacion catastrofica.','<b>B) Correcta.</b> Racionalizando: x = 2/(10^6 + sqrt(10^12-4)). Al sumar en el denominador se evita la cancelacion. <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Ejemplo 35</a>','<b>C) Incorrecta.</b> Newton podria funcionar, pero no es la solucion directa al problema de cancelacion.','<b>D) Incorrecta.</b> La division sintetica no resuelve el problema de la cancelacion numerica.']},
+{q:'El epsilon de maquina en precision doble (64 bits) es aproximadamente:',
+ opts:['1.19 &times; 10^(-7)','2.22 &times; 10^(-16)','1.11 &times; 10^(-16)','5.0 &times; 10^(-8)'],ans:1,d:'medio',
+ expl:'El epsilon de maquina en doble precision es 2^(-52) ≈ 2.22 * 10^(-16).',
+ why:['<b>A) Incorrecta.</b> Eso es el epsilon de precision simple (32 bits, 2^(-23)).','<b>B) Correcta.</b> Doble precision tiene 52 bits de mantisa: epsilon = 2^(-52) &asymp; 2.22&times;10^(-16). <a href="#" onclick="switchTab(\'theory\');showTopic(\'t8\');document.getElementById(\'topic-select\').value=\'t8\';return false">Ver Tema 8</a>','<b>C) Incorrecta.</b> Es 2.22, no 1.11. La diferencia es un factor 2.','<b>D) Incorrecta.</b> Eso corresponderia a una mantisa de ~27 bits, que no es ningun estandar.']},
+{q:'El metodo de Horner para evaluar polinomios reduce principalmente:',
+ opts:['El numero de sumas','El numero de multiplicaciones','El grado del polinomio','El error de redondeo a cero'],ans:1,d:'bajo',
+ expl:'Horner reduce multiplicaciones de O(n^2) a n, minimizando la propagacion de errores.',
+ why:['<b>A) Incorrecta.</b> El numero de sumas es n en ambos metodos.','<b>B) Correcta.</b> Horner reescribe P(x) = a0 + x(a1 + x(a2 + ...)) reduciendo multiplicaciones de O(n^2) a n. Menos operaciones = menos propagacion de error.','<b>C) Incorrecta.</b> El grado del polinomio no cambia, solo la forma de evaluarlo.','<b>D) Incorrecta.</b> No elimina el error de redondeo, solo lo reduce al hacer menos operaciones.']}
+];
+
+// PROBLEMS
+const problems=[
+{title:'Problema 16: Exactitud vs Precision con dos aproximaciones',d:'medio',
+ text:'Tienes \\(x^*=6.2\\) como aproximacion de \\(x=6\\), e \\(y^*=6198\\) como aproximacion de \\(y=6000\\). Explica por que una puede ser "mas exacta" y la otra "mas precisa".',
+ sol:'La <b>exactitud</b> se evalua con el <b>error absoluto</b> EA = |x - x*|: EA(6.2) = 0.2 y EA(6198) = 198, por lo que 6.2 es mas exacta. La <b>precision</b> se evalua con el <b>error relativo</b> ER: ER(6.2) = 0.2/6 ≈ 0.033 y ER(6198) = 198/6000 = 0.033. Ambas tienen precision similar (~2 cifras significativas). La clave es que el error absoluto mide distancia al valor real, mientras que el relativo mide la calidad proporcional al tamano del numero.'},
+{title:'Problema 17: Estabilidad de expresiones equivalentes',d:'alto',
+ text:'Para aproximar \\(a = (\\sqrt{3}-2)^6\\) con \\(z^* \\approx \\sqrt{3}\\), compara la estabilidad de: (1) \\(a = (7-4\\sqrt{3})^3\\) y (2) \\(a = \\frac{1}{1351+780\\sqrt{3}}\\).',
+ sol:'La estabilidad depende de la sensibilidad de cada expresion respecto a z, proporcional a max|f\'(z)| * EA(z*). La forma cubica (7-4z)^3 tiene derivada de magnitud grande cerca de z = sqrt(3) (porque 7-4*1.732 ≈ 0.072 es pequeno y se eleva al cubo, amplificando errores). La forma racional 1/(1351+780z) tiene derivada mucho menor en magnitud (el denominador es grande: ~2702), por lo que el error se amplifica mucho menos. La forma (2) es significativamente mas estable.'},
+{title:'Problema 18: Estrategia de precision en Mathematica',d:'alto',
+ text:'Disena una estrategia para evaluar una expresion numerica con precision objetivo \\(p\\), evitando "contaminar" con precision de maquina.',
+ sol:'(1) Introducir datos con precision declarada usando backtick (ej: 0.1`15 en vez de 0.1), para evitar precision de maquina. (2) Evaluar con N[expr, p] para forzar p cifras significativas. (3) Vigilar que no aparezcan numeros MachinePrecision, porque la precision de maquina "contagia" al mezclarse con otras precisiones. (4) Ajustar con SetPrecision/SetAccuracy si es necesario, entendiendo que Accuracy = Precision - log10(|x|). Esta estrategia evita perdidas accidentales de control.'},
+{title:'Problema 19: Chop y umbral de ceros numericos',d:'medio',
+ text:'Explica: (a) que hace Chop[expr] por defecto, (b) como cambia Chop[expr, dx], y (c) el riesgo de elegir dx demasiado grande.',
+ sol:'(a) Chop[expr] reemplaza por 0 los valores con magnitud < 10^(-10) (umbral por defecto). (b) Chop[expr, dx] usa dx como umbral personalizado. (c) Si dx es demasiado grande, se eliminan terminos que si son significativos: contribuciones pequenas pero acumulativas, cancelaciones reales, o propiedades estructurales del modelo. El umbral debe justificarse en funcion de la precision/exactitud perseguida.'},
+{title:'Problema 20: Intervalo de confianza y aproximacion optima',d:'medio',
+ text:'Dado un intervalo \\([a,b]\\) que contiene el valor real \\(x\\): (a) proponer una aproximacion, (b) dar su cota de EA, (c) explicar por que es util.',
+ sol:'(a) La mejor aproximacion es el punto medio: x* = (a+b)/2. (b) La cota del error absoluto es EA(x*) ≤ (b-a)/2 (el "radio" del intervalo). (c) Es util porque normalmente no conocemos el error exacto ni el valor exacto, pero si podemos estimar una cota superior. Con ella construimos un intervalo de confianza que <em>garantiza</em> donde esta el valor real, permitiendo decisiones seguras sobre precision y tolerancias.'}
+];
+
+function buildTest(){
+  let h='';
+  questions.forEach((q,i)=>{
+    const badge=q.d==='bajo'?'badge-easy':q.d==='alto'?'badge-hard':'badge-med';
+    h+='<div class="question-card" id="q'+i+'"><h3>Pregunta '+(i+1)+' <span class="badge '+badge+'">'+q.d+'</span></h3><p>'+q.q+'</p><div class="options">';
+    q.opts.forEach((o,j)=>{h+='<label><input type="radio" name="q'+i+'" value="'+j+'"> '+o+'</label>'});
+    h+='</div><div class="feedback" id="fb'+i+'"></div></div>';
+  });
+  document.getElementById('test-container').innerHTML=h;
+  // Problems
+  let ph='';
+  problems.forEach((p,i)=>{
+    const badge=p.d==='bajo'?'badge-easy':p.d==='alto'?'badge-hard':'badge-med';
+    ph+='<div class="problem-card" id="p'+i+'"><h3>'+p.title+' <span class="badge '+badge+'">'+p.d+'</span></h3><p>'+p.text+'</p>'+
+      '<button class="btn btn-primary" onclick="toggleSol('+i+')" style="margin-top:.5rem">Mostrar/Ocultar Solucion</button>'+
+      '<div class="sol" id="sol'+i+'">'+p.sol+'</div></div>';
+  });
+  document.getElementById('problems-container').innerHTML=ph;
+}
+
+function toggleSol(i){document.getElementById('sol'+i).classList.toggle('show')}
+
+function gradeTest(){
+  let c=0,t=questions.length;
+  questions.forEach((q,i)=>{
+    const s=document.querySelector('input[name="q'+i+'"]:checked');
+    const fb=document.getElementById('fb'+i);
+    let html='';
+    if(!s){fb.className='feedback incorrect';fb.style.display='block';fb.innerHTML='No seleccionaste respuesta.';return}
+    const chosen=+s.value;
+    if(chosen===q.ans){c++;fb.className='feedback correct';html='<b>&#10004; Correcto.</b> '+q.expl}
+    else{fb.className='feedback incorrect';html='<b>&#10008; Incorrecto.</b> '+q.expl}
+    if(q.why){
+      html+='<div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid rgba(0,0,0,.1)">';
+      html+='<b>Analisis de cada opcion:</b><ul style="margin:.3rem 0 0 1rem">';
+      q.why.forEach((w,j)=>{
+        const icon=j===q.ans?'&#10004;':'&#10008;';
+        const style=j===chosen&&j!==q.ans?'color:#c0392b;font-weight:600':'';
+        html+='<li style="margin:.3rem 0;'+style+'">'+icon+' '+w+'</li>'});
+      html+='</ul></div>';
+    }
+    fb.innerHTML=html;
+    fb.style.display='block';
+    renderMathInElement(fb,mathOpts);
+  });
+  document.getElementById('score-bar').style.display='block';
+  document.getElementById('score-value').textContent=c+' / '+t;
+  window.scrollTo({top:document.getElementById('tab-test').offsetTop,behavior:'smooth'});
+}
+
+function resetTest(){
+  questions.forEach((q,i)=>{
+    document.querySelectorAll('input[name="q'+i+'"]').forEach(r=>r.checked=false);
+    const fb=document.getElementById('fb'+i);fb.style.display='none';fb.className='feedback';
+  });
+  document.getElementById('score-bar').style.display='none';
+}
+
+// === SOLVER ===
+const _pd=[
+  {id:'real',label:'Valor real',sub:'Valor exacto'},
+  {id:'aprox',label:'Aproximacion (x*)',sub:'Valor aproximado'},
+  {id:'ea',label:'Error absoluto (EA)',sub:'|x - x*|'},
+  {id:'er',label:'Error relativo (ER)',sub:'EA / |x|'},
+  {id:'p',label:'Cifras dec. exactas',sub:'Exactitud',isInt:1},
+  {id:'t',label:'Cifras significativas',sub:'Precision',isInt:1},
+  {id:'eps',label:'Cota del error (\u03b5)',sub:'Limite sup. EA'},
+  {id:'k',label:'Cifras (k)',sub:'Redondeo/trunc.',isInt:1},
+  {id:'rd',label:'Redondeo',sub:'A k cifras'},
+  {id:'tr',label:'Truncamiento',sub:'A k cifras'},
+  {id:'iea',label:'EA para intervalo',sub:'Error absoluto'},
+  {id:'ier',label:'ER para intervalo',sub:'Error relativo'},
+  {id:'apdef',label:'Aprox. defecto',sub:'Truncamiento'},
+  {id:'apexc',label:'Aprox. exceso',sub:'Techo'},
+  {id:'intdef',label:'Int. defecto',sub:'[def-\u03b5, def+\u03b5]',isTxt:1},
+  {id:'intexc',label:'Int. exceso',sub:'[exc-\u03b5, exc+\u03b5]',isTxt:1},
+  {id:'intmayor',label:'Mayor intervalo',sub:'Union',isTxt:1},
+  {id:'intmenor',label:'Menor intervalo',sub:'Interseccion',isTxt:1},
+  {id:'cond',label:'Condicion C',sub:'|v\u00b7\u2202f/\u2202v / f|'}
+];
+const _cv=['x','y','z','f'];
+const _grpStart={real:0,k:1,iea:2,cond:3};
+const _grpInfo=[
+  {l:'Errores',c:'#2c3e50'},{l:'Cifras / Redondeo',c:'#e67e22'},
+  {l:'Intervalo de confianza',c:'#27ae60'},{l:'Condicionamiento',c:'#c0392b'}];
+function buildSolverTable(){
+  let h='<div class="st-h0"></div><div class="st-hdr st-hl">Parametro</div>';
+  _cv.forEach(v=>h+='<div class="st-hdr">'+(v==='f'?'f(x,y,z)':v)+'</div>');
+  _pd.forEach(p=>{
+    if(_grpStart[p.id]!==undefined){const g=_grpInfo[_grpStart[p.id]];
+      h+='<div class="st-sep" style="background:'+g.c+'">'+g.l+'</div>';}
+    h+='<div class="st-chk"><input type="checkbox" id="chk-'+p.id+'" onchange="toggleRow(\''+p.id+'\')"></div>';
+    if(p.id==='k'){
+      h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span><label class="k-mode"><input type="checkbox" id="k-dec" checked onchange="solveProblema()"> Dec.</label></div>';
+    } else {
+      h+='<div class="st-lbl">'+p.label+'<span class="param-sub">'+p.sub+'</span></div>';
+    }
+    _cv.forEach(v=>{
+      const iid='val-'+p.id+'-'+v;
+      h+='<div class="st-val"><input type="text" id="'+iid+'" disabled class="sv-in cv-'+v+'"'+(p.isInt?' inputmode="numeric"':'')+' placeholder="'+(v==='f'?'f':v)+'">';
+      h+='<span class="drag-h" data-id="'+iid+'"></span></div>';
+    });
+  });
+  document.getElementById('solver-tbl').innerHTML=h;
+}
+function toggleRow(id){
+  const c=document.getElementById('chk-'+id).checked;
+  _cv.forEach(v=>{const el=document.getElementById('val-'+id+'-'+v);el.disabled=!c;if(!c){el.value='';el.classList.remove('computed')}});
+}
+function toggleEq(){document.getElementById('eq-editor-box').style.display=document.getElementById('chk-func').checked?'block':'none'}
+function prepExpr(e){return e.replace(/\bln\b/g,'log').replace(/\braiz\b/gi,'sqrt').replace(/\bsen\b/gi,'sin')}
+function previewEq(){
+  const e=document.getElementById('val-func').value.trim(),p=document.getElementById('eq-preview');
+  if(!e){p.innerHTML='';return}
+  try{const n=math.parse(prepExpr(e)),tx=n.toTex({parenthesis:'keep',implicit:'show'});
+    katex.render('f(x,y,z) = '+tx,p,{throwOnError:false})}
+  catch(err){p.innerHTML='<span style="color:#e74c3c;font-size:.8rem">'+err.message+'</span>'}
+}
+// Drag behavior
+let _drag=null;
+document.addEventListener('mousedown',function(e){
+  const dh=e.target.closest('.drag-h');if(!dh)return;e.preventDefault();
+  const inp=document.getElementById(dh.dataset.id);if(!inp||inp.disabled)return;
+  dh.classList.add('dragging');
+  const cv=parseFloat(inp.value)||0;const isI=inp.inputMode==='numeric';
+  const step=isI?1:(cv===0?0.01:Math.pow(10,Math.floor(Math.log10(Math.abs(cv)))-2));
+  _drag={inp,startY:e.clientY,startVal:cv,step,dh,isI};
+});
+document.addEventListener('mousemove',function(e){
+  if(!_drag)return;e.preventDefault();
+  const dy=_drag.startY-e.clientY;
+  let nv=_drag.startVal+dy*_drag.step;
+  if(_drag.isI)nv=Math.max(0,Math.round(nv));
+  _drag.inp.value=_drag.isI?nv:fmt(nv);
+  solveProblema();
+});
+document.addEventListener('mouseup',function(){if(_drag){_drag.dh.classList.remove('dragging');_drag=null}});
+document.addEventListener('touchstart',function(e){
+  const dh=e.target.closest('.drag-h');if(!dh)return;
+  const inp=document.getElementById(dh.dataset.id);if(!inp||inp.disabled)return;
+  dh.classList.add('dragging');
+  const cv=parseFloat(inp.value)||0;const isI=inp.inputMode==='numeric';
+  const step=isI?1:(cv===0?0.01:Math.pow(10,Math.floor(Math.log10(Math.abs(cv)))-2));
+  _drag={inp,startY:e.touches[0].clientY,startVal:cv,step,dh,isI};
+},{passive:true});
+document.addEventListener('touchmove',function(e){
+  if(!_drag)return;
+  const dy=_drag.startY-e.touches[0].clientY;
+  let nv=_drag.startVal+dy*_drag.step;
+  if(_drag.isI)nv=Math.max(0,Math.round(nv));
+  _drag.inp.value=_drag.isI?nv:fmt(nv);
+  solveProblema();
+},{passive:true});
+document.addEventListener('touchend',function(){if(_drag){_drag.dh.classList.remove('dragging');_drag=null}});
+
+function resetCalc(){
+  _pd.forEach(p=>_cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
+    if(el&&el.classList.contains('computed')){el.value='';el.classList.remove('computed','answer')}}));
+  document.getElementById('solver-reasoning').style.display='none';
+  document.getElementById('solver-plot').style.display='none';
+}
+function resetSolver(){
+  _problemAnswerFields=null;
+  _pd.forEach(p=>{document.getElementById('chk-'+p.id).checked=false;toggleRow(p.id)});
+  document.getElementById('chk-func').checked=false;toggleEq();
+  document.getElementById('val-func').value='';document.getElementById('eq-preview').innerHTML='';
+  document.getElementById('val-tipo').value='';
+  document.getElementById('solver-reasoning').style.display='none';
+  document.getElementById('solver-plot').style.display='none';
+}
+function fmt(n){
+  if(n===undefined||isNaN(n))return'?';
+  if(Number.isInteger(n)&&Math.abs(n)<1e12)return n.toString();
+  const s=parseFloat(n.toPrecision(10)).toString();
+  return s.length>14?n.toExponential(6):s;
+}
+function parseFuncMV(expr){
+  try{
+    const node=math.parse(expr),compiled=node.compile();
+    const f=(x,y,z)=>{try{return compiled.evaluate({x:x||0,y:y||0,z:z||0})}catch(e){return NaN}};
+    let dxC,dyC,dzC,dxS='0',dyS='0',dzS='0';
+    try{const d=math.derivative(node,'x');dxC=d.compile();dxS=d.toString()}catch(e){}
+    try{const d=math.derivative(node,'y');dyC=d.compile();dyS=d.toString()}catch(e){}
+    try{const d=math.derivative(node,'z');dzC=d.compile();dzS=d.toString()}catch(e){}
+    const df=(vr,x,y,z)=>{const sc={x:x||0,y:y||0,z:z||0};
+      if(vr==='x'&&dxC)try{return dxC.evaluate(sc)}catch(e){return 0}
+      if(vr==='y'&&dyC)try{return dyC.evaluate(sc)}catch(e){return 0}
+      if(vr==='z'&&dzC)try{return dzC.evaluate(sc)}catch(e){return 0}
+      return 0;};
+    return {f,df,dexpr:{x:dxS,y:dyS,z:dzS},node};
+  }catch(e){return null}
+}
+// Aritmetica de k cifras: evalua el arbol aplicando rd/tr en cada operacion (v3)
+function evalKArith(nd,scope,k,mode,isDec,log){
+  const apK=v=>{
+    if(v===0||!isFinite(v)||isNaN(v))return v;
+    v=parseFloat(v.toPrecision(12));
+    if(isDec){
+      // k decimales desde el primer digito no-cero despues de la coma
+      let kEff=k;
+      if(Math.abs(v)<1&&v!==0){const lz=Math.max(0,Math.ceil(-Math.log10(Math.abs(v)))-1);kEff=k+lz;}
+      const f=Math.pow(10,kEff);return mode==='rd'?Math.round(v*f)/f:Math.trunc(v*f)/f;
+    }
+    const dd=Math.ceil(Math.log10(Math.abs(v))),mag=Math.pow(10,k-dd);
+    return mode==='rd'?Math.round(v*mag)/mag:Math.trunc(v*mag)/mag;
+  };
+  // Detectar tipo de nodo con booleanas y con type string como fallback
+  const isConst=nd.isConstantNode||(nd.type==='ConstantNode');
+  const isSym=nd.isSymbolNode||(nd.type==='SymbolNode');
+  const isParen=nd.isParenthesisNode||(nd.type==='ParenthesisNode');
+  const isOp=nd.isOperatorNode||(nd.type==='OperatorNode');
+  const isFn=nd.isFunctionNode||(nd.type==='FunctionNode');
+  if(isConst) return apK(nd.value);
+  if(isSym){
+    if(scope[nd.name]!==undefined)return apK(scope[nd.name]);
+    try{return apK(math.evaluate(nd.name))}catch(e){return NaN}
+  }
+  if(isParen) return evalKArith(nd.content,scope,k,mode,isDec,log);
+  if(isOp){
+    if(nd.args.length===1){const a=evalKArith(nd.args[0],scope,k,mode,isDec,log);
+      return nd.op==='-'?apK(-a):a;}
+    const L=evalKArith(nd.args[0],scope,k,mode,isDec,log);
+    const R=evalKArith(nd.args[1],scope,k,mode,isDec,log);
+    let res;
+    switch(nd.op){case'+':res=L+R;break;case'-':res=L-R;break;case'*':res=L*R;break;case'/':res=L/R;break;case'^':res=Math.pow(L,R);break;default:res=NaN;}
+    const rnd=apK(res);
+    if(log){const ml=mode==='rd'?'Rd':'Tr';
+      log.push(fmt(L)+' '+nd.op+' '+fmt(R)+' = '+fmt(res)+(res!==rnd?' → '+ml+'('+k+')='+fmt(rnd):''));}
+    return rnd;
+  }
+  if(isFn){
+    const args=nd.args.map(a=>evalKArith(a,scope,k,mode,isDec,log));
+    try{const fn=math[nd.fn?.name||nd.name];const res=fn(...args);const rnd=apK(res);
+      if(log)log.push((nd.fn?.name||nd.name)+'('+args.map(fmt).join(',')+')='+fmt(res)+(res!==rnd?' → '+fmt(rnd):''));
+      return rnd;}catch(e){return NaN}
+  }
+  // Fallback: nodo no reconocido - log para depurar
+  if(log)log.push('[FALLBACK nodo: type='+nd.type+' constructor='+nd.constructor?.name+'] evaluacion completa');
+  try{return apK(nd.compile().evaluate(scope))}catch(e){return NaN}
+}
+function solveProblema(){
+  // Limpiar valores computed anteriores y checkboxes auto-marcados
+  _pd.forEach(p=>{const chkEl=document.getElementById('chk-'+p.id);
+    if(chkEl&&chkEl.dataset.auto){chkEl.checked=false;delete chkEl.dataset.auto;}
+    _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
+      if(el.classList.contains('computed')){el.value='';el.disabled=true;el.classList.remove('computed','answer');}});
+  });
+  const d={},giv={},rawExpr={};
+  // Leer valores de la tabla. Para la columna f, si contiene variables, guardar como funcion
+  let _autoFnExpr='';
+  _pd.forEach(p=>{d[p.id]={};giv[p.id]={};
+    const chk=document.getElementById('chk-'+p.id).checked;
+    _cv.forEach(v=>{const el=document.getElementById('val-'+p.id+'-'+v);
+      const raw=el.value.trim();
+      if(chk&&raw!==''){
+        // Auto-detectar: si la celda f contiene variables x,y,z → es una funcion
+        if(v==='f'&&(p.id==='real'||p.id==='aprox')&&/\b[xyz]\b/.test(raw)){
+          _autoFnExpr=raw;console.log('[Solver] Auto-detectada funcion en '+p.id+'(f): '+raw);
+        } else {
+          d[p.id][v]=sEval(raw);giv[p.id][v]=true;
+          // Guardar expresion raw si contiene operadores (para evalKArith)
+          if((p.id==='real'||p.id==='aprox')&&/[+\-*/^()]/.test(raw)){
+            if(!rawExpr[v])rawExpr[v]={};rawExpr[v][p.id]=raw;}}}});
+  });
+  const tipo=document.getElementById('val-tipo').value;
+  let hasFn=document.getElementById('chk-func').checked;
+  let fnExpr=document.getElementById('val-func').value.trim();
+  // Si se auto-detecto funcion en columna f, usarla
+  if(_autoFnExpr&&!fnExpr){
+    fnExpr=_autoFnExpr;hasFn=true;
+    const chk=document.getElementById('chk-func');if(chk)chk.checked=true;
+    document.getElementById('val-func').value=_autoFnExpr;toggleEq();previewEq();
+    console.log('[Solver] Funcion auto-activada: '+fnExpr);}
+  let fd=null;
+  if(hasFn&&fnExpr){fd=parseFuncMV(prepExpr(fnExpr));
+    console.log('[Solver] fd='+(fd?'OK':'FALLO')+', fnExpr='+fnExpr);
+    if(!fd)console.warn('No se pudo parsear f(x,y,z)='+fnExpr);}
+  else{console.log('[Solver] Sin funcion. hasFn='+hasFn+', fnExpr="'+fnExpr+'"');}
+  console.log('[Solver] Datos leidos:',JSON.stringify(d));
+  const steps=[],comp={};
+  function gv(p,v){return d[p]?d[p][v]:undefined}
+  function sv(p,v,val,reason){
+    if(gv(p,v)===undefined&&val!==undefined&&(typeof val==='string'||(!isNaN(val)&&isFinite(val)))){
+      if(!d[p])d[p]={};d[p][v]=val;comp[p+'-'+v]=true;if(reason)steps.push(reason);}
+  }
+  for(let pass=0;pass<6;pass++){
+    ['x','y','z'].forEach(V=>{
+      if(gv('real',V)!==undefined&&gv('aprox',V)!==undefined&&gv('ea',V)===undefined){
+        const ea=Math.abs(gv('real',V)-gv('aprox',V));
+        sv('ea',V,ea,'<b>EA('+V+'):</b> \\(|'+V+'-'+V+'^*|=|'+fmt(gv('real',V))+'-'+fmt(gv('aprox',V))+'|='+fmt(ea)+'\\)');}
+      if(gv('ea',V)!==undefined&&gv('real',V)!==undefined&&gv('real',V)!==0&&gv('er',V)===undefined){
+        const er=gv('ea',V)/Math.abs(gv('real',V));
+        sv('er',V,er,'<b>ER('+V+'):</b> \\(\\frac{EA}{|'+V+'|}=\\frac{'+fmt(gv('ea',V))+'}{'+fmt(Math.abs(gv('real',V)))+'}='+fmt(er)+'\\)');}
+      if(gv('er',V)!==undefined&&gv('real',V)!==undefined&&gv('ea',V)===undefined){
+        const ea=gv('er',V)*Math.abs(gv('real',V));
+        sv('ea',V,ea,'<b>EA('+V+'):</b> \\(ER\\cdot|'+V+'|='+fmt(gv('er',V))+'\\cdot'+fmt(Math.abs(gv('real',V)))+'='+fmt(ea)+'\\)');}
+      if(gv('ea',V)!==undefined&&gv('p',V)===undefined){
+        let p=0;while(gv('ea',V)<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+        sv('p',V,p,'<b>p('+V+'):</b> \\(EA\\leq10^{-'+p+'}\\) \\(\\Rightarrow p='+p+'\\)');}
+      if(gv('er',V)!==undefined&&gv('t',V)===undefined){
+        let t=0;while(gv('er',V)<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+        sv('t',V,t,'<b>t('+V+'):</b> \\(ER<5\\cdot10^{-'+t+'}\\) \\(\\Rightarrow t='+t+'\\)');}
+      // p → eps (Def.4): si tenemos p y no eps/ea, eps = 10^(-p)
+      if(gv('p',V)!==undefined&&gv('eps',V)===undefined&&gv('ea',V)===undefined){
+        const pv=gv('p',V),epsP=Math.pow(10,-pv);
+        sv('eps',V,epsP,'<b>\u03b5('+V+') Def.4:</b> \\(EA('+V+'^*)\\leq 10^{-'+pv+'}='+fmt(epsP)+'\\)');}
+      // t → er (Def.9): si tenemos t y no er, ER < 5×10^(-t)
+      if(gv('t',V)!==undefined&&gv('er',V)===undefined){
+        const tv=gv('t',V),erT=5*Math.pow(10,-tv);
+        sv('er',V,erT,'<b>ER('+V+') Def.9:</b> \\(ER('+V+'^*)<5\\cdot10^{-'+tv+'}='+fmt(erT)+'\\)');
+        // De ER, derivar EA si hay valor real
+        if(gv('ea',V)===undefined&&gv('real',V)!==undefined&&gv('real',V)!==0){
+          const ea2=erT*Math.abs(gv('real',V));
+          sv('ea',V,ea2,'<b>EA('+V+'):</b> \\(ER\\cdot|'+V+'|='+fmt(erT)+'\\cdot'+fmt(Math.abs(gv('real',V)))+'='+fmt(ea2)+'\\)');
+          // Y eps tambien
+          if(gv('eps',V)===undefined)sv('eps',V,ea2,'<b>\u03b5('+V+'):</b> \\('+fmt(ea2)+'\\)');}}
+      // eps → er (si tenemos eps y real pero no er): cota ER ≤ eps/|x|
+      if(gv('eps',V)!==undefined&&gv('er',V)===undefined&&gv('real',V)!==undefined&&gv('real',V)!==0){
+        const erEps=gv('eps',V)/Math.abs(gv('real',V));
+        sv('er',V,erEps,'<b>ER('+V+'):</b> \\(\\frac{\\varepsilon}{|'+V+'|}=\\frac{'+fmt(gv('eps',V))+'}{'+fmt(Math.abs(gv('real',V)))+'}='+fmt(erEps)+'\\)');}
+      if(gv('k',V)!==undefined&&gv('eps',V)===undefined){
+        const kv=gv('k',V),isDec=document.getElementById('k-dec')?.checked??true;
+        let exp;
+        if(isDec){exp=-kv;}
+        else{const numV=gv('real',V)??gv('aprox',V);
+          if(numV!==undefined&&numV!==0){exp=Math.ceil(Math.log10(Math.abs(numV)))-kv;}else{exp=-kv;}}
+        if(exp!==undefined){
+          if(tipo==='redondeo'){const eps=0.5*Math.pow(10,exp);
+            sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(\\frac{1}{2}\\cdot10^{'+exp+'}='+fmt(eps)+'\\)');}
+          else if(tipo==='truncamiento'){const eps=Math.pow(10,exp);
+            sv('eps',V,eps,'<b>\u03b5('+V+') Prop.27:</b> \\(10^{'+exp+'}='+fmt(eps)+'\\)');}}}
+      // Intervalos por EA (usuario da iea o se usa eps/ea)
+      {const eaInt=gv('iea',V)??gv('eps',V)??gv('ea',V);
+      if(eaInt!==undefined&&gv('real',V)!==undefined&&!comp['_intEA-'+V]){
+        const rv=gv('real',V),epsV=eaInt;
+        const pEff=Math.max(0,Math.round(-Math.log10(epsV)));
+        const fac=Math.pow(10,pEff);
+        const def=Math.trunc(rv*fac)/fac;
+        const exc=def+(rv>=0?1:-1)/fac;
+        sv('apdef',V,def,'<b>Aprox. defecto ('+V+'):</b> \\(\\mathrm{Tr}('+fmt(rv)+')='+fmt(def)+'\\)');
+        sv('apexc',V,exc,'<b>Aprox. exceso ('+V+'):</b> \\('+fmt(def)+'+'+(rv>=0?'':'-')+'10^{-'+pEff+'}='+fmt(exc)+'\\)');
+        const lDef=def-epsV,uDef=def+epsV;
+        const lExc=exc-epsV,uExc=exc+epsV;
+        const mayor_l=Math.min(lDef,lExc),mayor_u=Math.max(uDef,uExc);
+        const menor_l=Math.max(lDef,lExc),menor_u=Math.min(uDef,uExc);
+        comp['_intEA-'+V]=true;
+        sv('intdef',V,'['+fmt(lDef)+', '+fmt(uDef)+']','<b>Int. defecto ('+V+'):</b> \\(['+fmt(def)+'\\pm'+fmt(epsV)+'] = ['+fmt(lDef)+',\\ '+fmt(uDef)+']\\)');
+        sv('intexc',V,'['+fmt(lExc)+', '+fmt(uExc)+']','<b>Int. exceso ('+V+'):</b> \\(['+fmt(exc)+'\\pm'+fmt(epsV)+'] = ['+fmt(lExc)+',\\ '+fmt(uExc)+']\\)');
+        sv('intmayor',V,'['+fmt(mayor_l)+', '+fmt(mayor_u)+']','<b>Mayor intervalo ('+V+'):</b> \\(['+fmt(mayor_l)+',\\ '+fmt(mayor_u)+']\\)');
+        if(menor_l<=menor_u)sv('intmenor',V,'['+fmt(menor_l)+', '+fmt(menor_u)+']','<b>Menor intervalo ('+V+'):</b> \\(['+fmt(menor_l)+',\\ '+fmt(menor_u)+']\\)');
+      }}
+      // Intervalos por ER: [x*(1-ER), x*(1+ER)]
+      {const erInt=gv('ier',V)??gv('er',V);
+      if(erInt!==undefined&&gv('real',V)!==undefined&&!comp['_intER-'+V]){
+        const erv=erInt,rv=gv('real',V);
+        const lER=rv*(1-erv),uER=rv*(1+erv);
+        comp['_intER-'+V]=true;
+        const epsEA=erv*Math.abs(rv);
+        const pEff=Math.max(0,Math.round(-Math.log10(epsEA)));
+        const fac=Math.pow(10,pEff);
+        const def=Math.trunc(rv*fac)/fac;
+        const exc=def+(rv>=0?1:-1)/fac;
+        sv('apdef',V,def,'<b>Aprox. defecto ('+V+'):</b> \\('+fmt(def)+'\\)');
+        sv('apexc',V,exc,'<b>Aprox. exceso ('+V+'):</b> \\('+fmt(exc)+'\\)');
+        sv('intmayor',V,'['+fmt(lER)+', '+fmt(uER)+']','<b>Mayor int. por ER ('+V+'):</b> \\(['+V+'(1-'+fmt(erv)+'),\\ '+V+'(1+'+fmt(erv)+')] = ['+fmt(lER)+',\\ '+fmt(uER)+']\\)');
+        if(def>=lER&&exc<=uER)sv('intmenor',V,'['+fmt(def)+', '+fmt(exc)+']','<b>Menor int. ('+V+'):</b> \\(['+fmt(def)+',\\ '+fmt(exc)+']\\)');
+      }}
+      const numR=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
+      const srcR=gv('real',V)!==undefined?V:V+'^*';
+      if(numR!==undefined&&gv('k',V)!==undefined){
+        const kv=gv('k',V),isDec=document.getElementById('k-dec')?.checked??true;
+        // Si hay expresion raw, usar evalKArith paso a paso
+        const rawV=rawExpr[V]?.real||rawExpr[V]?.aprox;
+        if(rawV){
+          try{
+            const nodeV=math.parse(prepExpr(rawV));
+            if(gv('rd',V)===undefined){const lg=[];
+              const rv=evalKArith(nodeV,{},kv,'rd',isDec,lg);
+              sv('rd',V,rv,'<b>Rd('+V+', arit. '+kv+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(rv)+'\\)');
+              if(lg.length>0){steps.push('<b style="color:#8e44ad">Pasos Rd('+V+'), k='+kv+':</b>');
+                lg.forEach(s=>steps.push('<span style="color:#8e44ad;margin-left:1em">'+s+'</span>'));}}
+            if(gv('tr',V)===undefined){const lg=[];
+              const tv=evalKArith(nodeV,{},kv,'tr',isDec,lg);
+              sv('tr',V,tv,'<b>Tr('+V+', arit. '+kv+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(tv)+'\\)');
+              if(lg.length>0){steps.push('<b style="color:#f39c12">Pasos Tr('+V+'), k='+kv+':</b>');
+                lg.forEach(s=>steps.push('<span style="color:#f39c12;margin-left:1em">'+s+'</span>'));}}
+          }catch(err){steps.push('<span style="color:red">Error arit. k: '+err.message+'</span>');}
+        } else {
+          // Valor simple: aplicar Rd/Tr directo
+          if(isDec){
+            let kEff=kv;
+            if(Math.abs(numR)<1&&numR!==0){const lz=Math.max(0,Math.ceil(-Math.log10(Math.abs(numR)))-1);kEff=kv+lz;}
+            const f=Math.pow(10,kEff);
+            if(gv('rd',V)===undefined){const rd=Math.round(numR*f)/f;
+              sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+kv+')='+fmt(rd)+'\\)');}
+            if(gv('tr',V)===undefined){const tr=Math.trunc(numR*f)/f;
+              sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+kv+')='+fmt(tr)+'\\)');}
+          } else if(numR!==0){
+            const d=Math.ceil(Math.log10(Math.abs(numR))),sh=kv-d,mag=Math.pow(10,sh);
+            if(gv('rd',V)===undefined){const rd=Math.round(numR*mag)/mag;
+              sv('rd',V,rd,'<b>Rd('+V+'):</b> \\(\\mathrm{Rd}('+srcR+','+kv+'\\text{ c.s.})='+fmt(rd)+'\\)');}
+            if(gv('tr',V)===undefined){const tr=Math.trunc(numR*mag)/mag;
+              sv('tr',V,tr,'<b>Tr('+V+'):</b> \\(\\mathrm{Tr}('+srcR+','+kv+'\\text{ c.s.})='+fmt(tr)+'\\)');}
+          }
+        }}
+      if(fd&&gv('cond',V)===undefined){
+        const xv=gv('real','x')??gv('aprox','x')??0,yv=gv('real','y')??gv('aprox','y')??0,zv=gv('real','z')??gv('aprox','z')??0;
+        const vv=gv('real',V)!==undefined?gv('real',V):gv('aprox',V);
+        if(vv!==undefined){const fv=fd.f(xv,yv,zv),dfv=fd.df(V,xv,yv,zv);
+          if(fv!==0&&!isNaN(fv)&&!isNaN(dfv)&&isFinite(fv)&&isFinite(dfv)){const c=Math.abs(vv*dfv/fv);
+            sv('cond',V,c,'<b>C('+V+'):</b> \\(\\left|\\frac{'+V+'\\cdot\\partial f/\\partial '+V+'}{f}\\right|=\\left|\\frac{'+fmt(vv)+'\\cdot'+fmt(dfv)+'}{'+fmt(fv)+'}\\right|='+fmt(c)+'\\) '+(c>1?'<span style="color:#e74c3c">Mal cond.</span>':'<span style="color:#27ae60">Bien cond.</span>'));}}}
+      if(gv('eps',V)!==undefined&&gv('aprox',V)!==undefined&&!comp['_cotaER-'+V]){
+        const c=gv('eps',V)/Math.abs(gv('aprox',V));
+        steps.push('<b>Cota ER('+V+'):</b> \\(\\varepsilon/|'+V+'^*|='+fmt(c)+'\\)');comp['_cotaER-'+V]=true;}
+    });
+    // f column
+    if(fd){try{
+      console.log('[Solver] Entrando en bloque f. eps(x)=',gv('eps','x'),'p(x)=',gv('p','x'),'p(f)=',gv('p','f'));
+      const rx=gv('real','x'),ry=gv('real','y'),rz=gv('real','z');
+      const ax=gv('aprox','x'),ay=gv('aprox','y'),az=gv('aprox','z');
+      const hasReal=rx!==undefined||ry!==undefined||rz!==undefined;
+      const hasAprox=ax!==undefined||ay!==undefined||az!==undefined;
+      // f_real: evaluar con valores reales (o constante si no hay variables)
+      if(gv('real','f')===undefined){
+        const fv=fd.f(rx??ax??0,ry??ay??0,rz??az??0);
+        if(!isNaN(fv)&&isFinite(fv)){
+          const args=[];if(hasReal||hasAprox){
+            if(rx!==undefined||ax!==undefined)args.push(fmt(rx??ax??0));
+            if(ry!==undefined||ay!==undefined)args.push(fmt(ry??ay??0));
+            if(rz!==undefined||az!==undefined)args.push(fmt(rz??az??0));}
+          sv('real','f',fv,'<b>f(real):</b> \\(f'+(args.length?'('+args.join(',')+')':'')+' = '+fmt(fv)+'\\)');}}
+      if(hasAprox&&gv('aprox','f')===undefined){
+        const fv=fd.f(ax??rx??0,ay??ry??0,az??rz??0);
+        const args=[];if(ax!==undefined||rx!==undefined)args.push(fmt(ax??rx??0));
+        if(ay!==undefined||ry!==undefined)args.push(fmt(ay??ry??0));
+        if(az!==undefined||rz!==undefined)args.push(fmt(az??rz??0));
+        sv('aprox','f',fv,'<b>f(aprox):</b> \\(f('+args.join(',')+')='+fmt(fv)+'\\)');}
+      if(gv('real','f')!==undefined&&gv('aprox','f')!==undefined&&gv('ea','f')===undefined){
+        const ea=Math.abs(gv('real','f')-gv('aprox','f'));
+        sv('ea','f',ea,'<b>EA(f):</b> \\(|f_{real}-f_{aprox}|='+fmt(ea)+'\\)');}
+      // === PROPAGACION DEL ERROR (Prop.21) ===
+      // Caso DIRECTO: tenemos ε(vi) → calcular ε(f)
+      if(gv('eps','f')===undefined){
+        let epsf=0,ok=false,detail=[];
+        const baseScope={x:rx??ax??0,y:ry??ay??0,z:rz??az??0};
+        const propData=[];// guardar datos para pasos
+        ['x','y','z'].forEach(V=>{
+          const eaV=gv('eps',V)??gv('ea',V);
+          if(eaV===undefined)return;
+          const centro=gv('real',V)??gv('aprox',V)??0;
+          const lo=centro-eaV,hi=centro+eaV;
+          const N=20;let maxdf=0,maxAt=centro;const pts=[];
+          for(let i=0;i<=N;i++){
+            const zi=lo+(hi-lo)*i/N;
+            const sc=Object.assign({},baseScope);sc[V]=zi;
+            const dfi=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
+            if(!isNaN(dfi)&&isFinite(dfi)){if(dfi>maxdf){maxdf=dfi;maxAt=zi;}
+              if(i===0||i===N)pts.push({z:zi,df:dfi});}}
+          if(maxdf>0||eaV>0){
+            epsf+=maxdf*eaV;ok=true;
+            propData.push({V,eaV,centro,lo,hi,maxdf,maxAt,pts});
+            detail.push(fmt(maxdf)+'\\cdot'+fmt(eaV));}});
+        if(ok){
+          const fVal=gv('real','f');
+          // Cabecera
+          steps.push('<div style="background:#f0f4ff;border-left:3px solid #2980b9;padding:.5em .8em;margin:.5em 0;border-radius:4px">'+
+            '<b style="color:#2980b9;font-size:1.05em">Propagacion del error (Prop. 21)</b><br>'+
+            '<span style="color:#555">Formula: \\(EA(f(x^*))\\leq\\displaystyle\\sum_i \\max_{z\\in I_i}\\left|\\frac{\\partial f}{\\partial v_i}(z)\\right|\\cdot\\varepsilon(v_i)\\)</span></div>');
+          let stepN=1;
+          // Paso por cada variable
+          propData.forEach(({V,eaV,centro,lo,hi,maxdf,maxAt,pts})=>{
+            const loS=pts[0],hiS=pts[1]||pts[0];
+            const dexpr=fd.dexpr[V]||'?';
+            steps.push('<b>Paso '+stepN+'. Variable \\('+V+'\\):</b> \\(\\varepsilon('+V+')='+fmt(eaV)+'\\), intervalo \\(I=['+fmt(lo)+',\\ '+fmt(hi)+']\\)');
+            steps.push('<span style="margin-left:1em">Derivada: \\(\\frac{\\partial f}{\\partial '+V+'}='+dexpr+'\\)</span>');
+            steps.push('<span style="margin-left:1em">\\(\\left|f\'('+fmt(loS.z)+')\\right|='+fmt(loS.df)+'\\), \\(\\left|f\'('+fmt(hiS.z)+')\\right|='+fmt(hiS.df)+'\\)</span>');
+            steps.push('<span style="margin-left:1em;color:#2980b9">\\(\\max_{z\\in I}\\left|\\frac{\\partial f}{\\partial '+V+'}\\right|='+fmt(maxdf)+'\\) (en \\(z='+fmt(maxAt)+'\\))</span>');
+            steps.push('<span style="margin-left:1em">Contribucion: \\('+fmt(maxdf)+'\\times'+fmt(eaV)+'='+fmt(maxdf*eaV)+'\\)</span>');
+            stepN++;});
+          // Resultado
+          steps.push('<b>Paso '+stepN+'. Resultado:</b> \\(\\varepsilon(f)='+detail.join('+')+' = '+fmt(epsf)+'\\)');stepN++;
+          sv('eps','f',epsf,'');
+          // EA(f)
+          if(gv('ea','f')===undefined){
+            sv('ea','f',epsf,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(epsf)+'\\)');stepN++;}
+          // ER(f)
+          if(fVal!==undefined&&fVal!==0&&gv('er','f')===undefined){
+            const eaReal=gv('ea','f')??epsf;
+            const er=eaReal/Math.abs(fVal);sv('er','f',er,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)=\\frac{EA(f)}{|f(real)|}=\\frac{'+fmt(eaReal)+'}{'+fmt(Math.abs(fVal))+'}='+fmt(er)+'\\)');stepN++;}
+          // p(f)
+          if(gv('p','f')===undefined){
+            let p=0;const eaf=gv('ea','f');while(eaf<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+            sv('p','f',p,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(EA(f)='+fmt(eaf)+'\\leq 10^{-'+p+'}\\) → \\(p(f)='+p+'\\) cifras decimales exactas');stepN++;}
+          // t(f)
+          if(gv('er','f')!==undefined&&gv('t','f')===undefined){
+            const erf=gv('er','f');let t=0;while(erf<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+            sv('t','f',t,'');
+            steps.push('<b>Paso '+stepN+'.</b> \\(ER(f)='+fmt(erf)+'<5\\cdot10^{-'+t+'}\\) → \\(t(f)='+t+'\\) cifras significativas');stepN++;}
+          // Aproximacion de f con p(f) cifras
+          if(fVal!==undefined&&gv('p','f')!==undefined){
+            const pf=gv('p','f'),facP=Math.pow(10,pf);
+            const fTr=Math.trunc(fVal*facP)/facP;
+            const fRd=Math.round(fVal*facP)/facP;
+            steps.push('<b>Paso '+stepN+'. Aproximacion:</b> \\(f(x)\\approx'+fmt(fVal)+'\\)');
+            steps.push('<span style="margin-left:1em">Truncamiento a '+pf+' dec: \\('+fmt(fTr)+'\\)</span>');
+            steps.push('<span style="margin-left:1em">Redondeo a '+pf+' dec: \\('+fmt(fRd)+'\\)</span>');
+            steps.push('<span style="margin-left:1em;color:#27ae60"><b>Aprox. con '+pf+' c.d.e.: \\(f\\approx'+fmt(fRd)+'\\pm'+fmt(epsf)+'\\)</b></span>');stepN++;}
+        }
+        // Caso INVERSO iterativo: tenemos p(f) o t(f) deseado → buscar p(vi) minimo
+        else if((gv('p','f')!==undefined||gv('t','f')!==undefined)&&!ok){
+          const pfDes=gv('p','f'),tfDes=gv('t','f');
+          const usePf=pfDes!==undefined;
+          const fVal=gv('real','f');
+          // Convertir objetivo a EA(f) target
+          let targetEAf;
+          if(usePf){targetEAf=Math.pow(10,-pfDes);}
+          else{const erT=5*Math.pow(10,-tfDes);targetEAf=(fVal!==undefined&&fVal!==0)?erT*Math.abs(fVal):erT;}
+          const tgtLabel=usePf?'p(f)='+pfDes+' c.d.e.':'t(f)='+tfDes+' c.s.';
+          steps.push('<div style="background:#fff8f0;border-left:3px solid #e67e22;padding:.5em .8em;margin:.5em 0;border-radius:4px">'+
+            '<b style="color:#e67e22;font-size:1.05em">Propagacion inversa iterativa (Prop. 21)</b><br>'+
+            '<span style="color:#555">¿Que precision minima necesitan las variables para que \\(f\\) tenga '+tgtLabel+'?</span></div>');
+          let stepN=1;
+          if(usePf){steps.push('<b>Paso '+stepN+'.</b> Objetivo: \\(EA(f)\\leq 10^{-'+pfDes+'}='+fmt(targetEAf)+'\\)');}
+          else{steps.push('<b>Paso '+stepN+'.</b> Objetivo: \\(ER(f)<5\\cdot10^{-'+tfDes+'}\\) → \\(EA(f)<'+fmt(targetEAf)+'\\)');}
+          stepN++;
+          // Variables activas
+          const actV=[];['x','y','z'].forEach(V=>{if(gv('real',V)!==undefined||gv('aprox',V)!==undefined)actV.push(V);});
+          // Derivadas primera y segunda
+          const d2c={};
+          actV.forEach(V=>{
+            const de=fd.dexpr[V]||'?';let d2s='';
+            try{const d2n=math.derivative(math.derivative(fd.node,V),V);d2c[V]=d2n.compile();d2s=', \\quad f\'\'_{'+V+'}='+d2n.toString();}catch(e){}
+            steps.push('<b>Paso '+stepN+'.</b> \\(f\'_{'+V+'}='+de+'\\)'+d2s);stepN++;});
+          // Iteracion: probar p=0,1,2,...
+          const MXP=20;let foundP=-1,foundEA=0;
+          steps.push('<b>Paso '+stepN+'. Iteraciones \\(p=0,1,2,\\ldots\\):</b>');stepN++;
+          for(let pt=0;pt<=MXP;pt++){
+            const ea=Math.pow(10,-pt);let tEA=0;const vi=[];
+            actV.forEach(V=>{
+              const c=gv('real',V)??gv('aprox',V)??0;
+              const lo=c-ea,hi=c+ea;
+              const bs={x:gv('real','x')??gv('aprox','x')??0,y:gv('real','y')??gv('aprox','y')??0,z:gv('real','z')??gv('aprox','z')??0};
+              let mx=0,dfL=0,dfH=0;
+              for(let i=0;i<=20;i++){const zi=lo+(hi-lo)*i/20;
+                const sc=Object.assign({},bs);sc[V]=zi;
+                const dv=Math.abs(fd.df(V,sc.x,sc.y,sc.z));
+                if(!isNaN(dv)&&isFinite(dv)){if(i===0)dfL=dv;if(i===20)dfH=dv;if(dv>mx)mx=dv;}}
+              // Monotonia con f''
+              let mn='';if(d2c[V]){try{const sc2=Object.assign({},bs);sc2[V]=(lo+hi)/2;
+                const d2v=d2c[V].evaluate({x:sc2.x,y:sc2.y,z:sc2.z});
+                if(d2v>1e-8)mn=' \\nearrow';else if(d2v<-1e-8)mn=' \\searrow';}catch(e){}}
+              tEA+=mx*ea;vi.push({V,lo,hi,dfL,dfH,mx,mn,ct:mx*ea});});
+            const ok2=tEA<=targetEAf;
+            let ln='<div style="margin-left:1em;padding:3px 6px;margin:1px 0;border-radius:3px;font-size:.92em;'+
+              (ok2?'background:#eafbe7;border:1px solid #a3d9a5':'background:#fafafa;border:1px solid #eee')+'">';
+            ln+='<b>\\(p='+pt+'\\)</b>: \\(\\varepsilon='+fmt(ea)+'\\)';
+            vi.forEach(({V,lo,hi,dfL,dfH,mx,mn})=>{
+              if(actV.length===1)ln+=', \\(I=['+fmt(lo)+','+fmt(hi)+']\\), \\(|f\'('+fmt(lo)+')|='+fmt(dfL)+'\\), \\(|f\'('+fmt(hi)+')|='+fmt(dfH)+'\\)'+mn+', \\(\\max|f\'|='+fmt(mx)+'\\)';
+              else ln+=', \\(\\max|f\'_{'+V+'}|='+fmt(mx)+'\\)';});
+            ln+=', \\(EA(f)='+fmt(tEA)+'\\) '+(ok2?'\\(\\leq '+fmt(targetEAf)+'\\) <b style="color:#27ae60">✓</b>':'\\(> '+fmt(targetEAf)+'\\) <span style="color:#aaa">✗</span>');
+            ln+='</div>';steps.push(ln);
+            if(ok2){foundP=pt;foundEA=tEA;break;}}
+          // Resultado
+          if(foundP>=0){
+            const epsR=Math.pow(10,-foundP);
+            steps.push('<div style="margin:.5em 0;padding:.5em .8em;background:#eafbe7;border-left:3px solid #27ae60;border-radius:4px">'+
+              '<b style="color:#27ae60;font-size:1.05em">Minimo \\(p='+foundP+'\\) c.d.e.</b> para cada variable (\\(\\varepsilon='+fmt(epsR)+'\\))<br>'+
+              '\\(EA(f)='+fmt(foundEA)+'\\leq'+fmt(targetEAf)+'\\) ✓</div>');stepN++;
+            actV.forEach(V=>{
+              const c=gv('real',V)??gv('aprox',V)??0;
+              if(gv('p',V)===undefined)sv('p',V,foundP,'');
+              if(gv('eps',V)===undefined)sv('eps',V,epsR,'');
+              if(c!==0){const er=epsR/Math.abs(c);
+                let t=0;while(er<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+                if(gv('t',V)===undefined)sv('t',V,t,'');
+                if(gv('er',V)===undefined)sv('er',V,er,'');
+                steps.push('<span style="margin-left:1em;color:#e67e22">\\('+V+'\\): \\(p='+foundP+'\\) c.d.e., \\(t='+t+'\\) c.s., \\(\\varepsilon='+fmt(epsR)+'\\), \\(ER='+fmt(er)+'\\)</span>');}});
+            sv('eps','f',foundEA,'');if(gv('ea','f')===undefined)sv('ea','f',foundEA,'');
+            // p(f) y t(f) derivados
+            let pfC=0;while(foundEA<=Math.pow(10,-pfC)&&pfC<50)pfC++;pfC=Math.max(0,pfC-1);
+            if(gv('p','f')===undefined)sv('p','f',pfC,'');
+            if(fVal!==undefined&&fVal!==0){const eaReal=gv('ea','f')??foundEA;
+              const erF=eaReal/Math.abs(fVal);
+              let tF=0;while(erF<5*Math.pow(10,-tF)&&tF<50)tF++;tF=Math.max(0,tF-1);
+              if(gv('t','f')===undefined)sv('t','f',tF,'');
+              if(gv('er','f')===undefined)sv('er','f',erF,'');}
+            // Aproximacion de f
+            if(fVal!==undefined){const pc=gv('p','f')??pfC;const fc=Math.pow(10,pc);
+              steps.push('<b>Paso '+stepN+'. Aproximacion:</b> \\(f\\approx'+fmt(fVal)+'\\pm'+fmt(foundEA)+'\\)');
+              steps.push('<span style="margin-left:1em">Redondeo a '+pc+' dec: \\('+fmt(Math.round(fVal*fc)/fc)+'\\)</span>');stepN++;}
+          }else{steps.push('<span style="color:#c0392b">No se encontro precision suficiente hasta \\(p='+MXP+'\\)</span>');}
+        }}
+      // Si eps(f) fue calculado por otro camino (no prop.), mantener inferencias simples
+      if(gv('ea','f')===undefined&&gv('eps','f')!==undefined&&!comp['ea-f']){
+        sv('ea','f',gv('eps','f'),'<b>EA(f):</b> \\(EA(f)\\leq\\varepsilon(f)='+fmt(gv('eps','f'))+'\\)');}
+      if(gv('ea','f')!==undefined&&gv('er','f')===undefined){
+        const denom=gv('real','f');
+        if(denom!==undefined&&denom!==0){const er=gv('ea','f')/Math.abs(denom);
+          sv('er','f',er,'<b>ER(f):</b> \\(\\frac{EA(f)}{|f(real)|}=\\frac{'+fmt(gv('ea','f'))+'}{'+fmt(Math.abs(denom))+'}='+fmt(er)+'\\)');}}
+      if(gv('ea','f')!==undefined&&gv('p','f')===undefined){
+        let p=0;while(gv('ea','f')<=Math.pow(10,-p)&&p<50)p++;p=Math.max(0,p-1);
+        sv('p','f',p,'<b>p(f)='+p+':</b> \\(EA(f)\\leq10^{-'+p+'}\\) → '+p+' c.d.e.');}
+      if(gv('er','f')!==undefined&&gv('t','f')===undefined){
+        let t=0;while(gv('er','f')<5*Math.pow(10,-t)&&t<50)t++;t=Math.max(0,t-1);
+        sv('t','f',t,'<b>t(f)='+t+':</b> \\(ER(f)<5\\cdot10^{-'+t+'}\\) → '+t+' c.s.');}
+      // Rd/Tr de f con aritmetica de k cifras
+      const kf=gv('k','f')??gv('k','x')??gv('k','y')??gv('k','z');
+      if(kf!==undefined&&fd.node){
+        const isDec=document.getElementById('k-dec')?.checked??true;
+        const sc={x:ax??rx??0,y:ay??ry??0,z:az??rz??0};
+        try{
+          if(gv('rd','f')===undefined){const lg=[];
+            const rv=evalKArith(fd.node,sc,kf,'rd',isDec,lg);
+            sv('rd','f',rv,'<b>Rd(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(rv)+'\\)');
+            if(lg.length>0){steps.push('<b style="color:#8e44ad">Pasos Redondeo (k='+kf+', '+(isDec?'dec':'c.s.')+'):</b>');
+              lg.forEach(s=>steps.push('<span style="color:#8e44ad;margin-left:1em">'+s+'</span>'));}}
+          if(gv('tr','f')===undefined){const lg=[];
+            const tv=evalKArith(fd.node,sc,kf,'tr',isDec,lg);
+            sv('tr','f',tv,'<b>Tr(f, arit. '+kf+(isDec?' dec':' c.s.')+'):</b> \\('+fmt(tv)+'\\)');
+            if(lg.length>0){steps.push('<b style="color:#f39c12">Pasos Truncamiento (k='+kf+', '+(isDec?'dec':'c.s.')+'):</b>');
+              lg.forEach(s=>steps.push('<span style="color:#f39c12;margin-left:1em">'+s+'</span>'));}}
+        }catch(err){steps.push('<span style="color:red">Error en arit. k cifras: '+err.message+'</span>');}
+      }
+      // Intervalos de confianza de f (defecto, exceso, mayor, menor)
+      {const epsF=gv('eps','f')??gv('ea','f');
+      const fReal=gv('real','f');
+      if(epsF!==undefined&&fReal!==undefined&&!comp['_intEA-f']){
+        comp['_intEA-f']=true;
+        const pEff=Math.max(0,Math.round(-Math.log10(epsF)));
+        const fac=Math.pow(10,pEff);
+        const def=Math.trunc(fReal*fac)/fac;
+        const exc=def+(fReal>=0?1:-1)/fac;
+        sv('apdef','f',def,'<b>Aprox. defecto (f):</b> \\(\\mathrm{Tr}('+fmt(fReal)+')='+fmt(def)+'\\)');
+        sv('apexc','f',exc,'<b>Aprox. exceso (f):</b> \\('+fmt(def)+'+'+(fReal>=0?'':'-')+'10^{-'+pEff+'}='+fmt(exc)+'\\)');
+        const lDef=def-epsF,uDef=def+epsF;
+        const lExc=exc-epsF,uExc=exc+epsF;
+        const mayor_l=Math.min(lDef,lExc),mayor_u=Math.max(uDef,uExc);
+        const menor_l=Math.max(lDef,lExc),menor_u=Math.min(uDef,uExc);
+        sv('intdef','f','['+fmt(lDef)+', '+fmt(uDef)+']','<b>Int. defecto (f):</b> \\(['+fmt(def)+'\\pm'+fmt(epsF)+'] = ['+fmt(lDef)+',\\ '+fmt(uDef)+']\\)');
+        sv('intexc','f','['+fmt(lExc)+', '+fmt(uExc)+']','<b>Int. exceso (f):</b> \\(['+fmt(exc)+'\\pm'+fmt(epsF)+'] = ['+fmt(lExc)+',\\ '+fmt(uExc)+']\\)');
+        sv('intmayor','f','['+fmt(mayor_l)+', '+fmt(mayor_u)+']','<b>Mayor intervalo (f):</b> \\(['+fmt(mayor_l)+',\\ '+fmt(mayor_u)+']\\)');
+        if(menor_l<=menor_u)sv('intmenor','f','['+fmt(menor_l)+', '+fmt(menor_u)+']','<b>Menor intervalo (f):</b> \\(['+fmt(menor_l)+',\\ '+fmt(menor_u)+']\\)');
+      }
+      // Int. confianza simple si solo hay aprox ± ε
+      else if(gv('aprox','f')!==undefined&&epsF!==undefined){
+        const fLinf=gv('aprox','f')-epsF,fLsup=gv('aprox','f')+epsF;
+        steps.push('<b>Int. conf. f:</b> \\(['+fmt(fLinf)+',\\ '+fmt(fLsup)+']\\)');}}
+    }catch(err){steps.push('<span style="color:red"><b>Error en propagacion:</b> '+err.message+'</span>');console.error('Prop error:',err);}
+    }
+  }
+  // Exceso/defecto
+  ['x','y','z'].forEach(V=>{
+    if(gv('real',V)!==undefined&&gv('aprox',V)!==undefined){const s=gv('real',V)-gv('aprox',V);
+      if(s<0)steps.unshift('<b>'+V+':</b> \\(E\'_A='+fmt(s)+'<0\\) → Por <b>exceso</b>');
+      else if(s>0)steps.unshift('<b>'+V+':</b> \\(E\'_A='+fmt(s)+'>0\\) → Por <b>defecto</b>');}
+  });
+  if(fd){let ds='<b>Funcion:</b> \\(f='+fnExpr+'\\)';
+    if(fd.dexpr.x!=='0')ds+=', \\(\\partial f/\\partial x='+fd.dexpr.x+'\\)';
+    if(fd.dexpr.y!=='0')ds+=', \\(\\partial f/\\partial y='+fd.dexpr.y+'\\)';
+    if(fd.dexpr.z!=='0')ds+=', \\(\\partial f/\\partial z='+fd.dexpr.z+'\\)';
+    steps.unshift(ds);}
+  // Fill computed
+  _pd.forEach(p=>{let anyComp=false;_cv.forEach(v=>{if(comp[p.id+'-'+v]){
+    const el=document.getElementById('val-'+p.id+'-'+v);
+    el.value=p.isTxt?d[p.id][v]:(p.isInt?d[p.id][v]:fmt(d[p.id][v]));el.classList.add('computed');el.disabled=false;anyComp=true;}});
+    if(anyComp){const chk=document.getElementById('chk-'+p.id);if(chk&&!chk.checked){chk.checked=true;chk.dataset.auto='1';}}});
+  // Answer highlighting for generated problems
+  if(_problemAnswerFields){_problemAnswerFields.forEach(id=>{const el=document.getElementById(id);if(el&&el.classList.contains('computed'))el.classList.add('answer');});
+    const _fa=document.querySelector('.sv-in.answer');if(_fa)setTimeout(()=>_fa.scrollIntoView({behavior:'smooth',block:'center'}),300);}
+  // Reasoning
+  const rBox=document.getElementById('solver-reasoning');rBox.style.display='block';
+  if(steps.length>0){rBox.innerHTML='<h4 style="color:var(--pri);margin-bottom:.4rem">Razonamiento paso a paso</h4>'+
+    steps.map(s=>'<div class="step">'+s+'</div>').join('');renderMathInElement(rBox,mathOpts);
+  }else{rBox.innerHTML='<p style="color:var(--txtl)">Introduce mas datos conocidos.</p>';}
+  drawSolverAxis(d);
+}
+function drawSolverAxis(d){
+  const container=document.getElementById('solver-plot');container.innerHTML='';container.style.display='none';
+  function parseIntv(s){if(!s||typeof s!=='string')return null;const m=s.match(/\[([^,]+),\s*([^\]]+)\]/);return m?[parseFloat(m[1]),parseFloat(m[2])]:null;}
+  const toPlot=[];
+  _cv.forEach(V=>{
+    const nums=[d.real?.[V],d.aprox?.[V],d.apdef?.[V],d.apexc?.[V],d.rd?.[V],d.tr?.[V]].filter(n=>n!==undefined&&!isNaN(n)&&isFinite(n));
+    const iMay=parseIntv(d.intmayor?.[V]),iMen=parseIntv(d.intmenor?.[V]);
+    if(iMay){nums.push(iMay[0],iMay[1]);}
+    if(iMen){nums.push(iMen[0],iMen[1]);}
+    if(nums.length>=2)toPlot.push({V,nums,iMay,iMen})});
+  if(toPlot.length===0)return;
+  container.style.display='block';
+  toPlot.forEach(({V,nums,iMay,iMen})=>{
+    const pid='sp-'+V;const div=document.createElement('div');div.id=pid;div.style.marginBottom='0';container.appendChild(div);
+    const traces=[],ann=[],mn=Math.min(...nums),mx=Math.max(...nums),pad=Math.max((mx-mn)*.2,.001);
+    const iMayor=iMay,iMenor=iMen;
+    // Mayor intervalo: franja ancha gris-azul
+    if(iMayor){
+      traces.push({x:[iMayor[0],iMayor[1]],y:[-.15,-.15],mode:'lines',line:{color:'rgba(41,128,185,.15)',width:20},name:'Mayor int.',hoverinfo:'x'});
+      traces.push({x:[iMayor[0],iMayor[0]],y:[-.35,.05],mode:'lines',line:{color:'#2980b9',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      traces.push({x:[iMayor[1],iMayor[1]],y:[-.35,.05],mode:'lines',line:{color:'#2980b9',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:(iMayor[0]+iMayor[1])/2,y:-.38,text:'<b>Mayor ['+fmt(iMayor[0])+', '+fmt(iMayor[1])+']</b>',showarrow:false,font:{size:8,color:'#2980b9'}});}
+    // Menor intervalo: franja estrecha verde
+    if(iMenor){
+      traces.push({x:[iMenor[0],iMenor[1]],y:[.15,.15],mode:'lines',line:{color:'rgba(39,174,96,.25)',width:20},name:'Menor int.',hoverinfo:'x'});
+      traces.push({x:[iMenor[0],iMenor[0]],y:[-.05,.35],mode:'lines',line:{color:'#27ae60',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      traces.push({x:[iMenor[1],iMenor[1]],y:[-.05,.35],mode:'lines',line:{color:'#27ae60',width:1,dash:'dot'},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:(iMenor[0]+iMenor[1])/2,y:.38,text:'<b>Menor ['+fmt(iMenor[0])+', '+fmt(iMenor[1])+']</b>',showarrow:false,font:{size:8,color:'#27ae60'}});}
+    // Defecto/exceso como marcadores
+    if(d.apdef?.[V]!==undefined)traces.push({x:[d.apdef[V]],y:[0],mode:'markers',marker:{size:9,color:'#2980b9',symbol:'triangle-left'},name:'Defecto',hoverinfo:'x+name'});
+    if(d.apexc?.[V]!==undefined)traces.push({x:[d.apexc[V]],y:[0],mode:'markers',marker:{size:9,color:'#2980b9',symbol:'triangle-right'},name:'Exceso',hoverinfo:'x+name'});
+    if(d.real?.[V]!==undefined)traces.push({x:[d.real[V]],y:[0],mode:'markers',marker:{size:13,color:'#27ae60',symbol:'star'},name:V+' real',hoverinfo:'x+name'});
+    if(d.aprox?.[V]!==undefined)traces.push({x:[d.aprox[V]],y:[0],mode:'markers',marker:{size:12,color:'#e74c3c',symbol:'diamond'},name:V+'*',hoverinfo:'x+name'});
+    if(d.rd?.[V]!==undefined)traces.push({x:[d.rd[V]],y:[.13],mode:'markers',marker:{size:8,color:'#8e44ad',symbol:'circle'},name:'Rd',hoverinfo:'x+name'});
+    if(d.tr?.[V]!==undefined)traces.push({x:[d.tr[V]],y:[-.13],mode:'markers',marker:{size:8,color:'#f39c12',symbol:'triangle-up'},name:'Tr',hoverinfo:'x+name'});
+    if(d.real?.[V]!==undefined&&d.aprox?.[V]!==undefined){
+      const r=d.real[V],a=d.aprox[V];
+      traces.push({x:[Math.min(r,a),Math.max(r,a)],y:[.33,.33],mode:'lines',line:{color:'#e74c3c',width:2.5},showlegend:false,hoverinfo:'skip'});
+      ann.push({x:(r+a)/2,y:.43,text:'<b>EA='+fmt(Math.abs(r-a))+'</b>',showarrow:false,font:{size:9,color:'#e74c3c'}});}
+    const hasIntv=iMayor||iMenor;
+    Plotly.newPlot(pid,traces,{margin:{t:18,b:32,l:30,r:15},yaxis:{visible:false,range:[hasIntv?-.7:-.6,hasIntv?.65:.55]},
+      xaxis:{title:V==='f'?'f(x,y,z)':V,range:[mn-pad,mx+pad],zeroline:false},height:hasIntv?145:115,
+      legend:{orientation:'h',y:1.15,font:{size:9}},annotations:ann,plot_bgcolor:'#fafbfc',
+      title:{text:'Variable '+(V==='f'?'f(x,y,z)':V),font:{size:10},x:.01,xanchor:'left'}},{responsive:true});
+  });
+}
+
+// === PROBLEM GENERATOR ===
+let _currentProblem=null,_problemAnswerFields=null;
+const _numPool=[
+  {n:'\\pi',v:Math.PI,e:'pi',d:1},
+  {n:'e',v:Math.E,e:'e',d:1},
+  {n:'\\sqrt{2}',v:Math.sqrt(2),e:'sqrt(2)',d:1},
+  {n:'\\sqrt{3}',v:Math.sqrt(3),e:'sqrt(3)',d:1},
+  {n:'\\sqrt{5}',v:Math.sqrt(5),e:'sqrt(5)',d:2},
+  {n:'\\sqrt{7}',v:Math.sqrt(7),e:'sqrt(7)',d:2},
+  {n:'\\sqrt{10}',v:Math.sqrt(10),e:'sqrt(10)',d:2},
+  {n:'\\ln(2)',v:Math.log(2),e:'ln(2)',d:2},
+  {n:'\\varphi',v:(1+Math.sqrt(5))/2,e:'(1+sqrt(5))/2',d:3},
+  {n:'1/7',v:1/7,e:'1/7',d:3},
+  {n:'22/7',v:22/7,e:'22/7',d:3}
+];
+const _fnPool=[
+  // d:1 - simple single-variable
+  {n:'x^2',e:'x^2',d:1,v:1},{n:'x^3',e:'x^3',d:1,v:1},{n:'\\sqrt{x}',e:'sqrt(x)',d:1,v:1},
+  {n:'(x-1)^2',e:'(x-1)^2',d:1,v:1},
+  // d:2 - medium single-variable
+  {n:'\\ln(x)',e:'ln(x)',d:2,v:1},{n:'\\sin(x)',e:'sin(x)',d:2,v:1},{n:'\\cos(x)',e:'cos(x)',d:2,v:1},
+  {n:'e^x',e:'exp(x)',d:2,v:1},{n:'1/(1+x)',e:'1/(1+x)',d:2,v:1},{n:'x^{1/3}',e:'x^(1/3)',d:2,v:1},
+  // d:3 - compound single-variable
+  {n:'\\sin(x)+\\ln(x)',e:'sin(x)+ln(x)',d:3,v:1},
+  {n:'e^x\\cdot\\cos(x)',e:'exp(x)*cos(x)',d:3,v:1},
+  {n:'\\sqrt{x}+x^2',e:'sqrt(x)+x^2',d:3,v:1},
+  {n:'\\frac{x^2}{1+x}',e:'x^2/(1+x)',d:3,v:1},
+  {n:'\\ln(x^2+1)',e:'ln(x^2+1)',d:3,v:1},
+  {n:'\\sin(x)\\cdot\\sqrt{x}',e:'sin(x)*sqrt(x)',d:3,v:1},
+  {n:'e^{-x^2}',e:'exp(-x^2)',d:3,v:1}
+];
+// Multi-variable functions for alta (propagation, conditioning)
+const _fnPoolMV=[
+  // 2 variables (x,y)
+  {n:'x^2+y^2',e:'x^2+y^2',d:3,v:2},
+  {n:'x\\cdot y',e:'x*y',d:3,v:2},
+  {n:'\\frac{x}{y}',e:'x/y',d:3,v:2},
+  {n:'x\\cdot e^y',e:'x*exp(y)',d:3,v:2},
+  {n:'\\ln(x)+\\sin(y)',e:'ln(x)+sin(y)',d:3,v:2},
+  {n:'\\sqrt{x^2+y^2}',e:'sqrt(x^2+y^2)',d:3,v:2},
+  {n:'x^2\\cdot\\ln(y)',e:'x^2*ln(y)',d:3,v:2},
+  {n:'\\sin(x)\\cdot\\cos(y)',e:'sin(x)*cos(y)',d:3,v:2},
+  // 3 variables (x,y,z)
+  {n:'x+y+z',e:'x+y+z',d:3,v:3},
+  {n:'x\\cdot y\\cdot z',e:'x*y*z',d:3,v:3},
+  {n:'x^2+y^2+z^2',e:'x^2+y^2+z^2',d:3,v:3},
+  {n:'\\frac{x\\cdot y}{z}',e:'x*y/z',d:3,v:3},
+  {n:'x\\cdot e^y+\\ln(z)',e:'x*exp(y)+ln(z)',d:3,v:3},
+  {n:'\\sqrt{x^2+y^2+z^2}',e:'sqrt(x^2+y^2+z^2)',d:3,v:3},
+  {n:'\\sin(x)+\\cos(y)+e^z',e:'sin(x)+cos(y)+exp(z)',d:3,v:3}
+];
+function _pk(a){return a[Math.floor(Math.random()*a.length)]}
+function _ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function _mkAp(r,p){const f=Math.pow(10,p);return(Math.random()>.5?Math.round(r*f):Math.trunc(r*f))/f;}
+function _getDiff(){const v=document.getElementById('prob-diff').value;return v==='baja'?1:v==='alta'?3:2;}
+function _dLv(){return _getDiff();}
+function _pkN(dl){return _pk(_numPool.filter(n=>n.d<=dl));}
+function _pkF(num,dl){
+  const pool=_fnPool.filter(f=>f.d<=dl);
+  const valid=pool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});
+  if(dl>=3){const hard=valid.filter(f=>f.d===3);if(hard.length)return _pk(hard);}
+  return _pk(valid.length?valid:[{n:'x^2',e:'x^2',d:1,v:1}]);
+}
+function _pkFMV(nums,nVars){
+  // Pick a multi-variable function valid for given number of variables and values
+  const pool=_fnPoolMV.filter(f=>f.v===nVars);
+  const valid=pool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();
+    const sc={x:nums[0].v,y:nums[1]?nums[1].v:1,z:nums[2]?nums[2].v:1};
+    const r=c.evaluate(sc);return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});
+  return _pk(valid.length?valid:pool);
+}
+function _validFn(num){return _fnPool.filter(f=>{try{const c=math.parse(prepExpr(f.e)).compile();const r=c.evaluate({x:num.v});return isFinite(r)&&!isNaN(r)&&r!==0}catch(e){return false}});}
+
+function onProbTypeChange(){
+  if(_currentProblem){
+    resetSolver();
+    generateProblem();
+  }
+}
+function generateProblem(){
+  let tp=+document.getElementById('prob-type').value;
+  if(tp===0)tp=_ri(1,7);
+  const dl=_dLv();
+  const g=[null,_gT1,_gT2,_gT3,_gT4,_gT5,_gT6,_gT7];
+  _currentProblem=g[tp](dl);_problemAnswerFields=null;
+  const dlNames={1:'Baja',2:'Media',3:'Alta'};
+  const dlColors={1:'#27ae60',2:'var(--warn)',3:'#e74c3c'};
+  const sd=document.getElementById('problem-statement');
+  sd.style.display='block';
+  sd.innerHTML='<b style="color:var(--warn)">Problema (Tipo '+tp+')</b> <span style="background:'+dlColors[dl]+';color:#fff;padding:2px 8px;border-radius:10px;font-size:.8rem">'+dlNames[dl]+'</span><br>'+_currentProblem.statement;
+  renderMathInElement(sd,mathOpts);
+  document.getElementById('btn-load-problem').style.display='inline-block';
+}
+function _gT1(dl){
+  // Baja: 1 variable. Media: 1 variable. Alta: 2-3 variables, cada una con su cálculo
+  if(dl<=2){
+    const nm=_pkN(dl),p=dl===1?_ri(1,2):_ri(2,3);
+    const ap=_mkAp(nm.v,p),aps=ap.toFixed(p);
+    return{type:1,
+      statement:'Sea \\(x='+nm.n+'\\) y su aproximacion \\(x^*='+aps+'\\).<br>Calcula: <b>(a)</b> \\(E_A(x^*)\\), <b>(b)</b> \\(E_R(x^*)\\), <b>(c)</b> cifras decimales exactas \\(p\\), <b>(d)</b> cifras significativas \\(t\\). Indica si es por exceso o por defecto.',
+      data:{real:{x:nm.e},aprox:{x:aps}},
+      answerFields:['val-ea-x','val-er-x','val-p-x','val-t-x']};
+  }
+  // Alta: 3 variables
+  const vars=['x','y','z'],nums=[],aps={},reals={},answers=[];
+  let stParts=[];
+  vars.forEach(V=>{
+    let nm=_pkN(3);while(nums.find(n=>n.e===nm.e))nm=_pkN(3);
+    nums.push(nm);
+    const p=_ri(3,5);const ap=_mkAp(nm.v,p);
+    reals[V]=nm.e;aps[V]=ap.toFixed(p);
+    stParts.push('\\('+V+'='+nm.n+'\\), \\('+V+'^*='+ap.toFixed(p)+'\\)');
+    answers.push('val-ea-'+V,'val-er-'+V,'val-p-'+V,'val-t-'+V);
+  });
+  return{type:1,
+    statement:'Sean '+stParts.join('; ')+'.<br>Para <b>cada variable</b>, calcula: \\(E_A\\), \\(E_R\\), \\(p\\) y \\(t\\). Indica exceso/defecto.',
+    data:{real:reals,aprox:aps},
+    answerFields:answers};
+}
+function _gT2(dl){
+  if(dl<=2){
+    const nm=_pkN(dl),p=dl===1?_ri(1,2):_ri(2,3);
+    return{type:2,
+      statement:'Sea \\(x='+nm.n+'\\) con \\(p='+p+'\\) cifras decimales exactas.<br>Calcula: <b>(a)</b> la cota \\(\\varepsilon\\), <b>(b)</b> aprox. por defecto y exceso, <b>(c)</b> intervalos de confianza por defecto y exceso, <b>(d)</b> mayor y menor intervalo.',
+      data:{real:{x:nm.e},p:{x:p}},
+      answerFields:['val-eps-x','val-apdef-x','val-apexc-x','val-intdef-x','val-intexc-x','val-intmayor-x','val-intmenor-x']};
+  }
+  // Alta: 2-3 variables con distintas p
+  const nv=_ri(2,3),vars=['x','y','z'].slice(0,nv);
+  const reals={},ps={},answers=[];let stParts=[];
+  const used=[];
+  vars.forEach(V=>{
+    let nm=_pkN(3);while(used.find(n=>n.e===nm.e))nm=_pkN(3);used.push(nm);
+    const p=_ri(3,5);reals[V]=nm.e;ps[V]=p;
+    stParts.push('\\('+V+'='+nm.n+'\\) con \\(p('+V+')='+p+'\\)');
+    answers.push('val-eps-'+V,'val-apdef-'+V,'val-apexc-'+V,'val-intdef-'+V,'val-intexc-'+V,'val-intmayor-'+V,'val-intmenor-'+V);
+  });
+  return{type:2,
+    statement:'Sean '+stParts.join('; ')+'.<br>Para <b>cada variable</b>, calcula: \\(\\varepsilon\\), aprox. defecto/exceso, intervalos de confianza, mayor y menor intervalo.',
+    data:{real:reals,p:ps},
+    answerFields:answers};
+}
+function _gT3(dl){
+  if(dl<=2){
+    const nm=_pkN(dl),t=dl===1?_ri(1,2):_ri(2,3);
+    return{type:3,
+      statement:'Sea \\(x='+nm.n+'\\) con \\(t='+t+'\\) cifras significativas.<br>Calcula: <b>(a)</b> cota \\(E_R\\), <b>(b)</b> cota \\(\\varepsilon\\) del EA, <b>(c)</b> aprox. defecto/exceso, <b>(d)</b> intervalos de confianza.',
+      data:{real:{x:nm.e},t:{x:t}},
+      answerFields:['val-er-x','val-eps-x','val-apdef-x','val-apexc-x','val-intmayor-x']};
+  }
+  // Alta: 2-3 variables
+  const nv=_ri(2,3),vars=['x','y','z'].slice(0,nv);
+  const reals={},ts={},answers=[];let stParts=[];
+  const used=[];
+  vars.forEach(V=>{
+    let nm=_pkN(3);while(used.find(n=>n.e===nm.e))nm=_pkN(3);used.push(nm);
+    const t=_ri(3,5);reals[V]=nm.e;ts[V]=t;
+    stParts.push('\\('+V+'='+nm.n+'\\) con \\(t('+V+')='+t+'\\)');
+    answers.push('val-er-'+V,'val-eps-'+V,'val-apdef-'+V,'val-apexc-'+V,'val-intmayor-'+V);
+  });
+  return{type:3,
+    statement:'Sean '+stParts.join('; ')+'.<br>Para <b>cada variable</b>, calcula: cota \\(E_R\\), cota \\(\\varepsilon\\), aprox. defecto/exceso, intervalos de confianza.',
+    data:{real:reals,t:ts},
+    answerFields:answers};
+}
+function _gT4(dl){
+  // Baja/Media: f(x) con 1 variable. Alta: f(x,y) o f(x,y,z) con propagación multivariable
+  if(dl<=2){
+    const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+    const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+    const p=dl===1?_ri(1,2):_ri(2,3);
+    const fn=_pkF(num,dl);
+    return{type:4,
+      statement:'Sea \\(x='+num.n+'\\) con \\(p(x)='+p+'\\) c.d.e. y \\(f(x)='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\), <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\).',
+      data:{real:{x:num.e},p:{x:p}},func:fn.e,
+      answerFields:['val-eps-f','val-p-f','val-t-f']};
+  }
+  // Alta: f(x,y) o f(x,y,z) - propagación con derivadas parciales
+  const nv=_ri(2,3),vars=['x','y','z'].slice(0,nv);
+  const pos=_numPool.filter(n=>n.d<=3&&n.v>0.1);
+  const nums=[],reals={},ps={};let stParts=[];
+  vars.forEach(V=>{
+    let nm=_pk(pos);while(nums.find(n=>n.e===nm.e))nm=_pk(pos);nums.push(nm);
+    const p=_ri(2,4);reals[V]=nm.e;ps[V]=p;
+    stParts.push('\\('+V+'='+nm.n+'\\) con \\(p('+V+')='+p+'\\)');
+  });
+  const fn=_pkFMV(nums,nv);
+  return{type:4,
+    statement:'Sean '+stParts.join('; ')+' y \\(f('+vars.join(',')+')='+fn.n+'\\).<br>Usando la Prop. 21, calcula: <b>(a)</b> \\(\\varepsilon(f)\\) sumando las contribuciones de cada variable, <b>(b)</b> \\(p(f)\\), <b>(c)</b> \\(t(f)\\), <b>(d)</b> \\(E_R(f)\\).',
+    data:{real:reals,p:ps},func:fn.e,
+    answerFields:['val-eps-f','val-p-f','val-t-f','val-er-f']};
+}
+function _gT5(dl){
+  if(dl<=2){
+    const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+    const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+    const pf=dl===1?_ri(1,2):_ri(2,3);
+    const fn=_pkF(num,dl);
+    return{type:5,
+      statement:'Sea \\(x='+num.n+'\\) y \\(f(x)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) minimo necesario, <b>(b)</b> \\(\\varepsilon(x)\\) necesario.',
+      data:{real:{x:num.e},p:{f:pf}},func:fn.e,
+      answerFields:['val-p-x','val-eps-x']};
+  }
+  // Alta: f(x,y) con propagación inversa - hallar p(x),p(y) necesarios
+  const pos=_numPool.filter(n=>n.d<=3&&n.v>0.1);
+  const nums=[];let n1=_pk(pos);nums.push(n1);
+  let n2=_pk(pos);while(n2.e===n1.e)n2=_pk(pos);nums.push(n2);
+  const fn=_pkFMV(nums,2);
+  const pf=_ri(2,4);
+  return{type:5,
+    statement:'Sean \\(x='+n1.n+'\\), \\(y='+n2.n+'\\) y \\(f(x,y)='+fn.n+'\\). Queremos \\(p(f)='+pf+'\\) c.d.e.<br>Calcula: <b>(a)</b> \\(p(x)\\) y \\(p(y)\\) minimos necesarios, <b>(b)</b> \\(\\varepsilon(x)\\) y \\(\\varepsilon(y)\\) necesarios.',
+    data:{real:{x:n1.e,y:n2.e},p:{f:pf}},func:fn.e,
+    answerFields:['val-p-x','val-eps-x','val-p-y','val-eps-y']};
+}
+function _gT6(dl){
+  if(dl<=2){
+    const n1=_pkN(dl);let n2=_pkN(dl);
+    while(n2.e===n1.e)n2=_pkN(dl);
+    const k=dl===1?3:_ri(3,4);
+    const ops=[{n:n1.n+' + '+n2.n,e:'x+y'},{n:n1.n+' - '+n2.n,e:'x-y'},{n:n1.n+' \\cdot '+n2.n,e:'x*y'}];
+    const op=_pk(ops);
+    return{type:6,
+      statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\).',
+      data:{real:{x:n1.e,y:n2.e},k:{x:k,y:k}},func:op.e,
+      answerFields:['val-rd-f','val-tr-f']};
+  }
+  // Alta: 3 variables, cadena de operaciones compuesta, k alto
+  const n1=_pkN(3);let n2=_pkN(3);while(n2.e===n1.e)n2=_pkN(3);
+  let n3=_pkN(3);while(n3.e===n1.e||n3.e===n2.e)n3=_pkN(3);
+  const k=_ri(4,5);
+  const ops=[
+    {n:'('+n1.n+' + '+n2.n+') \\cdot '+n3.n,e:'(x+y)*z'},
+    {n:n1.n+' \\cdot '+n2.n+' + '+n3.n,e:'x*y+z'},
+    {n:n1.n+' \\cdot '+n2.n+' - '+n3.n,e:'x*y-z'},
+    {n:'\\frac{'+n1.n+' + '+n2.n+'}{'+n3.n+'}',e:'(x+y)/z'},
+    {n:'\\frac{'+n1.n+' \\cdot '+n2.n+'}{'+n3.n+'}',e:'(x*y)/z'},
+    {n:n1.n+' \\cdot '+n2.n+' \\cdot '+n3.n,e:'x*y*z'},
+    {n:'('+n1.n+' - '+n2.n+') \\cdot '+n3.n+' + '+n1.n,e:'(x-y)*z+x'},
+    {n:'\\frac{'+n1.n+'}{'+n2.n+'} + '+n3.n,e:'x/y+z'}
+  ];
+  const op=_pk(ops);
+  return{type:6,
+    statement:'Calcula \\('+op.n+'\\) con aritmetica de \\(k='+k+'\\) cifras decimales (redondeo y truncamiento).<br>Datos: \\(x='+n1.n+'\\), \\(y='+n2.n+'\\), \\(z='+n3.n+'\\).<br><i>Recuerda: cada operacion intermedia se redondea/trunca a \\(k\\) cifras.</i>',
+    data:{real:{x:n1.e,y:n2.e,z:n3.e},k:{x:k,y:k,z:k}},func:op.e,
+    answerFields:['val-rd-f','val-tr-f']};
+}
+function _gT7(dl){
+  if(dl<=2){
+    const nmF=_numPool.filter(n=>n.d<=dl&&n.v>0.1);
+    const num=_pk(nmF.length?nmF:[{n:'\\pi',v:Math.PI,e:'pi',d:1}]);
+    const fn=_pkF(num,dl);
+    return{type:7,
+      statement:'Sea \\(f(x)='+fn.n+'\\) y \\(x='+num.n+'\\).<br>Calcula \\(C(x)=\\left|\\frac{x\\cdot f\'(x)}{f(x)}\\right|\\). ¿Bien o mal condicionado?',
+      data:{real:{x:num.e}},func:fn.e,
+      answerFields:['val-cond-x']};
+  }
+  // Alta: f(x,y) - condicionamiento de cada variable
+  const pos=_numPool.filter(n=>n.d<=3&&n.v>0.1);
+  const nums=[];let n1=_pk(pos);nums.push(n1);
+  let n2=_pk(pos);while(n2.e===n1.e)n2=_pk(pos);nums.push(n2);
+  const fn=_pkFMV(nums,2);
+  return{type:7,
+    statement:'Sea \\(f(x,y)='+fn.n+'\\) con \\(x='+n1.n+'\\) e \\(y='+n2.n+'\\).<br>Calcula el numero de condicion de <b>cada variable</b>: \\(C(x)=\\left|\\frac{x\\cdot\\partial f/\\partial x}{f}\\right|\\) y \\(C(y)=\\left|\\frac{y\\cdot\\partial f/\\partial y}{f}\\right|\\). ¿Bien o mal condicionado respecto a cada una?',
+    data:{real:{x:n1.e,y:n2.e}},func:fn.e,
+    answerFields:['val-cond-x','val-cond-y']};
+}
+function loadProblemToSolver(prob){
+  if(!prob)return;
+  resetSolver();
+  _problemAnswerFields=prob.answerFields||null;
+  // Activate rows and fill values
+  Object.keys(prob.data).forEach(pid=>{
+    const chk=document.getElementById('chk-'+pid);
+    if(chk){chk.checked=true;toggleRow(pid);}
+    Object.keys(prob.data[pid]).forEach(vid=>{
+      const el=document.getElementById('val-'+pid+'-'+vid);
+      if(el){el.disabled=false;el.value=String(prob.data[pid][vid]);}
+    });
+  });
+  // Activate function if present
+  if(prob.func){
+    document.getElementById('chk-func').checked=true;toggleEq();
+    document.getElementById('val-func').value=prob.func;previewEq();
+  }
+  // Scroll to solver
+  document.getElementById('solver-tbl').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded',function(){
+  console.log('MMI v17 cargado');
+  renderMathInElement(document.body,mathOpts);
+  buildSolverTable();
+  buildTest();
+  renderMathInElement(document.getElementById('test-container'),mathOpts);
+  renderMathInElement(document.getElementById('problems-container'),mathOpts);
+});
+</script>
+</body>
+</html>

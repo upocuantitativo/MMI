@@ -1,0 +1,296 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     11645,        287]
+NotebookOptionsPosition[     10983,        262]
+NotebookOutlinePosition[     11390,        279]
+CellTagsIndexPosition[     11347,        276]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"f", "[", "x_", "]"}], "=", 
+  RowBox[{
+  "Input", "[", "\"\<Introduce la funci\[OAcute]n a aproximar\>\"", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"a", "=", 
+  RowBox[{
+  "Input", "[", "\"\<Introduce el extremo inferior del intervalo\>\"", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"b", "=", 
+  RowBox[{
+  "Input", "[", "\"\<Introduce el extremo superior del intervalo\>\"", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"tol", "=", 
+  RowBox[{
+  "Input", "[", "\"\<Introduce la tolerancia\>\"", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"maxiter", "=", 
+   RowBox[{
+   "Input", "[", 
+    "\"\<Introduce el n\[UAcute]mero m\[AAcute]ximo de iteraciones\>\"", 
+    "]"}]}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "C\[AAcute]lculo", " ", "de", " ", "las", " ", "im\[AAcute]genes", " ", 
+    "de", " ", "los", " ", "extremos"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"fa", ":=", 
+  RowBox[{"f", "[", "a", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fb", ":=", 
+   RowBox[{"f", "[", "b", "]"}]}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "El", " ", "primer", " ", "IF", " ", "lo", " ", "que", " ", "hace", " ", 
+    "es", " ", "comprobar", " ", "la", " ", "existencia", " ", "del", " ", 
+    "cambio", " ", "de", " ", "signo", " ", "de", " ", "la", " ", 
+    "funci\[OAcute]n", " ", "en", " ", "el", " ", 
+    RowBox[{"intervalo", ".", " ", "Si"}], " ", "no", " ", "lo", " ", "hay", 
+    " ", "devuelve", " ", "un", " ", "mensaje", " ", "avisando", " ", "de", 
+    " ", "que", " ", "es", " ", "necesario", " ", "considerar", " ", "otro", 
+    " ", 
+    RowBox[{"intervalo", ".", " ", "En"}], " ", "caso", " ", "de", " ", 
+    "existir", " ", "un", " ", "cambio", " ", "de", " ", "signo", " ", 
+    "comienza", " ", "a", " ", "funcionar", " ", "una", " ", "orden", " ", 
+    "WHILE"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"If", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"fa", "*", "fb"}], ">", "0"}], ",", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<La funci\[OAcute]n no tiene distinto signo en sus extremos. Utiliza \
+otro intervalo.\>\"", "]"}], ",", 
+   RowBox[{
+    RowBox[{"iter", ":=", "0"}], ";", 
+    RowBox[{"incr", ":=", 
+     RowBox[{"b", "-", "a"}]}], ";", 
+    RowBox[{"While", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"incr", ">", "tol"}], ",", 
+         RowBox[{"iter", "<", "maxiter"}]}], "}"}], "\[Equal]", 
+       RowBox[{"{", 
+        RowBox[{"True", ",", "True"}], "}"}]}], ",", 
+      RowBox[{
+       RowBox[{"c", "=", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"a", "+", "b"}], ")"}], "/", "2"}]}], ";", 
+       RowBox[{"fc", ":=", 
+        RowBox[{"f", "[", "c", "]"}]}], ";", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"fc", "\[Equal]", "0"}], ",", 
+         RowBox[{
+          RowBox[{"a", "=", "c"}], ";", 
+          RowBox[{"b", "=", "c"}]}], ",", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"fa", "*", "fc"}], "<", "0"}], ",", 
+           RowBox[{
+            RowBox[{"b", "=", "c"}], ";", 
+            RowBox[{"fb", "=", "fc"}], ";", 
+            RowBox[{"incr", "=", 
+             RowBox[{"b", "-", "a"}]}], ";", 
+            RowBox[{"iter", "=", 
+             RowBox[{"iter", "+", "1"}]}]}], ",", 
+           RowBox[{
+            RowBox[{"a", "=", "c"}], ";", 
+            RowBox[{"fa", "=", "fc"}], ";", 
+            RowBox[{"incr", "=", 
+             RowBox[{"b", "-", "a"}]}], ";", 
+            RowBox[{"iter", "=", 
+             RowBox[{"iter", "+", "1"}]}]}]}], "]"}]}], "]"}]}]}], "]"}], ";", 
+    RowBox[{"sol", ":=", "c"}], ";", 
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"incr", ">", "tol"}], ",", 
+      RowBox[{"Print", "[", "\"\<Insuficientes iteraciones\>\"", "]"}], ",", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<La soluci\[OAcute]n es \>\"", ",", "sol"}], "]"}]}], 
+     "]"}]}]}], "]"}]}], "Input"],
+
+Cell[BoxData[
+ RowBox[{"x", "+", 
+  RowBox[{"Cos", "[", "x", "]"}]}]], "Output",
+ CellChangeTimes->{3.478000888707612*^9}],
+
+Cell[BoxData[
+ RowBox[{"-", "1"}]], "Output",
+ CellChangeTimes->{3.478000894973317*^9}],
+
+Cell[BoxData["3"], "Output",
+ CellChangeTimes->{3.478000897223346*^9}],
+
+Cell[BoxData["0.01`"], "Output",
+ CellChangeTimes->{3.478000901285898*^9}],
+
+Cell[BoxData["100"], "Output",
+ CellChangeTimes->{3.478000904473439*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"La soluci\[OAcute]n es \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", 
+    FractionBox["95", "128"]}]}],
+  SequenceForm["La soluci\[OAcute]n es ", 
+   Rational[-95, 128]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.478000904489064*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{
+   "Pasamos", " ", "a", " ", "explicar", " ", "las", " ", "la", " ", 
+    "implementaci\[OAcute]n", " ", "del", " ", "comando", " ", 
+    RowBox[{"WHILE", ".", " ", "Primero"}], " ", "se", " ", "reinician", " ", 
+    "los", " ", "contadores", " ", "ITER", " ", "e", " ", "INCR", " ", 
+    "correspondientes", " ", "al", " ", "n\[UAcute]mero", " ", "de", " ", 
+    "iteraciones", " ", "realizadas", " ", "y", " ", "a", " ", "la", " ", 
+    "longitud", " ", "del", " ", 
+    RowBox[{"intervalo", ".", " ", "Posteriormente"}]}], ",", " ", 
+   RowBox[{
+   "En", " ", "el", " ", "comando", " ", "WHILE", " ", "se", " ", "indica", 
+    " ", "que", " ", "deben", " ", "continuar", " ", "las", " ", 
+    "iteraciones", " ", "mientras", " ", "que", " ", "ITER", " ", "no", " ", 
+    "supere", " ", "el", " ", "n\[UAcute]mero", " ", "m\[AAcute]ximo", " ", 
+    "de", " ", "iteraciones", " ", "e", " ", "INCR", " ", "no", " ", "sea", 
+    " ", "menor", " ", "que", " ", "la", " ", "tolerancia", " ", 
+    RowBox[{"definida", ".", " ", "En"}], " ", "el", " ", "momento", " ", 
+    "que", " ", "alguna", " ", "de", " ", "estas", " ", "dos", " ", 
+    "condiciones", " ", "no", " ", "se", " ", "cumplan"}], ",", " ", 
+   RowBox[{"se", " ", "procede", " ", "a", " ", "deterner", " ", "el", " ", 
+    RowBox[{
+    "WHILE", ".", "\[IndentingNewLine]", "\[IndentingNewLine]", "En"}], " ", 
+    "cada", " ", "iteraci\[OAcute]n", " ", "nos", " ", "quedamos", " ", "con",
+     " ", "un", " ", "intervalo", " ", "de", " ", "longitud", " ", "la", " ", 
+    "mitad", " ", "del", " ", "anterior", " ", "y", " ", "de", " ", "tal", 
+    " ", "modo", " ", "que", " ", "siga", " ", "existiendo", " ", "cambio", 
+    " ", "de", " ", "signo", " ", "en", " ", "los", " ", 
+    RowBox[{"extremos", ".", " ", "Eso"}], " ", "es", " ", "precisamente", 
+    " ", "lo", " ", "que", " ", "haran", " ", "los", " ", 
+    RowBox[{"IF", ".", " ", "El"}], " ", "primer", " ", "IF", " ", 
+    "comprueba", " ", "si"}], ",", " ", 
+   RowBox[{"por", " ", "casualidad"}], ",", " ", 
+   RowBox[{
+   "el", " ", "nuevo", " ", "valor", " ", "obtenido", " ", "en", " ", "la", 
+    " ", "aproximaci\[OAcute]n", " ", "es", " ", "la", " ", 
+    "soluci\[OAcute]n", " ", "exacta", " ", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"fc", "=", "0"}], ")"}], ".", " ", "Si"}], " ", "no", " ", "lo",
+     " ", "es", " ", "se", " ", "estudia", " ", "si", " ", "fc", " ", "tiene",
+     " ", "el", " ", "mismo", " ", "signo", " ", "de", " ", 
+    RowBox[{"fa", ".", " ", "En"}], " ", "caso", " ", "de", " ", "que", " ", 
+    "sea", " ", "as\[IAcute]"}], ",", " ", 
+   RowBox[{"se", " ", "elige", " ", "el", " ", 
+    RowBox[{"intervalo", " ", "[", 
+     RowBox[{"c", ",", "b"}], "]"}], " ", "y", " ", "su", " ", 
+    RowBox[{"imagen", ".", " ", "Adem\[AAcute]s"}], " ", "se", " ", "vuelve", 
+    " ", "a", " ", "calcular", " ", "INCR", " ", 
+    RowBox[{"(", 
+     RowBox[{
+     "para", " ", "ver", " ", "si", " ", "es", " ", "menor", " ", "que", " ", 
+      "la", " ", "tolerancia"}], ")"}], " ", "e", " ", "ITER", " ", "se", " ",
+     "aumenta", " ", "en", " ", "una", " ", "unidad", " ", "para", " ", 
+    "pasar"}], ",", " ", 
+   RowBox[{"si", " ", "es", " ", "necesario"}], ",", " ", 
+   RowBox[{"a", " ", "la", " ", "iteraci\[OAcute]n", " ", 
+    RowBox[{
+    "siguiente", ".", " ", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     "Si"}], " ", "hubiese", " ", "que", " ", "elegir", " ", "el", " ", 
+    RowBox[{"intervalo", " ", "[", 
+     RowBox[{"a", ",", "c"}], "]"}], " ", "porque", " ", "es", " ", "en", " ",
+     "este", " ", "donde", " ", "se", " ", "observa", " ", "el", " ", 
+    "cambio", " ", "de", " ", "signo"}], ",", " ", 
+   RowBox[{
+   "entonces", " ", "todo", " ", "lo", " ", "anterior", " ", "se", " ", 
+    "repite", " ", "para", " ", "dicho", " ", 
+    RowBox[{
+    "intervalo", ".", "\[IndentingNewLine]", "\[IndentingNewLine]", "Una"}], 
+    " ", "vez", " ", "que", " ", "el", " ", "WHILE", " ", "concluye"}], ",", 
+   " ", 
+   RowBox[{
+   "la", " ", "soluci\[OAcute]n", " ", "es", " ", "el", " ", "valor", " ", 
+    "de", " ", "c", " ", "que", " ", "se", " ", "ha", " ", "obtenido", " ", 
+    "en", " ", "la", " ", "\[UAcute]ltima", " ", "iteraci\[OAcute]n", " ", 
+    RowBox[{"realizada", ".", " ", "Obs\[EAcute]rvese"}], " ", "que", " ", 
+    "podr\[IAcute]a", " ", "darse", " ", "el", " ", "caso", " ", "de", " ", 
+    "que", " ", "se", " ", "hicieran", " ", "todas", " ", "las", " ", 
+    "iteraciones", " ", "y", " ", "la", " ", "tolerancia", " ", "no", " ", 
+    "se", " ", 
+    RowBox[{"alcanzase", ".", " ", "Es"}], " ", "para", " ", "ello", " ", 
+    "para", " ", "lo", " ", "que", " ", "se", " ", "utiliza", " ", "el", " ", 
+    "\[UAcute]ltimo", " ", "de", " ", "los", " ", 
+    RowBox[{"IF", ":", " ", 
+     RowBox[{
+     "o", " ", "devuelve", " ", "la", " ", "soluci\[OAcute]n", " ", "o", " ", 
+      "pide", " ", "m\[AAcute]s", " ", 
+      RowBox[{
+      "iteraciones", ".", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       "Debe"}], " ", "observarse", " ", "que", " ", "todos", " ", "los", " ",
+       "comandos", " ", "est\[AAcute]n", " ", "dentro", " ", "del", " ", 
+      "primero", " ", "de", " ", "los", " ", "IF", " ", "que", " ", "es", " ",
+       "el", " ", "comando", " ", 
+      RowBox[{"principal", "."}]}]}]}]}], " ", "*)"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}]], "Input"]
+},
+WindowSize->{494, 561},
+WindowMargins->{{24, Automatic}, {Automatic, 30}},
+PrintingCopies->1,
+PrintingPageRange->{Automatic, Automatic},
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (November 10, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[567, 22, 3997, 106, 612, "Input"],
+Cell[4567, 130, 122, 3, 30, "Output"],
+Cell[4692, 135, 87, 2, 30, "Output"],
+Cell[4782, 139, 70, 1, 30, "Output"],
+Cell[4855, 142, 74, 1, 30, "Output"],
+Cell[4932, 145, 72, 1, 30, "Output"],
+Cell[5007, 148, 290, 8, 40, "Print"]
+}, Open  ]],
+Cell[5312, 159, 5391, 95, 892, "Input"],
+Cell[10706, 256, 273, 4, 232, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
