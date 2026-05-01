@@ -1,0 +1,811 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     25136,        802]
+NotebookOptionsPosition[     22984,        725]
+NotebookOutlinePosition[     23327,        740]
+CellTagsIndexPosition[     23284,        737]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+     "Consideremos", " ", "el", " ", "sistema", " ", "de", " ", "ecuaciones", 
+      " ", 
+      RowBox[{"(", GridBox[{
+         {"1", "2"},
+         {"2", "5"}
+        }], ")"}], 
+      RowBox[{"(", GridBox[{
+         {"x"},
+         {"y"}
+        }], ")"}]}], "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", GridBox[{
+          {
+           RowBox[{"-", "1"}]},
+          {"5"}
+         }], ")"}], ".", " ", "Apliquemos"}], " ", "en", " ", "caso", " ", 
+      "de", " ", "ser", " ", "posible"}]}], ",", " ", 
+    RowBox[{
+    "el", " ", "m\[EAcute]todo", " ", "de", " ", "Cholesky", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", "En", " ", "primer", " ", 
+     "lugar", " ", "veremos", " ", "que", " ", "la", " ", "matriz", " ", "es",
+      " ", "definida", " ", "positiva", " ", "para", " ", "asegurar", " ", 
+     "la", " ", "existencia", " ", "de", " ", "la", " ", 
+     "factorizaci\[OAcute]n", " ", "de", " ", "Cholesky"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"a", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "5"}], "}"}]}], "}"}]}]}]], "Input",
+ CellChangeTimes->{{3.508500777171875*^9, 3.508500892578125*^9}, {
+  3.508501141296875*^9, 3.508501156125*^9}, {3.508501368953125*^9, 
+  3.508501371*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "5"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.5085011568125*^9, 3.50850137725*^9, 3.50850346946875*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Para", " ", "determinar", " ", "el", " ", "signo", " ", "de", " ", "una",
+      " ", "matriz", " ", "sim\[EAcute]trica"}], ",", " ", 
+    RowBox[{"hab\[IAcute]a", " ", "que", " ", "calcular", " ", "sus", " ", 
+     RowBox[{"autovalores", ":"}]}]}], "*)"}], " ", 
+  RowBox[{"Eigenvalues", "[", "a", "]"}]}]], "Input",
+ CellChangeTimes->{{3.5085011631875*^9, 3.508501197078125*^9}, {
+  3.508501386046875*^9, 3.50850140046875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"3", "+", 
+    RowBox[{"2", " ", 
+     SqrtBox["2"]}]}], ",", 
+   RowBox[{"3", "-", 
+    RowBox[{"2", " ", 
+     SqrtBox["2"]}]}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.50850116478125*^9, 3.50850117515625*^9}, 
+   3.508501405484375*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"N", "[", "%", "]"}]], "Input",
+ CellChangeTimes->{{3.5085011783125*^9, 3.508501181234375*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"5.82842712474619`", ",", "0.1715728752538097`"}], "}"}]], "Output",
+ CellChangeTimes->{3.50850140675*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{
+   "Como", " ", "todos", " ", "los", " ", "autovalores", " ", "son", " ", 
+    "positivos"}], ",", " ", 
+   RowBox[{
+   "entonces", " ", "la", " ", "matriz", " ", "es", " ", "definida", " ", 
+    "positiva", " ", "y", " ", "la", " ", "factorizaci\[OAcute]n", " ", "de", 
+    " ", "Cholesky", " ", 
+    RowBox[{
+    "existe", ".", "\[IndentingNewLine]", "\[IndentingNewLine]", "Para"}], 
+    " ", "calcular", " ", "dicha", " ", "factorizaci\[OAcute]n"}], ",", " ", 
+   RowBox[{"empleamos", " ", "la", " ", "orden", " ", 
+    RowBox[{"siguiente", ":"}]}]}], "*)"}]], "Input",
+ CellChangeTimes->{{3.50850140890625*^9, 3.508501457765625*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"u", "=", 
+  RowBox[{"CholeskyDecomposition", "[", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "5"}], "}"}]}], "}"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.508500671671875*^9, 3.508500698546875*^9}, {
+  3.508501467921875*^9, 3.5085014683125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.508500693953125*^9, 3.508500698921875*^9}, {
+  3.508501463203125*^9, 3.5085014688125*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{
+   "Observa", " ", "que", " ", "la", " ", "matriz", " ", "que", " ", 
+    "devuelve", " ", "es", " ", "triangular", " ", "superior", " ", "y", " ", 
+    "no", " ", 
+    RowBox[{"inferior", ".", " ", "Es"}], " ", "decir"}], ",", " ", 
+   RowBox[{
+   "Mathematica", " ", "considera", " ", "el", " ", "enunciado", " ", 
+    "alternativo", " ", "que", " ", "no", " ", "es", " ", "el", " ", "que", 
+    " ", "dio", " ", "Cholesky", " ", "en", " ", "el", " ", "siglo", " ", 
+    RowBox[{"XIX", ".", " ", "Por"}], " ", "tanto"}], ",", " ", 
+   RowBox[{"en", " ", "vez", " ", "de", " ", 
+    RowBox[{"l", ".", 
+     RowBox[{"l", "^", "t"}]}], " ", "debemos", " ", "escribir", " ", 
+    RowBox[{
+     RowBox[{"u", "^", "t"}], ".", "u", ".", " ", "Comprobemos"}], " ", "que",
+     " ", "multiplicando", " ", "la", " ", "transpuesta", " ", "de", " ", 
+    "la", " ", "matriz", " ", "u", " ", "por", " ", "ella", " ", "misma", " ",
+     "sale", " ", "la", " ", "matriz", " ", "de", " ", 
+    "partida"}]}]}]], "Input",
+ CellChangeTimes->{{3.5085014655*^9, 3.508501565296875*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Transpose", "[", "u", "]"}], ".", "u"}]], "Input",
+ CellChangeTimes->{{3.508500700390625*^9, 3.50850071215625*^9}, {
+  3.508501538859375*^9, 3.508501571125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "5"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.508500712796875*^9, 3.508501571640625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "[", "%", "]"}]], "Input",
+ CellChangeTimes->{{3.5085015748125*^9, 3.508501578203125*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "2"},
+     {"2", "5"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.508501578703125*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Ahora", " ", "solo", " ", "queda", " ", "resolver", " ", "el", " ", 
+     "sistema", " ", "que", " ", "ya", " ", "est\[AAcute]", " ", "escrito", 
+     " ", "como", " ", "\[IndentingNewLine]", 
+     SuperscriptBox[
+      TagBox[
+       RowBox[{"(", "\[NoBreak]", GridBox[{
+          {"1", "2"},
+          {"0", "1"}
+         },
+         GridBoxAlignment->{
+          "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, 
+           "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.7]}, 
+             Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+       Function[BoxForm`e$, 
+        MatrixForm[BoxForm`e$]]], "t"], 
+     TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {"1", "2"},
+         {"2", "1"}
+        },
+        GridBoxAlignment->{
+         "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+      Function[BoxForm`e$, 
+       MatrixForm[BoxForm`e$]]], 
+     RowBox[{"(", GridBox[{
+        {"x"},
+        {"y"}
+       }], ")"}]}], "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", GridBox[{
+         {
+          RowBox[{"-", "1"}]},
+         {"5"}
+        }], ")"}], ".", " ", "Primero"}], " ", "multiplicamos", " ", "por", 
+     " ", "la", " ", "inversa", " ", "de", " ", "la", " ", 
+     RowBox[{"transpuesta", ":"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"solAux", "=", 
+   RowBox[{
+    RowBox[{"Inverse", "[", 
+     RowBox[{"Transpose", "[", "u", "]"}], "]"}], ".", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"-", "1"}], ",", "5"}], "}"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.50850158578125*^9, 3.508501684171875*^9}, {
+  3.508501736953125*^9, 3.508501740375*^9}, {3.50850501140625*^9, 
+  3.50850502584375*^9}, {3.50850606971875*^9, 3.508506075*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "1"}], ",", "7"}], "}"}]], "Output",
+ CellChangeTimes->{3.508501685109375*^9, 3.508501740734375*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Ahora", " ", "tenemos", " ", "el", " ", "sistema", " ", 
+     TagBox[
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {"1", "2"},
+         {"0", "1"}
+        },
+        GridBoxAlignment->{
+         "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, 
+          "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+      Function[BoxForm`e$, 
+       MatrixForm[BoxForm`e$]]], 
+     RowBox[{"(", GridBox[{
+        {"x"},
+        {"y"}
+       }], ")"}]}], "=", 
+    RowBox[{"(", GridBox[{
+       {
+        RowBox[{"-", "1"}]},
+       {"7"}
+      }], ")"}]}], ",", " ", 
+   RowBox[{
+   "por", " ", "lo", " ", "que", " ", "solo", " ", "resta", " ", 
+    "multiplicar", " ", "la", " ", "ecuaci\[OAcute]n", " ", "por", " ", "la", 
+    " ", "inversa", " ", "de", " ", 
+    RowBox[{"U", ":"}]}]}], "*)"}]], "Input",
+ CellChangeTimes->{{3.5085016885*^9, 3.5085017216875*^9}, {
+  3.508505043578125*^9, 3.508505047828125*^9}, {3.508506079125*^9, 
+  3.508506082953125*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Inverse", "[", "u", "]"}], ".", "solAux"}]], "Input",
+ CellChangeTimes->{{3.508500719984375*^9, 3.5085007238125*^9}, {
+  3.508501724859375*^9, 3.50850174471875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "15"}], ",", "7"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.50850072428125*^9, {3.50850173375*^9, 3.5085017450625*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.50850177496875*^9, 3.5085017755625*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Repitamos", " ", "el", " ", "problema", " ", "con", " ", "un", " ", 
+     "sistema", " ", "en", " ", "el", " ", "que", " ", "la", " ", "matriz", 
+     " ", "de", " ", "coeficientes", " ", "es", " ", "definida", " ", 
+     RowBox[{"negativa", ".", " ", "El"}], " ", "sistema", " ", 
+     RowBox[{"ser\[IAcute]a", ":", " ", 
+      RowBox[{
+       RowBox[{"(", GridBox[{
+          {
+           RowBox[{"-", "1"}], "2"},
+          {"2", 
+           RowBox[{"-", "5"}]}
+         }], ")"}], 
+       RowBox[{"(", GridBox[{
+          {"x"},
+          {"y"}
+         }], ")"}]}]}]}], "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", GridBox[{
+         {
+          RowBox[{"-", "1"}]},
+         {"5"}
+        }], ")"}], ".", " ", "Veamos"}], " ", "que", " ", "la", " ", "matriz",
+      " ", "de", " ", "coeficientes", " ", "es", " ", "definida", " ", 
+     RowBox[{"negativa", ":"}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"a", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"2", ",", 
+        RowBox[{"-", "5"}]}], "}"}]}], "}"}]}], "\[IndentingNewLine]", 
+   RowBox[{"Eigenvalues", "[", "a", "]"}], "\[IndentingNewLine]", 
+   RowBox[{"N", "[", "%", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.50850177903125*^9, 3.50850190409375*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", 
+     RowBox[{"-", "5"}]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.508501865578125*^9, 3.508501871015625*^9}, 
+   3.50850190459375*^9, 3.50850565440625*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "3"}], "-", 
+    RowBox[{"2", " ", 
+     SqrtBox["2"]}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "3"}], "+", 
+    RowBox[{"2", " ", 
+     SqrtBox["2"]}]}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.508501865578125*^9, 3.508501871015625*^9}, 
+   3.50850190459375*^9, 3.50850565440625*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "5.82842712474619`"}], ",", 
+   RowBox[{"-", "0.1715728752538097`"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.508501865578125*^9, 3.508501871015625*^9}, 
+   3.50850190459375*^9, 3.50850565440625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Como", " ", "los", " ", "autovalores", " ", "son", " ", "negativos"}], 
+    ",", " ", 
+    RowBox[{
+    "entonces", " ", "tenemos", " ", "que", " ", "es", " ", "definida", " ", 
+     RowBox[{
+     "negativa", ".", "\[IndentingNewLine]", "\[IndentingNewLine]", "Si"}], 
+     " ", "intentamos", " ", "calcular", " ", "la", " ", 
+     "factorizaci\[OAcute]n", " ", "de", " ", "Cholesky", " ", "nos", " ", 
+     "dir\[AAcute]", " ", "que", " ", "no", " ", "es", " ", "posible", " ", 
+     "porque", " ", "la", " ", "matriz", " ", "no", " ", "es", " ", 
+     "definida", " ", "positiva"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"CholeskyDecomposition", "[", "a", "]"}]}]], "Input",
+ CellChangeTimes->{{3.5085019115*^9, 3.508502010546875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"CholeskyDecomposition", "::", "\<\"posdef\"\>"}], 
+  RowBox[{
+  ":", " "}], "\<\"\\!\\(\\*StyleBox[\\\"\\\\\\\"The matrix \\\\\\\"\\\", \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\!\\({\\(\\({\\(\\(-1\\)\\), 2}\\)\
+\\), \\(\\({2, \\(\\(-5\\)\\)}\\)\\)}\\), \
+\\\"MT\\\"]\\)\[NoBreak]\\!\\(\\*StyleBox[\\\"\\\\\\\" is not sufficiently \
+positive definite to complete the Cholesky decomposition to reasonable \
+accuracy.\\\\\\\"\\\", \\\"MT\\\"]\\) \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\
+\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/CholeskyDecomposition\\\", ButtonNote -> \
+\\\"CholeskyDecomposition::posdef\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.508501964453125*^9, 3.508502011046875*^9}],
+
+Cell[BoxData[
+ RowBox[{"CholeskyDecomposition", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"-", "1"}], ",", "2"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", 
+      RowBox[{"-", "5"}]}], "}"}]}], "}"}], "]"}]], "Output",
+ CellChangeTimes->{3.508501964453125*^9, 3.5085020110625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Consideremos", " ", "la", " ", "matriz", " ", "opuesta", " ", "y", " ", 
+    RowBox[{"factoric\[EAcute]mosla", ":"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"u", "=", 
+    RowBox[{"CholeskyDecomposition", "[", 
+     RowBox[{"-", "a"}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"MatrixForm", "[", "%", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.508502013140625*^9, 3.508502045375*^9}, {
+  3.508502164234375*^9, 3.50850216940625*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     RowBox[{"-", "2"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.508502041203125*^9, 3.508502045921875*^9}, 
+   3.50850216990625*^9}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", 
+      RowBox[{"-", "2"}]},
+     {"0", "1"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.508502041203125*^9, 3.508502045921875*^9}, 
+   3.50850216990625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Veamos", " ", "que", " ", "pasa", " ", "al", " ", "multiplicarla", " ", 
+    "por", " ", "su", " ", 
+    RowBox[{"transpuesta", ":"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Transpose", "[", "u", "]"}], ".", "u"}]}]], "Input",
+ CellChangeTimes->{{3.50850205184375*^9, 3.5085020765625*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     RowBox[{"-", "2"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "2"}], ",", "5"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.5085020770625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Sale", " ", "la", " ", "matriz"}], " ", "-", 
+     RowBox[{
+      RowBox[{"A", ".", " ", "Por"}], " ", "tanto"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{
+     "podemos", " ", "escribir", " ", "el", " ", "sistema", " ", "cambiado", 
+      " ", "de", " ", "signo", " ", "y", " ", "factorizar", " ", "el", " ", 
+      "sistema", " ", "usando", " ", "Cholesky", " ", "para"}], " ", "-", 
+     RowBox[{
+      RowBox[{"A", ".", " ", "Es"}], " ", "decir"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"consideramos", " ", "-", 
+      RowBox[{
+       RowBox[{"(", GridBox[{
+          {
+           RowBox[{"-", "1"}], "2"},
+          {"2", 
+           RowBox[{"-", "5"}]}
+         }], ")"}], 
+       RowBox[{"(", GridBox[{
+          {"x"},
+          {"y"}
+         }], ")"}]}]}], "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"(", GridBox[{
+           {
+            RowBox[{"-", "1"}]},
+           {"5"}
+          }], ")"}]}], " ", "y", " ", "este", " ", "es", " ", "el", " ", 
+       "sistema", " ", "que", " ", "factorizamos", " ", "como", " ", 
+       SuperscriptBox[
+        TagBox[
+         RowBox[{"(", "\[NoBreak]", GridBox[{
+            {"1", 
+             RowBox[{"-", "2"}]},
+            {"0", "1"}
+           },
+           
+           GridBoxAlignment->{
+            "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, 
+             "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+           GridBoxSpacings->{"Columns" -> {
+               Offset[0.27999999999999997`], {
+                Offset[0.7]}, 
+               Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+               Offset[0.2], {
+                Offset[0.4]}, 
+               Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+         Function[BoxForm`e$, 
+          MatrixForm[BoxForm`e$]]], "t"], 
+       TagBox[
+        RowBox[{"(", "\[NoBreak]", GridBox[{
+           {"1", 
+            RowBox[{"-", "2"}]},
+           {"0", "1"}
+          },
+          
+          GridBoxAlignment->{
+           "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, 
+            "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+          GridBoxSpacings->{"Columns" -> {
+              Offset[0.27999999999999997`], {
+               Offset[0.7]}, 
+              Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+              Offset[0.2], {
+               Offset[0.4]}, 
+              Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+        Function[BoxForm`e$, 
+         MatrixForm[BoxForm`e$]]], 
+       RowBox[{"(", GridBox[{
+          {"x"},
+          {"y"}
+         }], ")"}]}], "=", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", GridBox[{
+           {"1"},
+           {
+            RowBox[{"-", "5"}]}
+          }], ")"}], ".", " ", "Ahora"}], " ", "aplicamos", " ", "los", " ", 
+       "dos", " ", "despejes", " ", "y", " ", "obtenemos", " ", "el", " ", 
+       "valor", " ", "de", " ", "las", " ", 
+       RowBox[{"inc\[OAcute]gnitas", ":"}]}]}]}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"solAux", "=", 
+    RowBox[{
+     RowBox[{"Inverse", "[", 
+      RowBox[{"Transpose", "[", "u", "]"}], "]"}], ".", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"-", "5"}]}], "}"}]}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Inverse", "[", "u", "]"}], ".", "solAux"}]}]}]], "Input",
+ CellChangeTimes->{{3.508502081359375*^9, 3.508502251296875*^9}, {
+  3.508502315265625*^9, 3.50850231740625*^9}, {3.50850601184375*^9, 
+  3.508506055875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", 
+   RowBox[{"-", "3"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.50850225175*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "5"}], ",", 
+   RowBox[{"-", "3"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.50850225175*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", GridBox[{
+       {
+        RowBox[{"-", "1"}], "2"},
+       {"2", 
+        RowBox[{"-", "5"}]}
+      }], ")"}], ".", 
+    RowBox[{"(", GridBox[{
+       {"x"},
+       {"y"}
+      }], ")"}]}], "==", 
+   RowBox[{"(", GridBox[{
+      {
+       RowBox[{"-", "1"}]},
+      {"5"}
+     }], ")"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.508502253375*^9, 3.508502285125*^9}, {
+  3.50850232465625*^9, 3.508502326921875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"x", "\[Rule]", 
+     RowBox[{"-", "5"}]}], ",", 
+    RowBox[{"y", "\[Rule]", 
+     RowBox[{"-", "3"}]}]}], "}"}], "}"}]], "Output",
+ CellChangeTimes->{{3.508502275703125*^9, 3.508502285609375*^9}, 
+   3.508502327328125*^9}]
+}, Open  ]]
+},
+WindowSize->{611, 537},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"7.0 for Microsoft Windows (32-bit) (November 10, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[567, 22, 1409, 41, 156, "Input"],
+Cell[1979, 65, 250, 7, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2266, 77, 499, 11, 72, "Input"],
+Cell[2768, 90, 291, 10, 37, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3096, 105, 118, 2, 31, "Input"],
+Cell[3217, 109, 145, 3, 30, "Output"]
+}, Open  ]],
+Cell[3377, 115, 691, 15, 132, "Input"],
+Cell[CellGroupData[{
+Cell[4093, 134, 365, 10, 31, "Input"],
+Cell[4461, 146, 284, 8, 30, "Output"]
+}, Open  ]],
+Cell[4760, 157, 1120, 22, 152, "Input"],
+Cell[CellGroupData[{
+Cell[5905, 183, 196, 4, 31, "Input"],
+Cell[6104, 189, 235, 7, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6376, 201, 127, 2, 31, "Input"],
+Cell[6506, 205, 627, 18, 57, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7170, 228, 2384, 65, 105, "Input"],
+Cell[9557, 295, 156, 4, 30, "Output"]
+}, Open  ]],
+Cell[9728, 302, 1337, 38, 84, "Input"],
+Cell[CellGroupData[{
+Cell[11090, 344, 200, 4, 31, "Input"],
+Cell[11293, 350, 177, 5, 30, "Output"]
+}, Open  ]],
+Cell[11485, 358, 192, 3, 112, "Input"],
+Cell[CellGroupData[{
+Cell[11702, 365, 1433, 42, 157, "Input"],
+Cell[13138, 409, 325, 10, 30, "Output"],
+Cell[13466, 421, 353, 12, 37, "Output"],
+Cell[13822, 435, 257, 6, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14116, 446, 814, 17, 132, "Input"],
+Cell[14933, 465, 781, 13, 56, "Message"],
+Cell[15717, 480, 330, 10, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16084, 495, 509, 12, 72, "Input"],
+Cell[16596, 509, 283, 9, 30, "Output"],
+Cell[16882, 520, 698, 20, 57, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17617, 545, 364, 9, 52, "Input"],
+Cell[17984, 556, 253, 9, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18274, 570, 3584, 103, 229, "Input"],
+Cell[21861, 675, 130, 4, 30, "Output"],
+Cell[21994, 681, 149, 5, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22180, 691, 492, 20, 42, "Input"],
+Cell[22675, 713, 293, 9, 30, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloque 3 - Metodos Matematicos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='50' text-anchor='middle' fill='white' font-family='serif'>B3</text></svg>">
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--sh:0 4px 15px rgba(0,0,0,.1);--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Ctext x='30' y='50' font-size='28' fill='%231a5276' font-family='serif'%3EAx=b%3C/text%3E%3Ctext x='400' y='90' font-size='24' fill='%231a5276' font-family='serif'%3EL%C2%B7U%3C/text%3E%3Ctext x='150' y='140' font-size='30' fill='%231a5276' font-family='serif'%3E%CF%81(T)%3C1%3C/text%3E%3Ctext x='500' y='160' font-size='22' fill='%231a5276' font-family='serif'%3EP_n(x)=%CE%A3 f(x_i)%C2%B7L_i(x)%3C/text%3E%3Ctext x='50' y='220' font-size='26' fill='%231a5276' font-family='serif'%3Ef[x_0,x_1,...,x_n]%3C/text%3E%3Ctext x='350' y='260' font-size='20' fill='%231a5276' font-family='serif'%3E%CE%BA(A)=%E2%80%96A%E2%80%96%C2%B7%E2%80%96A%E2%81%BB%C2%B9%E2%80%96%3C/text%3E%3Ctext x='100' y='320' font-size='24' fill='%231a5276' font-family='serif'%3ES_i(x)=a+b(x-x_i)+c(x-x_i)%C2%B2%3C/text%3E%3Ctext x='500' y='340' font-size='28' fill='%231a5276' font-family='serif'%3E%CF%89%E2%88%88(0,2)%3C/text%3E%3Ctext x='250' y='400' font-size='22' fill='%231a5276' font-family='serif'%3EJacobi - Gauss-Seidel%3C/text%3E%3Ctext x='600' y='420' font-size='26' fill='%231a5276' font-family='serif'%3ESpline%3C/text%3E%3Ctext x='80' y='480' font-size='20' fill='%231a5276' font-family='serif'%3EE_A(x) %E2%89%A4 M%C2%B7%E2%88%8F%7Cx-x_i%7C/(n+1)!%3C/text%3E%3Ctext x='450' y='520' font-size='24' fill='%231a5276' font-family='serif'%3ELagrange - Newton%3C/text%3E%3Ctext x='200' y='560' font-size='28' fill='%231a5276' font-family='serif'%3ERunge%3C/text%3E%3C/svg%3E");background-size:cover}
+.header{text-align:center;padding:2rem;margin-bottom:1.5rem}
+.header h1{font-size:2.2rem;color:var(--pri);margin-bottom:.5rem}
+.header p{font-size:1.1rem;color:#7f8c8d}
+.header a{color:var(--pri-l);text-decoration:none;font-size:.9rem;display:inline-block;margin-top:.5rem}
+.header a:hover{text-decoration:underline}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:850px;width:90%;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);padding:2rem;box-shadow:var(--sh);text-decoration:none;color:var(--txt);transition:transform .3s,box-shadow .3s;border-top:5px solid var(--pri)}
+.card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+.card .icon{font-size:2.6rem;margin-bottom:1rem;display:block;color:var(--pri)}
+.card h2{font-size:1.3rem;color:var(--pri);margin-bottom:.5rem}
+.card p{font-size:.95rem;color:#7f8c8d;line-height:1.5}
+.card .topics{margin-top:.8rem;font-size:.85rem;color:#95a5a6}
+.card .topics span{display:inline-block;background:#eaf2f8;color:var(--pri);padding:.2rem .5rem;border-radius:4px;margin:.2rem .2rem 0 0;font-size:.75rem}
+.card.s1{border-top-color:#8e44ad}
+.card.s2{border-top-color:#d35400}
+.footer{margin-top:3rem;text-align:center;padding:1rem;font-size:.85rem;color:#95a5a6}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.header h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Bloque 3</h1>
+  <p>Sistemas de Ecuaciones Lineales y Aproximacion de Funciones</p>
+  <a href="../index.html">&larr; Volver al indice general</a>
+</div>
+
+<div class="cards">
+  <a href="Tema 3/index.html" class="card s1">
+    <span class="icon">A&middot;x = b</span>
+    <h2>Sistemas de Ecuaciones Lineales</h2>
+    <p>Metodos directos e iterativos para resolver sistemas lineales: Gauss con pivoteo, Gauss-Jordan, factorizacion LU, Cholesky, Jacobi, Gauss-Seidel, relajacion y condicionamiento.</p>
+    <div class="topics">
+      <span>Gauss</span>
+      <span>Pivoteo Parcial</span>
+      <span>LU</span>
+      <span>Cholesky</span>
+      <span>Jacobi</span>
+      <span>Gauss-Seidel</span>
+      <span>Relajacion</span>
+      <span>Condicion</span>
+    </div>
+  </a>
+  <a href="Tema 4/index.html" class="card s2">
+    <span class="icon">P(x)</span>
+    <h2>Aproximacion de Funciones</h2>
+    <p>Interpolacion polinomica: calculo directo (Vandermonde), Lagrange, diferencias divididas de Newton, error de interpolacion, fenomeno de Runge, polinomio de Taylor, Hermite y splines cubicos.</p>
+    <div class="topics">
+      <span>Vandermonde</span>
+      <span>Lagrange</span>
+      <span>Newton DD</span>
+      <span>Error</span>
+      <span>Runge</span>
+      <span>Taylor</span>
+      <span>Hermite</span>
+      <span>Splines</span>
+    </div>
+  </a>
+</div>
+
+<div class="footer">
+  Bloque 3 &mdash; Teoria interactiva, solver paso a paso y test de autoevaluacion
+</div>
+
+</body>
+</html>

@@ -14,7 +14,8 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-ind
 .header h1{font-size:2.2rem;color:var(--pri);margin-bottom:.5rem}
 .header p{font-size:1.1rem;color:#7f8c8d}
 .header .sub{font-size:.9rem;color:#95a5a6;margin-top:.3rem}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:800px;width:90%;margin:0 auto}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;max-width:1100px;width:90%;margin:0 auto}
+@media(max-width:900px){.cards{grid-template-columns:1fr 1fr}}
 .card{background:var(--card);border-radius:var(--r);padding:2rem;box-shadow:var(--sh);text-decoration:none;color:var(--txt);transition:transform .3s,box-shadow .3s;border-top:5px solid var(--pri)}
 .card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
 .card .icon{font-size:3rem;margin-bottom:1rem;display:block}
@@ -24,6 +25,7 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-ind
 .card .topics span{display:inline-block;background:#eaf2f8;color:var(--pri);padding:.2rem .5rem;border-radius:4px;margin:.2rem .2rem 0 0;font-size:.8rem}
 .card.b1{border-top-color:#27ae60}
 .card.b2{border-top-color:#2980b9}
+.card.b3{border-top-color:#8e44ad}
 .footer{margin-top:3rem;text-align:center;padding:1rem;font-size:.85rem;color:#95a5a6}
 @media(max-width:600px){.cards{grid-template-columns:1fr}.header h1{font-size:1.6rem}}
 </style>
@@ -59,6 +61,19 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-ind
       <span>Regula Falsi</span>
       <span>Punto Fijo</span>
       <span>Newton-Raphson</span>
+    </div>
+  </a>
+  <a href="Bloque3/index.html" class="card b3">
+    <span class="icon">A&middot;x &amp; P(x)</span>
+    <h2>Bloque 3: Sistemas Lineales e Interpolacion</h2>
+    <p>Resolucion de sistemas A&middot;x=b por Gauss, LU, Cholesky, Jacobi, Gauss-Seidel y relajacion. Interpolacion polinomica: Lagrange, Newton, Hermite y splines cubicos.</p>
+    <div class="topics">
+      <span>Gauss/LU</span>
+      <span>Cholesky</span>
+      <span>Jacobi/SOR</span>
+      <span>Lagrange</span>
+      <span>Newton DD</span>
+      <span>Splines</span>
     </div>
   </a>
 </div>

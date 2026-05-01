@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Aproximacion de Funciones - Metodos Matematicos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='50' text-anchor='middle' fill='white' font-family='serif'>Px</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--acc:#e74c3c;--ok:#27ae60;--warn:#f39c12;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--txtl:#7f8c8d;--brd:#dce1e6;--sh:0 2px 8px rgba(0,0,0,.08);--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+.header{background:linear-gradient(135deg,#d35400,#a04000);color:#fff;padding:1.5rem 2rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.header p{font-size:.95rem;opacity:.9}
+.header a{color:#ffd700;text-decoration:none;font-size:.85rem}
+.header a:hover{text-decoration:underline}
+.tab-bar{display:flex;background:var(--card);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#eef2f7}
+.tab-btn.active{color:var(--pri);border-bottom-color:var(--pri);background:#eef2f7}
+.tab-content{display:none;padding:1rem;max-width:1100px;margin:0 auto}
+.tab-content.active{display:block}
+.topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.topic-selector label{font-weight:600;font-size:1rem;color:var(--pri)}
+.topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri-l);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
+.topic-section{display:none}
+.topic-section.active{display:block}
+.def-box,.prop-box,.example-box,.algo-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
+.def-box{border-color:var(--pri);background:#eaf2f8}
+.prop-box{border-color:var(--ok);background:#eafaf1}
+.example-box{border-color:var(--warn);background:#fef9e7}
+.algo-box{border-color:#8e44ad;background:#f5eef8}
+.def-box strong,.prop-box strong,.example-box strong,.algo-box strong{display:block;margin-bottom:.3rem}
+.interactive-box{background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin:1rem 0}
+.interactive-box h4{color:var(--pri);margin-bottom:.7rem;font-size:.95rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.calc-grid label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-grid input,.calc-grid select,.calc-grid textarea{width:100%;padding:.5rem;border:1px solid var(--brd);border-radius:4px;font-size:.95rem;font-family:inherit}
+.btn{padding:.5rem 1.2rem;border:none;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--pri);color:#fff}
+.btn-primary:hover{background:var(--pri-l)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-accent{background:var(--acc);color:#fff}
+.result-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;min-height:2rem}
+.result-box .val{color:var(--pri);font-weight:700}
+.steps-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;line-height:1.7}
+.steps-box .step{padding:.5rem;margin:.3rem 0;border-left:3px solid var(--pri-l);background:#f8f9fb}
+.steps-box h5{color:var(--pri);margin:.5rem 0 .3rem 0}
+.matrix-display{font-family:'Courier New',monospace;background:#fff;padding:.5rem;border:1px solid var(--brd);border-radius:4px;display:block;margin:.3rem 0;font-size:.85rem;white-space:pre;overflow-x:auto}
+.matrix-input{font-family:'Courier New',monospace;font-size:.9rem;min-height:80px;resize:vertical}
+.plot-container{margin:1rem 0;min-height:300px}
+table.dt{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.85rem}
+table.dt th,table.dt td{padding:.4rem .6rem;border:1px solid var(--brd);text-align:center}
+table.dt th{background:var(--pri);color:#fff;font-weight:600}
+table.dt tr:nth-child(even){background:#f8f9fb}
+.question-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.question-card h3{font-size:1rem;margin-bottom:.8rem;color:var(--pri)}
+.question-card .options label{display:block;padding:.6rem .8rem;margin:.3rem 0;border:1px solid var(--brd);border-radius:4px;cursor:pointer;transition:.2s;font-size:.9rem}
+.question-card .options label:hover{background:#eef2f7}
+.question-card .options input{margin-right:.5rem}
+.question-card .feedback{margin-top:.6rem;padding:.6rem;border-radius:4px;font-size:.9rem;display:none}
+.question-card .feedback.correct{display:block;background:#d5f5e3;color:#1e8449}
+.question-card .feedback.incorrect{display:block;background:#fadbd8;color:#c0392b}
+.problem-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);border-left:4px solid var(--warn)}
+.problem-card h3{font-size:1rem;margin-bottom:.5rem;color:var(--pri)}
+.problem-card .sol{display:none;margin-top:.8rem;padding:.8rem;background:#eafaf1;border-radius:4px;font-size:.9rem}
+.problem-card .sol.show{display:block}
+.score-bar{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);text-align:center}
+.score-bar .score{font-size:2rem;font-weight:700;color:var(--pri)}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600;margin-left:.5rem}
+.badge-easy{background:#d5f5e3;color:#1e8449}
+.badge-med{background:#fef9e7;color:#b7950b}
+.badge-hard{background:#fadbd8;color:#c0392b}
+.badge-tarea{background:#d4e6f1;color:#1a5276}
+.nb-link{display:inline-flex;align-items:center;gap:.4rem;background:#dc143c;color:#fff;padding:.4rem .8rem;border-radius:4px;text-decoration:none;font-size:.85rem;font-weight:600;margin:.3rem .2rem 0 0;border:none;cursor:pointer}
+.nb-link:hover{background:#a30f2c}
+.nb-link::before{content:'📥';font-size:1rem}
+.nb-row{margin-top:.5rem;padding:.5rem;background:#fff;border:1px dashed var(--brd);border-radius:4px;font-size:.85rem}
+.nb-row strong{color:var(--pri);display:block;margin-bottom:.3rem}
+.katex{font-size:1em!important}
+.katex-display{margin:.5em 0!important}
+p{margin:.5rem 0}
+ul,ol{margin:.5rem 0 .5rem 1.5rem}
+.iter-table{max-height:400px;overflow:auto}
+@media(max-width:700px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Aproximacion de Funciones</h1>
+  <p>Interpolacion polinomica: Lagrange, Newton, Hermite y Splines</p>
+  <a href="../index.html">&larr; Volver al Bloque 3</a>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
+  <button class="tab-btn" onclick="switchTab('problems')">Solver de Problemas</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test y Problemas</button>
+</div>
+
+<!-- ============ TEORIA ============ -->
+<div id="tab-theory" class="tab-content active">
+
+<div class="topic-selector">
+  <label for="topic-select">Selecciona un tema:</label>
+  <select id="topic-select" onchange="showTopic(this.value)">
+    <option value="" disabled selected>-- Elige un tema --</option>
+    <option value="t1">1. Introduccion. Tipos de interpolacion</option>
+    <option value="t2">2. Polinomio interpolador. Existencia y unicidad</option>
+    <option value="t3">3. Calculo directo (sistema de Vandermonde)</option>
+    <option value="t4">4. Error de interpolacion</option>
+    <option value="t5">5. Fenomeno de Runge</option>
+    <option value="t6">6. Polinomio de Taylor</option>
+    <option value="t7">7. Metodo de Lagrange</option>
+    <option value="t8">8. Diferencias divididas de Newton</option>
+    <option value="t9">9. Interpolacion de Hermite</option>
+    <option value="t10">10. Splines cubicos</option>
+    <option value="t11">11. Comparativa</option>
+  </select>
+</div>
+
+<!-- T1 -->
+<div class="topic-section" id="t1">
+<h2>1. Introduccion. Tipos de interpolacion</h2>
+<p>Una <strong>tecnica de interpolacion</strong> consiste en construir una funcion \(f:\mathbb{R}\to\mathbb{R}\) que se ajuste exactamente a un conjunto finito de datos \(S=\{(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)\}\) (el <em>soporte</em>) en el sentido de que \(f(x_i)=y_i\) para todo \(i\). Permite reconstruir un fenomeno continuo a partir de mediciones empiricas o simplificar el estudio de una funcion compleja.</p>
+
+<div class="def-box">
+  <strong>Tipos principales de interpolacion</strong>
+  <ul>
+    <li><strong>Polinomica</strong>: \(f\) es un unico polinomio para todo el soporte.</li>
+    <li><strong>Polinomica segmentada (a trozos)</strong>: distintos polinomios en distintos subintervalos. Caso particular: <strong>splines</strong>.</li>
+    <li><strong>Lineal</strong>: une cada par de puntos consecutivos por una recta (caso particular de la segmentada).</li>
+    <li><strong>Hermite</strong>: ajusta tambien las derivadas en los puntos del soporte.</li>
+    <li><strong>Otras</strong>: racional, trigonometrica (Fourier), wavelets...</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion: interpolacion lineal a trozos vs polinomio unico</h4>
+  <div class="calc-grid">
+    <div><label>Soporte (x_i, y_i) separado por ;</label>
+      <input type="text" id="vis-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
+  </div>
+  <button class="btn btn-primary" onclick="visTipos()">Comparar</button>
+  <div id="vis-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T2 Existencia -->
+<div class="topic-section" id="t2">
+<h2>2. Polinomio interpolador. Existencia y unicidad</h2>
+
+<div class="prop-box">
+  <strong>Teorema 1 (Existencia y unicidad)</strong>
+  Dada una familia de \(n+1\) puntos \(\{(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)\}\) con \(x_i\neq x_j\) si \(i\neq j\), existe un <strong>unico</strong> polinomio \(P_n(x)\) de grado menor o igual que \(n\) tal que \(P_n(x_i)=y_i\) para todo \(i\).
+</div>
+
+<div class="def-box">
+  <strong>Polinomio interpolador</strong>
+  El polinomio \(P_n(x)\) anterior se llama <strong>polinomio interpolador</strong> de \(f\) sobre el soporte \(S=\{x_0,x_1,\ldots,x_n\}\). Notese que la unicidad permite usar distintos metodos (Vandermonde, Lagrange, Newton...) que dan el mismo polinomio reorganizado.
+</div>
+
+<div class="prop-box">
+  <strong>Proposicion 4</strong>
+  Si \(f\) es un polinomio de grado \(\leq n\), entonces \(P_n=f\) (el polinomio interpolador coincide con la funcion).
+</div>
+
+<div class="prop-box">
+  <strong>Teorema de Weierstrass</strong>
+  Si \(f\) es continua y suficientemente derivable en \([a,b]\), para todo \(\varepsilon>0\) existe un polinomio interpolador \(P_\varepsilon(x)\) tal que \(|f(x)-P_\varepsilon(x)|<\varepsilon\), \(\forall x\in[a,b]\).
+</div>
+</div>
+
+<!-- T3 Vandermonde -->
+<div class="topic-section" id="t3">
+<h2>3. Calculo directo (sistema de Vandermonde)</h2>
+<p>Buscamos \(P_n(x)=a_0+a_1 x+a_2 x^2+\cdots+a_n x^n\) imponiendo las \(n+1\) condiciones \(P_n(x_i)=f(x_i)\). Esto da un sistema lineal con matriz de Vandermonde:</p>
+\[\begin{pmatrix}1 & x_0 & x_0^2 & \cdots & x_0^n\\1 & x_1 & x_1^2 & \cdots & x_1^n\\\vdots & \vdots & \vdots & \ddots & \vdots\\1 & x_n & x_n^2 & \cdots & x_n^n\end{pmatrix}\begin{pmatrix}a_0\\a_1\\\vdots\\a_n\end{pmatrix}=\begin{pmatrix}f(x_0)\\f(x_1)\\\vdots\\f(x_n)\end{pmatrix}\]
+
+<div class="prop-box">
+  <strong>Mal condicionamiento</strong>
+  El determinante es \(\prod_{i<j}(x_j-x_i)\neq 0\), pero el numero de condicion crece rapidamente con \(n\). Por tanto, los coeficientes obtenidos pueden no ser fiables y es preferible Lagrange o Newton.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo (Tema 4, Ej. 10)</strong>
+  Soporte \(\{(0,0),(1,0.5),(4,2.5),(7,4.1)\}\) &rarr; \(P_3(t)=0.421825t+0.0873016t^2-0.00912698t^3\). Estimacion en \(t=3.5\): \(P_3(3.5)\approx 2.15451\).
+  <div class="nb-row">
+    <strong>Archivo Mathematica de ejemplo:</strong>
+    <a class="nb-link" href="Ejemplos con Mathematica.nb" download>Ejemplos con Mathematica.nb</a>
+  </div>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora directa (Vandermonde)</h4>
+  <div class="calc-grid">
+    <div><label>Soporte (x;y) separados por coma:</label>
+      <input type="text" id="van-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
+    <div><label>Evaluar P(t):</label><input type="text" id="van-eval" value="3.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runVandermonde()">Calcular polinomio</button>
+  <div id="van-plot" class="plot-container"></div>
+  <div class="result-box" id="van-result"></div>
+</div>
+</div>
+
+<!-- T4 Error -->
+<div class="topic-section" id="t4">
+<h2>4. Error de interpolacion</h2>
+
+<div class="prop-box">
+  <strong>Proposicion 6 (Cota del error)</strong>
+  Si \(f\in\mathcal{C}^{n+1}([x_0,x_n])\) y \(P_n\) interpola en \(S=\{x_0,\ldots,x_n\}\):
+  \[E_A(x)=|f(x)-P_n(x)|=\left|\frac{f^{(n+1)}(c)}{(n+1)!}\right|\cdot|x-x_0|\cdot|x-x_1|\cdots|x-x_n|\]
+  donde \(c\in I\) es algun punto del intervalo determinado por \(x\) y \(S\). Llamando \(M=\max_{c\in I}|f^{(n+1)}(c)|\):
+  \[E_A(x)\leq \frac{M}{(n+1)!}\cdot|x-x_0|\cdots|x-x_n|\leq \frac{M}{(n+1)!}\cdot(x_n-x_0)^{n+1}\]
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo (Tema 4, Ej. 7)</strong>
+  Para \(f(x)=\frac{1}{1+9x^2}\) en \([1,2]\):
+  <ul>
+    <li>Soporte de 4 ptos: \(M=|f^{iv}(1)|\leq 6.1431\), \(E_A\leq 6.1431/4!\cdot 1^4\approx 0.256\).</li>
+    <li>Soporte de 5 ptos: \(M\leq 27.294\), \(E_A\leq 0.228\).</li>
+    <li>Soporte de 6 ptos: \(M\leq 128.92\), \(E_A\leq 0.18\).</li>
+  </ul>
+  Aumentar \(n\) reduce el error (en general), pero el numerador tambien crece.
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de cota del error</h4>
+  <div class="calc-grid">
+    <div><label>Funcion f(x):</label><input type="text" id="err-fn" value="1/(1+9*x^2)"></div>
+    <div><label>Intervalo [a,b]:</label><input type="text" id="err-ab" value="1,2"></div>
+    <div><label>Numero de puntos en soporte:</label><input type="number" id="err-n" value="4" min="2"></div>
+    <div><label>Punto x para evaluar:</label><input type="text" id="err-x" value="1.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runError()">Calcular cota</button>
+  <div class="result-box" id="err-result"></div>
+</div>
+</div>
+
+<!-- T5 Runge -->
+<div class="topic-section" id="t5">
+<h2>5. Fenomeno de Runge</h2>
+<p>Aumentar el numero de puntos del soporte NO siempre mejora la aproximacion. Runge demostro que para \(f(x)=\frac{1}{1+k^2 x^2}\) con soportes equiespaciados en \([-1,1]\), el polinomio interpolador empeora cerca de los extremos a medida que aumenta el grado, mientras que en la zona central la aproximacion mejora.</p>
+
+<div class="def-box">
+  <strong>Recomendaciones practicas</strong>
+  <ul>
+    <li>Para soportes equiespaciados, evita evaluar cerca de los extremos.</li>
+    <li>Si necesitas evaluar cerca de un extremo, anyade puntos en esa zona o usa una <strong>interpolacion segmentada</strong>.</li>
+    <li>Los splines son una solucion frecuente al fenomeno de Runge.</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualizacion del fenomeno de Runge</h4>
+  <div class="calc-grid">
+    <div><label>Funcion:</label><input type="text" id="runge-fn" value="1/(1+25*x^2)"></div>
+    <div><label>Intervalo:</label><input type="text" id="runge-ab" value="-1,1"></div>
+    <div><label>Grados a comparar (separados por coma):</label><input type="text" id="runge-grados" value="4,8,12"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runRunge()">Mostrar fenomeno</button>
+  <div id="runge-plot" class="plot-container" style="min-height:400px"></div>
+</div>
+</div>
+
+<!-- T6 Taylor -->
+<div class="topic-section" id="t6">
+<h2>6. Polinomio de Taylor</h2>
+<p>El polinomio de Taylor de \(f\) en \(x_0\) de orden \(n\) es:</p>
+\[P_{n,x_0}(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\cdots+\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n\]
+
+<div class="prop-box">
+  <strong>Cota del error</strong>
+  Si \(f\in\mathcal{C}^{n+1}((a,b))\) y \(I\subset(a,b)\) es el subintervalo de extremos \(x_0\) y \(x\):
+  \[E_A(P_{n,x_0}(x))=|f(x)-P_{n,x_0}(x)|\leq \frac{M}{(n+1)!}\cdot|x-x_0|^{n+1},\quad M=\max_{c\in I}|f^{(n+1)}(c)|\]
+</div>
+
+<div class="def-box">
+  <strong>Interpretacion</strong>
+  El polinomio de Taylor puede verse como un caso particular del polinomio interpolador con todo el soporte colapsado a \(x_0\). Por eso la formula del error es identica a la del polinomio interpolador con \((x-x_0)^{n+1}\) en lugar del producto de factores.
+</div>
+
+<div class="interactive-box">
+  <h4>Aproximacion por Taylor</h4>
+  <div class="calc-grid">
+    <div><label>Funcion f(x):</label><input type="text" id="tay-fn" value="cos(x)"></div>
+    <div><label>Punto x_0:</label><input type="text" id="tay-x0" value="0"></div>
+    <div><label>Grado n:</label><input type="number" id="tay-n" value="4" min="1"></div>
+    <div><label>Punto a evaluar x:</label><input type="text" id="tay-x" value="0.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runTaylor()">Calcular Taylor</button>
+  <div id="tay-plot" class="plot-container"></div>
+  <div class="result-box" id="tay-result"></div>
+</div>
+</div>
+
+<!-- T7 Lagrange -->
+<div class="topic-section" id="t7">
+<h2>7. Metodo de Lagrange</h2>
+<p>Permite calcular el polinomio interpolador EVITANDO resolver el sistema de Vandermonde.</p>
+
+<div class="def-box">
+  <strong>Polinomios auxiliares de Lagrange</strong>
+  Para cada \(j=0,1,\ldots,n\):
+  \[L_j(x)=\prod_{\substack{i=0\\i\neq j}}^n \frac{x-x_i}{x_j-x_i}\]
+  Cumplen: \(L_j(x_i)=0\) si \(i\neq j\), \(L_j(x_j)=1\).
+</div>
+
+<div class="def-box">
+  <strong>Polinomio interpolador</strong>
+  \[P_n(x)=\sum_{j=0}^n f(x_j)\cdot L_j(x)\]
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo</strong>
+  Para \(\{(1,0.3),(2,-0.7)\}\): \(L_0(x)=\frac{x-2}{-1}\), \(L_1(x)=\frac{x-1}{1}\). Polinomio interpolador: \(P_1(x)=0.3\cdot \frac{x-2}{-1}+(-0.7)\cdot\frac{x-1}{1}=1.3-x\).
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora Lagrange</h4>
+  <div class="calc-grid">
+    <div><label>Soporte (x;y separados por coma):</label><input type="text" id="lag-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
+    <div><label>Evaluar P(t):</label><input type="text" id="lag-eval" value="3.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runLagrange()">Calcular Lagrange</button>
+  <div id="lag-plot" class="plot-container"></div>
+  <div class="result-box" id="lag-result"></div>
+  <div class="steps-box" id="lag-steps"></div>
+</div>
+</div>
+
+<!-- T8 Newton -->
+<div class="topic-section" id="t8">
+<h2>8. Diferencias divididas de Newton</h2>
+<p>Permite anyadir nuevos puntos al soporte aprovechando el polinomio ya calculado para los puntos previos.</p>
+
+<div class="def-box">
+  <strong>Diferencias divididas</strong>
+  <ul>
+    <li>Orden 0: \(f[x_i]=f(x_i)\).</li>
+    <li>Orden 1: \(f[x_i,x_{i+1}]=\frac{f[x_{i+1}]-f[x_i]}{x_{i+1}-x_i}\).</li>
+    <li>Orden \(k\): \(f[x_i,\ldots,x_{i+k}]=\frac{f[x_{i+1},\ldots,x_{i+k}]-f[x_i,\ldots,x_{i+k-1}]}{x_{i+k}-x_i}\).</li>
+  </ul>
+</div>
+
+<div class="def-box">
+  <strong>Polinomio interpolador en base de Newton</strong>
+  \[P_n(x)=f[x_0]+\sum_{k=1}^n \left(f[x_0,\ldots,x_k]\cdot\prod_{j=0}^{k-1}(x-x_j)\right)\]
+</div>
+
+<div class="prop-box">
+  <strong>Anyadir un punto al soporte</strong>
+  \[P_{n+1}(x)=P_n(x)+f[x_0,\ldots,x_{n+1}]\cdot\prod_{i=0}^n(x-x_i)\]
+  Solo hay que calcular las nuevas diferencias divididas que involucran al nuevo punto.
+</div>
+
+<div class="prop-box">
+  <strong>Estimacion del error</strong>
+  Sin conocer \(f^{(n+1)}\), podemos estimar:
+  \[E_A(x)\approx |P_{n+1}(x)-P_n(x)|=|f[x_0,\ldots,x_{n+1}]|\cdot\prod_{i=0}^n |x-x_i|\]
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora Newton (diferencias divididas)</h4>
+  <div class="calc-grid">
+    <div><label>Soporte (x;y separados por coma):</label><input type="text" id="new-sup" value="1,5; 2,2; 3,1; 4,3"></div>
+    <div><label>Evaluar P(t):</label><input type="text" id="new-eval" value="2.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runNewton()">Calcular Newton</button>
+  <div id="new-plot" class="plot-container"></div>
+  <div class="result-box" id="new-result"></div>
+  <div class="steps-box" id="new-steps"></div>
+</div>
+</div>
+
+<!-- T9 Hermite -->
+<div class="topic-section" id="t9">
+<h2>9. Interpolacion de Hermite</h2>
+<p>Construye un polinomio que ajusta tanto la funcion como su <strong>derivada</strong> en cada punto del soporte. Para \(n+1\) puntos, hay \(2n+2\) condiciones &rarr; el polinomio de Hermite tiene grado \(\leq 2n+1\).</p>
+
+<div class="def-box">
+  <strong>Forma con Lagrange (Teorema 32)</strong>
+  \[H_{2n+1}(x)=\sum_{j=0}^n f(x_j)\cdot H_j(x)+\sum_{j=0}^n f'(x_j)\cdot \hat H_j(x)\]
+  donde \(H_j(x)=(1-2(x-x_j)L'_j(x))L_j^2(x)\) y \(\hat H_j(x)=(x-x_j)L_j^2(x)\).
+</div>
+
+<div class="def-box">
+  <strong>Forma con diferencias divididas (Proposicion 35)</strong>
+  Se duplican los puntos del soporte: \(z_{2k}=z_{2k+1}=x_k\). Las diferencias divididas de orden 1 con puntos repetidos se interpretan como derivadas: \(f[z_{2k},z_{2k+1}]=f'(x_k)\). Las de orden &gt;1 se calculan normalmente.
+  \[H_{2n+1}(x)=f[z_0]+\sum_{k=1}^{2n+1}f[z_0,\ldots,z_k]\cdot\prod_{j=0}^{k-1}(x-z_j)\]
+</div>
+
+<div class="prop-box">
+  <strong>Cota del error</strong>
+  Si \(f\in\mathcal{C}^{2n+2}([a,b])\):
+  \[E_A(x)=|H_{2n+1}(x)-f(x)|\leq \frac{N}{(2n+2)!}\cdot(x-x_0)^2\cdots(x-x_n)^2\]
+  con \(N=\max|f^{(2n+2)}(c)|\).
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo</strong>
+  Para \(f(x)=\cos(x)\) y soporte \(\{\pi/4,\pi/3,\pi/2\}\), Hermite produce un polinomio de grado 5. Cota: \(E_A\leq \frac{1}{720}(x-\pi/4)^2(x-\pi/3)^2(x-\pi/2)^2\). Para \(x=1.2\): \(E_A\approx 7.69\times 10^{-7}\) &rarr; 6 cifras decimales exactas.
+  <div class="nb-row">
+    <strong>Archivo Mathematica de ejemplo:</strong>
+    <a class="nb-link" href="CalculosApuntesAprozHermite.nb" download>CalculosApuntesAprozHermite.nb</a>
+  </div>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de Hermite (con diferencias divididas)</h4>
+  <p style="font-size:.85rem;color:var(--txtl)">Formato: x,y,y' separado por ; (un punto por triplete)</p>
+  <div class="calc-grid">
+    <div><label>Soporte (x,f(x),f'(x)):</label><input type="text" id="her-sup" value="0.7854,0.707105,-0.707108; 1.047,0.500171,-0.865927; 1.571,-0.000204,-1"></div>
+    <div><label>Evaluar H(t):</label><input type="text" id="her-eval" value="1.2"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runHermite()">Calcular Hermite</button>
+  <div id="her-plot" class="plot-container"></div>
+  <div class="result-box" id="her-result"></div>
+  <div class="steps-box" id="her-steps"></div>
+</div>
+</div>
+
+<!-- T10 Splines -->
+<div class="topic-section" id="t10">
+<h2>10. Splines cubicos</h2>
+<p>Los splines son funciones polinomicas a trozos que minimizan el grado del polinomio en cada subintervalo manteniendo derivabilidad global. Un <strong>spline cubico</strong> tiene grado 3 en cada subintervalo y es de clase \(\mathcal{C}^2\) en todo el dominio.</p>
+
+<div class="def-box">
+  <strong>Spline cubico</strong>
+  En cada \([x_i,x_{i+1}]\), \(S_i(x)=a_i+b_i(x-x_i)+c_i(x-x_i)^2+d_i(x-x_i)^3\) con condiciones:
+  <ol>
+    <li>\(S_i(x_i)=y_i\) e \(S_{n-1}(x_n)=y_n\) (interpolacion).</li>
+    <li>\(S_i(x_{i+1})=S_{i+1}(x_{i+1})\) (continuidad).</li>
+    <li>\(S'_i(x_{i+1})=S'_{i+1}(x_{i+1})\) y \(S''_i(x_{i+1})=S''_{i+1}(x_{i+1})\) (suavidad).</li>
+    <li>Condicion en extremos:
+      <ul>
+        <li>Splines <strong>libres (naturales)</strong>: \(S''(x_0)=S''(x_n)=0\).</li>
+        <li>Splines <strong>sujetos</strong>: \(S'(x_0)=f'(x_0)\) y \(S'(x_n)=f'(x_n)\).</li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<div class="def-box">
+  <strong>Sistema lineal para los \(c_i\)</strong>
+  Tras desarrollar las condiciones, los coeficientes \(c_i\) (con \(h_i=x_{i+1}-x_i\)) cumplen:
+  \[h_{i-1}c_{i-1}+2(h_{i-1}+h_i)c_i+h_i c_{i+1}=\frac{3}{h_i}(y_{i+1}-y_i)-\frac{3}{h_{i-1}}(y_i-y_{i-1})\]
+  Una vez resuelto, se calculan: \(a_i=y_i\), \(d_i=\frac{c_{i+1}-c_i}{3h_i}\), \(b_i=\frac{1}{h_i}(y_{i+1}-y_i)-\frac{h_i}{3}(2c_i+c_{i+1})\).
+</div>
+
+<div class="nb-row">
+  <strong>Archivo Mathematica de ejemplo:</strong>
+  <a class="nb-link" href="CalculosApuntesAprozSpline.nb" download>CalculosApuntesAprozSpline.nb</a>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora de spline cubico</h4>
+  <div class="calc-grid">
+    <div><label>Soporte (x;y separados por coma):</label><input type="text" id="spl-sup" value="0.8,1.2; 1.2,1.4; 1.7,1.95; 2.3,2.23; 2.5,2.0; 3.0,2.4; 4.1,2.1"></div>
+    <div><label>Tipo extremos:</label>
+      <select id="spl-type">
+        <option value="libre" selected>Libre (natural, S''(x_0)=S''(x_n)=0)</option>
+        <option value="sujeto">Sujeto (con f'(x_0) y f'(x_n))</option>
+      </select>
+    </div>
+    <div id="spl-deriv" style="display:none"><label>f'(x_0), f'(x_n) separados por coma:</label><input type="text" id="spl-fp" value="0,0"></div>
+    <div><label>Evaluar S(t):</label><input type="text" id="spl-eval" value="2.0"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runSpline()">Calcular spline cubico</button>
+  <div id="spl-plot" class="plot-container"></div>
+  <div class="result-box" id="spl-result"></div>
+  <div class="iter-table"><table class="dt" id="spl-coef"><thead></thead><tbody></tbody></table></div>
+</div>
+</div>
+
+<!-- T11 Comparativa -->
+<div class="topic-section" id="t11">
+<h2>11. Comparativa de metodos</h2>
+<table class="dt">
+<tr><th>Metodo</th><th>Tipo</th><th>Coste calculo</th><th>Reutilizable al ampliar soporte</th><th>Suaviza derivada</th></tr>
+<tr><td>Vandermonde</td><td>Polinomio unico</td><td>O(n&sup3;) (sistema)</td><td>NO (recomputar)</td><td>No (es polinomio)</td></tr>
+<tr><td>Lagrange</td><td>Polinomio unico</td><td>O(n&sup2;) (productos)</td><td>NO (recomputar)</td><td>No</td></tr>
+<tr><td>Newton DD</td><td>Polinomio unico</td><td>O(n&sup2;) (tabla DD)</td><td>SI (anyadir solo nuevo punto)</td><td>No</td></tr>
+<tr><td>Hermite</td><td>Polinomio unico</td><td>O(n&sup2;) DD ampliada</td><td>SI</td><td>Si (1a derivada)</td></tr>
+<tr><td>Spline cubico</td><td>A trozos</td><td>O(n) sistema tridiag.</td><td>Recomputar (afecta global)</td><td>Si (clase \(\mathcal{C}^2\))</td></tr>
+<tr><td>Taylor</td><td>Soporte colapsado</td><td>O(n) si conoces derivadas</td><td>SI</td><td>Si (todas las derivadas)</td></tr>
+</table>
+
+<div class="interactive-box">
+  <h4>Comparar metodos en un mismo soporte</h4>
+  <div class="calc-grid">
+    <div><label>Soporte (x;y):</label><input type="text" id="cmp-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
+    <div><label>Evaluar t:</label><input type="text" id="cmp-eval" value="3.5"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runCompareInt()">Comparar Vandermonde/Lagrange/Newton</button>
+  <div id="cmp-plot" class="plot-container"></div>
+  <div class="result-box" id="cmp-result"></div>
+</div>
+</div>
+
+</div><!-- fin tab-theory -->
+
+<!-- ============ SOLVER ============ -->
+<div id="tab-problems" class="tab-content" style="max-width:1100px">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Solver de Interpolacion</h2>
+<p style="margin-bottom:1rem;color:var(--txtl)">Introduce el soporte y selecciona el metodo de interpolacion. El solver mostrara el polinomio interpolador, su evaluacion y los pasos del calculo.</p>
+
+<div class="solver-card" style="background:var(--card);border-radius:var(--r);padding:1.2rem;box-shadow:var(--sh)">
+  <div class="calc-grid">
+    <div>
+      <label>Soporte (formato x,y o x,y,y' para Hermite, separados por ;):</label>
+      <textarea id="slv-sup" class="matrix-input">0,0
+1,0.5
+4,2.5
+7,4.1</textarea>
+      <div style="font-size:.8rem;color:var(--txtl);margin-top:.3rem">Una linea por punto, o separados por ;</div>
+    </div>
+    <div>
+      <label>Metodo:</label>
+      <select id="slv-method" onchange="updateSlvUI()" style="padding:.5rem;font-size:.95rem">
+        <option value="vandermonde">Calculo directo (Vandermonde)</option>
+        <option value="lagrange" selected>Lagrange</option>
+        <option value="newton">Newton (diferencias divididas)</option>
+        <option value="newton-amp">Newton: ampliar soporte</option>
+        <option value="hermite">Hermite (con diferencias divididas)</option>
+        <option value="spline">Spline cubico</option>
+        <option value="taylor">Polinomio de Taylor</option>
+        <option value="error">Cota del error</option>
+        <option value="compare">Comparar todos los metodos</option>
+      </select>
+      <div id="slv-extra" style="margin-top:.5rem"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="runSolver()" style="font-size:1rem;padding:.6rem 1.5rem">Calcular interpolador</button>
+    <button class="btn btn-success" onclick="runEvaluate()" style="font-size:.9rem">Evaluar en t</button>
+    <button class="btn nb-link" onclick="generateNotebook()" style="background:#dc143c;color:#fff;border:none">Generar archivo Mathematica (.nb) con mis datos</button>
+  </div>
+</div>
+
+<div id="slv-plot" class="plot-container" style="margin-top:1rem;min-height:350px"></div>
+<div class="steps-box" id="slv-steps" style="display:none;margin-top:1rem"></div>
+<div class="iter-table" id="slv-table-wrap" style="display:none;margin-top:1rem"><table class="dt" id="slv-table"><thead></thead><tbody></tbody></table></div>
+<div class="result-box" id="slv-result" style="margin-top:1rem"></div>
+
+</div><!-- fin tab-problems -->
+
+<!-- ============ TEST ============ -->
+<div id="tab-test" class="tab-content">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Evaluacion</h2>
+
+<div class="topic-selector" style="margin-bottom:1rem">
+  <label>Modo:</label>
+  <select id="eval-mode" onchange="switchEvalMode(this.value)" style="max-width:300px">
+    <option value="test" selected>Test de autoevaluacion</option>
+    <option value="problems">Problemas resueltos paso a paso</option>
+  </select>
+</div>
+
+<div id="eval-test">
+<div class="score-bar"><span>Puntuacion: </span><span class="score" id="test-score">0</span><span> / <span id="test-total">15</span></span></div>
+<div id="test-questions"></div>
+<button class="btn btn-success" onclick="gradeTest()" style="margin-top:1rem">Corregir Test</button>
+</div>
+
+<div id="eval-problems" style="display:none">
+<p style="margin-bottom:1rem;color:var(--txtl)">Problemas similares a los de las practicas 6-7 y al listado adicional. Pulsa "Resolver" para ver el desarrollo automatico.</p>
+
+<div class="problem-card">
+  <h3>Problema 1 <span class="badge badge-tarea">PRACTICA 6</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>Una tabla con horas y numero de incidencias atendidas por un servicio tecnico: \(\{(8,0),(9,11),(10,16),(11,9),(12,7),(13,11),(14,8),(15,13),(16,5)\}\). Obten un polinomio interpolador y estima las incidencias a las 11:30. Discute la fiabilidad.</p>
+  <button class="btn btn-primary" onclick="solveP(1)">Resolver</button>
+  <div class="sol" id="sol-1"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 2 <span class="badge badge-tarea">PRACTICA 6</span> <span class="badge badge-med">Media</span></h3>
+  <p>Mediciones de velocidad de un servidor (Mb/s): \(\{(0,0),(2,18),(4,28),(6,35),(8,40)\}\). Obten el polinomio de Lagrange y, por separado, el polinomio de Newton con 4 puntos y luego ampliando a 5.</p>
+  <button class="btn btn-primary" onclick="solveP(2)">Resolver</button>
+  <div class="sol" id="sol-2"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 3 <span class="badge badge-tarea">PRACTICA 6</span> <span class="badge badge-med">Media</span></h3>
+  <p>Considera \(f(x)=\frac{2}{3+5x^2}\) en \([-2,2]\). (a) Da una expresion de la cota del error con soporte equiespaciado de 4 y 5 puntos. (b) Estima \(E_A\) al usar \(P_3(1.2)\) en lugar de \(f(1.2)\). (c) Da la cota del error de Hermite con 4 y 5 puntos.</p>
+  <button class="btn btn-primary" onclick="solveP(3)">Resolver</button>
+  <div class="sol" id="sol-3"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 4 <span class="badge badge-tarea">PROB 6 amp. P6</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Considera \(f(x)=\frac{7}{2+4x^2}\) en \([-1,1]\). (a) Acota el error con interpolacion polinomica de 4 y 5 puntos equiespaciados. (b) Estima \(E_A\) al usar \(P_4(0.2)\) en lugar de \(f(0.2)\). (c) Cota del error con Hermite de 4 y 5 puntos.</p>
+  <button class="btn btn-primary" onclick="solveP(4)">Resolver</button>
+  <div class="sol" id="sol-4"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 5 <span class="badge badge-tarea">PROB 56 (a,b) list.</span> <span class="badge badge-med">Media</span></h3>
+  <p>Calcula el polinomio interpolador de Lagrange para \(f(x)=\sin(x)\) con soporte \(\{0,\pi/4,\pi/2,3\pi/4,\pi\}\) y obten una estimacion de \(\sin(\pi/3)\). Calcula la cota del error.</p>
+  <button class="btn btn-primary" onclick="solveP(5)">Resolver</button>
+  <div class="sol" id="sol-5"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 6 <span class="badge badge-tarea">PROB 58 (a,c) list.</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Para \(f(x)=e^x\) en \([0,1]\) con soporte equiespaciado \(\{0,0.25,0.5,0.75,1\}\): (a) calcula el polinomio interpolador de Newton con diferencias divididas; (c) estima \(e^{0.6}\) y compara con el valor real, dando una cota del error.</p>
+  <button class="btn btn-primary" onclick="solveP(6)">Resolver</button>
+  <div class="sol" id="sol-6"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 7 <span class="badge badge-tarea">PROB 60 (a,b) list.</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Sea la tabla \(\{(0.5,1.0),(1.0,1.7),(1.5,1.9),(2.0,2.0),(2.5,1.8),(3.0,1.5)\}\). (a) Calcula la interpolacion segmentada con splines cubicos libres. (b) Evaluala en \(t=1.7\) y \(t=2.4\).</p>
+  <button class="btn btn-primary" onclick="solveP(7)">Resolver</button>
+  <div class="sol" id="sol-7"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 8 <span class="badge badge-tarea">PRACTICA 6 / Hermite</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Calcula la interpolacion de Hermite para \(f(x)=\cos(x)\) con soporte \(\{\pi/4,\pi/3,\pi/2\}\) (utilizando los valores reales de \(f'(x_i)=-\sin(x_i)\)). Estima \(\cos(1.2)\) y la cota del error.</p>
+  <button class="btn btn-primary" onclick="solveP(8)">Resolver</button>
+  <div class="sol" id="sol-8"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 9 <span class="badge badge-tarea">Runge</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>Para \(f(x)=\frac{1}{1+25x^2}\) en \([-1,1]\), compara graficamente los polinomios interpoladores con soportes equiespaciados de 5, 9 y 13 puntos. Discute el fenomeno de Runge.</p>
+  <button class="btn btn-primary" onclick="solveP(9)">Resolver</button>
+  <div class="sol" id="sol-9"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 10 <span class="badge badge-tarea">Vandermonde</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>Un proyectil tiene velocidades \((0,0),(1,0.5),(4,2.5),(7,4.1)\) m/s en distintos instantes. Calcula el polinomio interpolador resolviendo el sistema de Vandermonde y estima la velocidad en \(t=3.5\) s.</p>
+  <button class="btn btn-primary" onclick="solveP(10)">Resolver</button>
+  <div class="sol" id="sol-10"></div>
+</div>
+
+</div>
+</div>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}],throwOnError:false};
+
+function switchTab(t){
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tab-btn')[['theory','problems','test'].indexOf(t)].classList.add('active');
+  renderMathInElement(document.getElementById('tab-'+t),mathOpts);
+}
+function showTopic(id){
+  document.querySelectorAll('.topic-section').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  renderMathInElement(document.getElementById(id),mathOpts);
+}
+function switchEvalMode(m){
+  document.getElementById('eval-test').style.display=m==='test'?'block':'none';
+  document.getElementById('eval-problems').style.display=m==='problems'?'block':'none';
+  if(m==='problems') renderMathInElement(document.getElementById('eval-problems'),mathOpts);
+}
+
+// ============== HELPERS ==============
+function parseSupport(text){
+  // accept newlines or ; separators, x,y or x,y,yp
+  const sep = text.includes(';')?';':'\n';
+  return text.split(sep).map(s=>s.trim()).filter(s=>s.length).map(s=>s.split(',').map(v=>{
+    try{return math.evaluate(v.trim());}catch(e){return NaN;}
+  }));
+}
+function fmt(x,d=6){
+  if(typeof x !== 'number' || !isFinite(x)) return String(x);
+  if(Math.abs(x)<1e-12) return '0';
+  if(Math.abs(x)>=1e6 || Math.abs(x)<1e-4) return x.toExponential(d-1);
+  return parseFloat(x.toPrecision(d)).toString();
+}
+function evalFn(expr,x){
+  try { return math.evaluate(expr,{x}); } catch(e){ return NaN; }
+}
+function polyToString(coeffs){
+  // coeffs[0]+coeffs[1]*x+coeffs[2]*x^2+...
+  let parts=[];
+  coeffs.forEach((c,i)=>{
+    if(Math.abs(c)<1e-12) return;
+    let s=fmt(c,5);
+    if(i===0) parts.push(s);
+    else if(i===1) parts.push((c>=0&&parts.length?'+':'')+s+'·x');
+    else parts.push((c>=0&&parts.length?'+':'')+s+'·x^'+i);
+  });
+  return parts.join(' ')||'0';
+}
+function evalPoly(coeffs,x){
+  let r=0;
+  for(let i=coeffs.length-1;i>=0;i--) r=r*x+coeffs[i];
+  return r;
+}
+function polyAdd(a,b){
+  const n=Math.max(a.length,b.length);
+  let c=Array(n).fill(0);
+  for(let i=0;i<n;i++) c[i]=(a[i]||0)+(b[i]||0);
+  return c;
+}
+function polyMul(a,b){
+  const c=Array(a.length+b.length-1).fill(0);
+  for(let i=0;i<a.length;i++) for(let j=0;j<b.length;j++) c[i+j]+=a[i]*b[j];
+  return c;
+}
+function polyScale(a,k){return a.map(v=>v*k);}
+
+// ============== METODOS DE INTERPOLACION ==============
+function vandermonde(xs,ys){
+  const n=xs.length;
+  let A=xs.map(x=>{let r=[1]; for(let k=1;k<n;k++)r.push(r[k-1]*x); return r;});
+  // resolver Ax=ys via Gauss
+  let M=A.map((r,i)=>r.concat([ys[i]]));
+  for(let i=0;i<n;i++){
+    let p=i;
+    for(let k=i+1;k<n;k++) if(Math.abs(M[k][i])>Math.abs(M[p][i])) p=k;
+    if(p!==i)[M[i],M[p]]=[M[p],M[i]];
+    for(let j=i+1;j<n;j++){
+      const m=M[j][i]/M[i][i];
+      for(let k=i;k<=n;k++) M[j][k]-=m*M[i][k];
+    }
+  }
+  let coef=Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    let s=M[i][n];
+    for(let j=i+1;j<n;j++) s-=M[i][j]*coef[j];
+    coef[i]=s/M[i][i];
+  }
+  return coef;
+}
+
+function lagrange(xs,ys){
+  const n=xs.length;
+  let P=[0];
+  let Ls=[];
+  for(let j=0;j<n;j++){
+    let Lj=[1];
+    let denom=1;
+    for(let i=0;i<n;i++){
+      if(i===j) continue;
+      Lj=polyMul(Lj,[-xs[i],1]);
+      denom*=(xs[j]-xs[i]);
+    }
+    Lj=polyScale(Lj,1/denom);
+    Ls.push(Lj);
+    P=polyAdd(P,polyScale(Lj,ys[j]));
+  }
+  return {P, Ls};
+}
+
+function dividedDiffs(xs,ys){
+  const n=xs.length;
+  let dd=[ys.slice()]; // dd[k][i] = f[x_i,...,x_{i+k}]
+  for(let k=1;k<n;k++){
+    let row=[];
+    for(let i=0;i<n-k;i++) row.push((dd[k-1][i+1]-dd[k-1][i])/(xs[i+k]-xs[i]));
+    dd.push(row);
+  }
+  return dd;
+}
+
+function newtonPoly(xs,ys){
+  const dd=dividedDiffs(xs,ys);
+  const n=xs.length;
+  // P(x) = sum_{k=0}^{n-1} dd[k][0] * prod_{j=0..k-1}(x-x_j)
+  let P=[0];
+  let term=[1];
+  for(let k=0;k<n;k++){
+    P=polyAdd(P,polyScale(term,dd[k][0]));
+    if(k<n-1) term=polyMul(term,[-xs[k],1]);
+  }
+  return {P, dd};
+}
+
+function hermiteDD(xs,ys,yps){
+  // duplicate points
+  const m=xs.length;
+  let zs=[],fz=[];
+  for(let i=0;i<m;i++){zs.push(xs[i]); zs.push(xs[i]); fz.push(ys[i]); fz.push(ys[i]);}
+  // build divided differences with first-order replaced by derivative when points coincide
+  const N=zs.length;
+  let dd=Array.from({length:N},()=>Array(N).fill(0));
+  for(let i=0;i<N;i++) dd[i][0]=fz[i];
+  for(let k=1;k<N;k++){
+    for(let i=0;i<N-k;i++){
+      if(k===1 && zs[i+k]===zs[i]) dd[i][k]=yps[Math.floor(i/2)];
+      else dd[i][k]=(dd[i+1][k-1]-dd[i][k-1])/(zs[i+k]-zs[i]);
+    }
+  }
+  // build polynomial: P(x)=sum_k dd[0][k]*prod_{j<k}(x-z_j)
+  let P=[0]; let term=[1];
+  for(let k=0;k<N;k++){
+    P=polyAdd(P,polyScale(term,dd[0][k]));
+    if(k<N-1) term=polyMul(term,[-zs[k],1]);
+  }
+  return {P, zs, dd};
+}
+
+function cubicSpline(xs,ys,type='libre',fp0=0,fpn=0){
+  const n=xs.length-1; // intervals
+  const h=xs.slice(1).map((x,i)=>x-xs[i]);
+  // System for c_i (i=0..n)
+  let A=Array.from({length:n+1},()=>Array(n+1).fill(0));
+  let t=Array(n+1).fill(0);
+  if(type==='libre'){
+    A[0][0]=1;
+    A[n][n]=1;
+  } else {
+    A[0][0]=2*h[0]; A[0][1]=h[0];
+    t[0]=3/h[0]*(ys[1]-ys[0])-3*fp0;
+    A[n][n-1]=h[n-1]; A[n][n]=2*h[n-1];
+    t[n]=3*fpn-3/h[n-1]*(ys[n]-ys[n-1]);
+  }
+  for(let i=1;i<n;i++){
+    A[i][i-1]=h[i-1];
+    A[i][i]=2*(h[i-1]+h[i]);
+    A[i][i+1]=h[i];
+    t[i]=3/h[i]*(ys[i+1]-ys[i])-3/h[i-1]*(ys[i]-ys[i-1]);
+  }
+  // resolve A*c=t (tridiagonal)
+  let M=A.map((r,i)=>r.concat([t[i]]));
+  const N=n+1;
+  for(let i=0;i<N;i++){
+    let p=i;
+    for(let k=i+1;k<N;k++) if(Math.abs(M[k][i])>Math.abs(M[p][i])) p=k;
+    if(p!==i)[M[i],M[p]]=[M[p],M[i]];
+    for(let j=i+1;j<N;j++){
+      const m=M[j][i]/M[i][i];
+      for(let k=i;k<=N;k++) M[j][k]-=m*M[i][k];
+    }
+  }
+  let c=Array(N).fill(0);
+  for(let i=N-1;i>=0;i--){
+    let s=M[i][N];
+    for(let j=i+1;j<N;j++) s-=M[i][j]*c[j];
+    c[i]=s/M[i][i];
+  }
+  // compute a,b,d
+  let a=ys.slice(0,n);
+  let d=Array(n).fill(0); let b=Array(n).fill(0);
+  for(let i=0;i<n;i++){
+    d[i]=(c[i+1]-c[i])/(3*h[i]);
+    b[i]=(ys[i+1]-ys[i])/h[i]-h[i]*(2*c[i]+c[i+1])/3;
+  }
+  return {a,b,c:c.slice(0,n),d,h,xs:xs.slice(0,n+1)};
+}
+
+function evalSpline(spl,x){
+  const xs=spl.xs;
+  let i=0;
+  for(let k=0;k<spl.a.length;k++){
+    if(x>=xs[k]-1e-12 && x<=xs[k+1]+1e-12){i=k; break;}
+    if(k===spl.a.length-1) i=k;
+  }
+  const dx=x-xs[i];
+  return spl.a[i]+spl.b[i]*dx+spl.c[i]*dx*dx+spl.d[i]*dx*dx*dx;
+}
+
+function taylorPoly(fn,x0,n){
+  // numerical derivatives
+  let coeffs=Array(n+1).fill(0);
+  const h=1e-3;
+  for(let k=0;k<=n;k++){
+    coeffs[k]=numDeriv(fn,x0,k)/factorial(k);
+  }
+  // convert to polynomial in x by expanding (x-x0)^k
+  let P=[0];
+  let term=[1];
+  for(let k=0;k<=n;k++){
+    P=polyAdd(P,polyScale(term,coeffs[k]));
+    term=polyMul(term,[-x0,1]);
+  }
+  return {P, coeffs};
+}
+function factorial(n){let r=1; for(let i=2;i<=n;i++)r*=i; return r;}
+function numDeriv(fn,x,k){
+  // central differences for k-th derivative, simple
+  const h=1e-3;
+  if(k===0) return evalFn(fn,x);
+  if(k===1) return (evalFn(fn,x+h)-evalFn(fn,x-h))/(2*h);
+  if(k===2) return (evalFn(fn,x+h)-2*evalFn(fn,x)+evalFn(fn,x-h))/(h*h);
+  if(k===3) return (evalFn(fn,x+2*h)-2*evalFn(fn,x+h)+2*evalFn(fn,x-h)-evalFn(fn,x-2*h))/(2*h*h*h);
+  // higher: numerical using mathjs derivative
+  try{
+    let f=fn;
+    for(let i=0;i<k;i++) f=math.derivative(f,'x').toString();
+    return evalFn(f,x);
+  }catch(e){return 0;}
+}
+
+// ============== INTERFACES ==============
+function plotData(divId,traces,layout){
+  Plotly.newPlot(divId,traces,Object.assign({margin:{t:20,b:40,l:50,r:20},height:350,xaxis:{title:'x'},yaxis:{title:'y'}},layout||{}),{responsive:true,displayModeBar:false});
+}
+
+function visTipos(){
+  const sup=parseSupport(document.getElementById('vis-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  // lineal
+  const xline=[], yline=[];
+  for(let i=0;i<xs.length;i++){xline.push(xs[i]); yline.push(ys[i]);}
+  // polinomio Lagrange
+  const {P}=lagrange(xs,ys);
+  const N=200;
+  const xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
+  plotData('vis-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xline,y:yline,mode:'lines',name:'Lineal a trozos',line:{color:'#27ae60',dash:'dash'}},
+    {x:xp,y:yp,mode:'lines',name:'Polinomio unico (Lagrange)',line:{color:'#1a5276'}}
+  ]);
+}
+
+function runVandermonde(){
+  const sup=parseSupport(document.getElementById('van-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  const c=vandermonde(xs,ys);
+  const xx=parseFloat(document.getElementById('van-eval').value);
+  const v=evalPoly(c,xx);
+  let html=`<strong>Polinomio interpolador:</strong> P(x) = ${polyToString(c)}<br>`;
+  html+=`<strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+  document.getElementById('van-result').innerHTML=html;
+  // plot
+  const N=200, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(c,x));}
+  plotData('van-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276'}},
+    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`P(${xx})`}
+  ]);
+}
+
+function runError(){
+  const fn=document.getElementById('err-fn').value;
+  const [a,b]=document.getElementById('err-ab').value.split(',').map(parseFloat);
+  const npts=parseInt(document.getElementById('err-n').value);
+  const xx=parseFloat(document.getElementById('err-x').value);
+  // num derivada de orden npts (es n+1 con n=npts-1)
+  // E_A <= M/(n+1)! * prod|x-x_i|
+  const n=npts-1;
+  // compute M = max |f^{(n+1)}(x)| sobre [a,b]
+  let M=0;
+  for(let k=0;k<=200;k++){
+    const x=a+(b-a)*k/200;
+    const dv=Math.abs(numDeriv(fn,x,n+1));
+    if(dv>M) M=dv;
+  }
+  // soporte equiespaciado
+  let xs=[]; for(let i=0;i<=n;i++) xs.push(a+(b-a)*i/n);
+  let prod=1; for(const xi of xs) prod*=Math.abs(xx-xi);
+  const cota=M/factorial(n+1)*prod;
+  const cotaGen=M/factorial(n+1)*Math.pow(b-a,n+1);
+  let html=`<strong>n+1 = ${npts} puntos &rarr; n = ${n}, deriv. de orden ${n+1}</strong><br>`;
+  html+=`M = max|f<sup>(${n+1})</sup>| en [${a},${b}] ≈ ${fmt(M,5)}<br>`;
+  html+=`Soporte equiespaciado: [${xs.map(v=>fmt(v,3)).join(', ')}]<br>`;
+  html+=`E<sub>A</sub>(${xx}) ≤ ${fmt(M,4)}/${n+1}! · ${fmt(prod,4)} ≈ <span class="val">${fmt(cota,5)}</span><br>`;
+  html+=`Cota global E<sub>A</sub> ≤ ${fmt(M,4)}/${n+1}! · (${b}-${a})<sup>${n+1}</sup> ≈ ${fmt(cotaGen,5)}`;
+  document.getElementById('err-result').innerHTML=html;
+}
+
+function runRunge(){
+  const fn=document.getElementById('runge-fn').value;
+  const [a,b]=document.getElementById('runge-ab').value.split(',').map(parseFloat);
+  const grados=document.getElementById('runge-grados').value.split(',').map(s=>parseInt(s.trim()));
+  const N=300;
+  let xp=[],yfn=[];
+  for(let i=0;i<=N;i++){const x=a+(b-a)*i/N; xp.push(x); yfn.push(evalFn(fn,x));}
+  let traces=[{x:xp,y:yfn,mode:'lines',name:'f(x)',line:{color:'#000',width:3}}];
+  const colors=['#1a5276','#27ae60','#e74c3c','#8e44ad','#d35400'];
+  grados.forEach((g,idx)=>{
+    let xs=[]; for(let i=0;i<=g;i++) xs.push(a+(b-a)*i/g);
+    let ys=xs.map(x=>evalFn(fn,x));
+    const {P}=lagrange(xs,ys);
+    let yp2=xp.map(x=>evalPoly(P,x));
+    traces.push({x:xp,y:yp2,mode:'lines',name:`P_${g}`,line:{color:colors[idx%colors.length],dash:'dash'}});
+    traces.push({x:xs,y:ys,mode:'markers',marker:{color:colors[idx%colors.length],size:5},showlegend:false});
+  });
+  plotData('runge-plot',traces);
+}
+
+function runTaylor(){
+  const fn=document.getElementById('tay-fn').value;
+  const x0=parseFloat(document.getElementById('tay-x0').value);
+  const n=parseInt(document.getElementById('tay-n').value);
+  const xx=parseFloat(document.getElementById('tay-x').value);
+  const {P,coeffs}=taylorPoly(fn,x0,n);
+  const real=evalFn(fn,xx);
+  const aprx=evalPoly(P,xx);
+  const N=300;
+  const a=Math.min(x0,xx)-Math.abs(xx-x0); const b=Math.max(x0,xx)+Math.abs(xx-x0);
+  let xp=[],yfn=[],yp=[];
+  for(let i=0;i<=N;i++){const x=a+(b-a)*i/N; xp.push(x); yfn.push(evalFn(fn,x)); yp.push(evalPoly(P,x));}
+  plotData('tay-plot',[
+    {x:xp,y:yfn,mode:'lines',name:'f(x)',line:{color:'#000',width:2}},
+    {x:xp,y:yp,mode:'lines',name:`Taylor n=${n}`,line:{color:'#1a5276',dash:'dash'}},
+    {x:[x0],y:[evalFn(fn,x0)],mode:'markers',marker:{color:'#e74c3c',size:10},name:'x_0'}
+  ]);
+  document.getElementById('tay-result').innerHTML=`<strong>P_${n,x0}(x) ≈</strong> ${polyToString(P)}<br><strong>f(${xx})=</strong>${fmt(real,8)}, <strong>P_n(${xx})=</strong>${fmt(aprx,8)}, <strong>|error|=</strong>${fmt(Math.abs(real-aprx),5)}`;
+}
+
+function runLagrange(){
+  const sup=parseSupport(document.getElementById('lag-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  const xx=parseFloat(document.getElementById('lag-eval').value);
+  const {P,Ls}=lagrange(xs,ys);
+  const v=evalPoly(P,xx);
+  let html=`<strong>Polinomios auxiliares:</strong>`;
+  Ls.forEach((Lj,j)=>{html+=`<div class="step"><strong>L_${j}(x) =</strong> ${polyToString(Lj)}</div>`;});
+  html+=`<div class="step"><strong>P(x) = Σ y_j·L_j(x) =</strong> ${polyToString(P)}</div>`;
+  document.getElementById('lag-steps').innerHTML=html;
+  document.getElementById('lag-result').innerHTML=`<strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+  // plot
+  const N=200, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
+  plotData('lag-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276'}},
+    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`P(${xx})`}
+  ]);
+}
+
+function runNewton(){
+  const sup=parseSupport(document.getElementById('new-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  const xx=parseFloat(document.getElementById('new-eval').value);
+  const {P,dd}=newtonPoly(xs,ys);
+  const v=evalPoly(P,xx);
+  // tabla DD
+  let html='<strong>Tabla de diferencias divididas:</strong>';
+  let tab='<table class="dt"><tr><th>x_i</th>';
+  for(let k=0;k<dd.length;k++) tab+=`<th>orden ${k}</th>`;
+  tab+='</tr>';
+  for(let i=0;i<xs.length;i++){
+    tab+=`<tr><td>${fmt(xs[i],4)}</td>`;
+    for(let k=0;k<dd.length;k++){
+      tab+= dd[k][i]!==undefined?`<td>${fmt(dd[k][i],5)}</td>`:'<td></td>';
+    }
+    tab+='</tr>';
+  }
+  tab+='</table>';
+  html+=tab;
+  html+=`<div class="step"><strong>P(x) = </strong>${polyToString(P)}</div>`;
+  document.getElementById('new-steps').innerHTML=html;
+  document.getElementById('new-result').innerHTML=`<strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+  const N=200, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
+  plotData('new-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276'}},
+    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`P(${xx})`}
+  ]);
+}
+
+function runHermite(){
+  const sup=parseSupport(document.getElementById('her-sup').value);
+  if(sup[0].length<3){document.getElementById('her-result').innerHTML='<span style="color:var(--acc)">Cada punto debe tener formato x,y,y\'</span>'; return;}
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]), yps=sup.map(p=>p[2]);
+  const xx=parseFloat(document.getElementById('her-eval').value);
+  const {P,zs,dd}=hermiteDD(xs,ys,yps);
+  const v=evalPoly(P,xx);
+  let html='<strong>Soporte duplicado z = </strong>['+zs.map(v=>fmt(v,4)).join(', ')+']<br>';
+  html+='<strong>Coeficientes de la base de Newton (DD):</strong> ['+dd[0].map(v=>fmt(v,5)).join(', ')+']<br>';
+  html+=`<div class="step"><strong>H(x) = </strong>${polyToString(P)}</div>`;
+  document.getElementById('her-steps').innerHTML=html;
+  document.getElementById('her-result').innerHTML=`<strong>H(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+  const N=200, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
+  plotData('her-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'H(x)',line:{color:'#1a5276'}},
+    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`H(${xx})`}
+  ]);
+}
+
+document.getElementById('spl-type')&&document.getElementById('spl-type').addEventListener('change',e=>{
+  document.getElementById('spl-deriv').style.display=e.target.value==='sujeto'?'block':'none';
+});
+
+function runSpline(){
+  const sup=parseSupport(document.getElementById('spl-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  const type=document.getElementById('spl-type').value;
+  let fp0=0,fpn=0;
+  if(type==='sujeto'){const fp=document.getElementById('spl-fp').value.split(',').map(parseFloat); fp0=fp[0]; fpn=fp[1];}
+  const xx=parseFloat(document.getElementById('spl-eval').value);
+  const spl=cubicSpline(xs,ys,type,fp0,fpn);
+  const v=evalSpline(spl,xx);
+  // tabla coeficientes
+  let th='<tr><th>i</th><th>x_i</th><th>a_i</th><th>b_i</th><th>c_i</th><th>d_i</th><th>S_i(x) en [x_i,x_{i+1}]</th></tr>';
+  let tb='';
+  for(let i=0;i<spl.a.length;i++){
+    tb+=`<tr><td>${i}</td><td>${fmt(spl.xs[i],4)}</td><td>${fmt(spl.a[i],4)}</td><td>${fmt(spl.b[i],4)}</td><td>${fmt(spl.c[i],4)}</td><td>${fmt(spl.d[i],4)}</td><td>${fmt(spl.a[i],3)}+${fmt(spl.b[i],3)}(x-${fmt(spl.xs[i],3)})+${fmt(spl.c[i],3)}(x-${fmt(spl.xs[i],3)})²+${fmt(spl.d[i],3)}(x-${fmt(spl.xs[i],3)})³</td></tr>`;
+  }
+  document.getElementById('spl-coef').querySelector('thead').innerHTML=th;
+  document.getElementById('spl-coef').querySelector('tbody').innerHTML=tb;
+  document.getElementById('spl-result').innerHTML=`<strong>S(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+  // plot
+  const N=300, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalSpline(spl,x));}
+  plotData('spl-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'Spline',line:{color:'#1a5276'}},
+    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`S(${xx})`}
+  ]);
+}
+
+function runCompareInt(){
+  const sup=parseSupport(document.getElementById('cmp-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  const xx=parseFloat(document.getElementById('cmp-eval').value);
+  const cV=vandermonde(xs,ys);
+  const {P:cL}=lagrange(xs,ys);
+  const {P:cN}=newtonPoly(xs,ys);
+  const vV=evalPoly(cV,xx), vL=evalPoly(cL,xx), vN=evalPoly(cN,xx);
+  let html=`<table class="dt"><tr><th>Metodo</th><th>P(${xx})</th><th>Polinomio</th></tr>`;
+  html+=`<tr><td>Vandermonde</td><td>${fmt(vV,6)}</td><td>${polyToString(cV)}</td></tr>`;
+  html+=`<tr><td>Lagrange</td><td>${fmt(vL,6)}</td><td>${polyToString(cL)}</td></tr>`;
+  html+=`<tr><td>Newton DD</td><td>${fmt(vN,6)}</td><td>${polyToString(cN)}</td></tr>`;
+  html+='</table><p><em>Los tres metodos dan EL MISMO polinomio, escrito en bases distintas. Pueden diferir minimamente por error de redondeo.</em></p>';
+  document.getElementById('cmp-result').innerHTML=html;
+  const N=200, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(cN,x));}
+  plotData('cmp-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276'}},
+    {x:[xx],y:[vN],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`P(${xx})`}
+  ]);
+}
+
+// ============== SOLVER GENERICO ==============
+function updateSlvUI(){
+  const m=document.getElementById('slv-method').value;
+  const ext=document.getElementById('slv-extra');
+  let html='<label>Punto t para evaluar (opcional):</label><input type="text" id="slv-eval" value="3.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  if(m==='taylor'){
+    html='<label>Funcion f(x):</label><input type="text" id="slv-fn" value="cos(x)" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Punto x_0:</label><input type="text" id="slv-x0" value="0" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Grado n:</label><input type="number" id="slv-n" value="4" min="1" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Punto a evaluar t:</label><input type="text" id="slv-eval" value="0.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  } else if(m==='error'){
+    html='<label>Funcion f(x):</label><input type="text" id="slv-fn" value="1/(1+9*x^2)" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Intervalo [a,b]:</label><input type="text" id="slv-ab" value="1,2" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Numero de puntos:</label><input type="number" id="slv-n" value="4" min="2" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Punto a evaluar t:</label><input type="text" id="slv-eval" value="1.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  } else if(m==='spline'){
+    html+='<label style="margin-top:.4rem">Tipo extremos:</label><select id="slv-spltype" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px"><option value="libre">Libre</option><option value="sujeto">Sujeto</option></select>';
+    html+='<label style="margin-top:.4rem">f\'(x_0), f\'(x_n) (si sujeto):</label><input type="text" id="slv-fp" value="0,0" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  }
+  ext.innerHTML=html;
+}
+updateSlvUI();
+
+function runSolver(){
+  const m=document.getElementById('slv-method').value;
+  const stepsBox=document.getElementById('slv-steps');
+  const tableBox=document.getElementById('slv-table-wrap');
+  const resBox=document.getElementById('slv-result');
+  stepsBox.style.display='none'; tableBox.style.display='none';
+  resBox.innerHTML='';
+  const xx=document.getElementById('slv-eval')?parseFloat(document.getElementById('slv-eval').value):NaN;
+
+  if(m==='taylor'){
+    const fn=document.getElementById('slv-fn').value;
+    const x0=parseFloat(document.getElementById('slv-x0').value);
+    const n=parseInt(document.getElementById('slv-n').value);
+    const {P,coeffs}=taylorPoly(fn,x0,n);
+    const v=evalPoly(P,xx); const real=evalFn(fn,xx);
+    resBox.innerHTML=`<strong>P_${n,x0}(x) =</strong> ${polyToString(P)}<br><strong>P(${xx}) =</strong> <span class="val">${fmt(v,6)}</span>, f(${xx})=${fmt(real,6)}, |error|=${fmt(Math.abs(real-v),5)}`;
+    plotPoly(P,[x0-2,x0+2],xx,v);
+    return;
+  }
+  if(m==='error'){
+    document.getElementById('err-fn')&&(document.getElementById('err-fn').value=document.getElementById('slv-fn').value);
+    document.getElementById('err-ab')&&(document.getElementById('err-ab').value=document.getElementById('slv-ab').value);
+    document.getElementById('err-n')&&(document.getElementById('err-n').value=document.getElementById('slv-n').value);
+    document.getElementById('err-x')&&(document.getElementById('err-x').value=document.getElementById('slv-eval').value);
+    // recompute
+    const fn=document.getElementById('slv-fn').value;
+    const [a,b]=document.getElementById('slv-ab').value.split(',').map(parseFloat);
+    const npts=parseInt(document.getElementById('slv-n').value);
+    const n=npts-1;
+    let M=0;
+    for(let k=0;k<=200;k++){const x=a+(b-a)*k/200; const dv=Math.abs(numDeriv(fn,x,n+1)); if(dv>M)M=dv;}
+    let xs=[]; for(let i=0;i<=n;i++) xs.push(a+(b-a)*i/n);
+    let prod=1; for(const xi of xs) prod*=Math.abs(xx-xi);
+    const cota=M/factorial(n+1)*prod;
+    resBox.innerHTML=`<strong>n+1 = ${npts} ptos, M = ${fmt(M,5)}, E_A(${xx}) ≤ ${fmt(cota,5)}</strong>`;
+    return;
+  }
+  // resto: requiere soporte
+  const sup=parseSupport(document.getElementById('slv-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  let P,extra='';
+  if(m==='vandermonde') P=vandermonde(xs,ys);
+  else if(m==='lagrange'){const r=lagrange(xs,ys); P=r.P;
+    let html='<strong>Polinomios auxiliares L_j(x):</strong>';
+    r.Ls.forEach((Lj,j)=>{html+=`<div class="step"><strong>L_${j}(x) =</strong> ${polyToString(Lj)}</div>`;});
+    stepsBox.innerHTML=html; stepsBox.style.display='block';
+  }
+  else if(m==='newton'){
+    const r=newtonPoly(xs,ys); P=r.P;
+    let html='<strong>Tabla DD:</strong><table class="dt"><tr><th>x_i</th>';
+    for(let k=0;k<r.dd.length;k++) html+=`<th>orden ${k}</th>`;
+    html+='</tr>';
+    for(let i=0;i<xs.length;i++){
+      html+=`<tr><td>${fmt(xs[i],4)}</td>`;
+      for(let k=0;k<r.dd.length;k++) html+=r.dd[k][i]!==undefined?`<td>${fmt(r.dd[k][i],5)}</td>`:'<td></td>';
+      html+='</tr>';
+    }
+    html+='</table>';
+    stepsBox.innerHTML=html; stepsBox.style.display='block';
+  }
+  else if(m==='newton-amp'){
+    // ampliar: calcular P_n con n pts y luego anyadir el ultimo
+    if(xs.length<3){resBox.innerHTML='<span style="color:var(--acc)">Necesitas al menos 3 puntos para ampliar.</span>'; return;}
+    const xs1=xs.slice(0,-1), ys1=ys.slice(0,-1);
+    const r1=newtonPoly(xs1,ys1);
+    const r2=newtonPoly(xs,ys);
+    let html=`<strong>Polinomio P_${xs1.length-1} (con ${xs1.length} puntos):</strong> ${polyToString(r1.P)}<br>`;
+    html+=`<strong>Polinomio P_${xs.length-1} (con ${xs.length} puntos):</strong> ${polyToString(r2.P)}<br>`;
+    html+=`<em>El nuevo coeficiente que aparece es f[x_0,...,x_${xs.length-1}] = ${fmt(r2.dd[xs.length-1][0],5)}</em>`;
+    stepsBox.innerHTML=html; stepsBox.style.display='block';
+    P=r2.P;
+  }
+  else if(m==='hermite'){
+    if(sup[0].length<3){resBox.innerHTML='<span style="color:var(--acc)">Cada punto debe tener formato x,y,y\'</span>'; return;}
+    const yps=sup.map(p=>p[2]);
+    const r=hermiteDD(xs,ys,yps); P=r.P;
+    let html='<strong>Soporte duplicado:</strong> ['+r.zs.map(v=>fmt(v,4)).join(', ')+']<br>';
+    html+='<strong>Coeficientes DD:</strong> ['+r.dd[0].map(v=>fmt(v,5)).join(', ')+']';
+    stepsBox.innerHTML=html; stepsBox.style.display='block';
+  }
+  else if(m==='spline'){
+    const tp=document.getElementById('slv-spltype').value;
+    let fp0=0,fpn=0;
+    if(tp==='sujeto'){const fp=document.getElementById('slv-fp').value.split(',').map(parseFloat); fp0=fp[0]; fpn=fp[1];}
+    const spl=cubicSpline(xs,ys,tp,fp0,fpn);
+    let th='<tr><th>i</th><th>x_i</th><th>a_i</th><th>b_i</th><th>c_i</th><th>d_i</th></tr>';
+    let tb='';
+    for(let i=0;i<spl.a.length;i++) tb+=`<tr><td>${i}</td><td>${fmt(spl.xs[i],4)}</td><td>${fmt(spl.a[i],4)}</td><td>${fmt(spl.b[i],4)}</td><td>${fmt(spl.c[i],4)}</td><td>${fmt(spl.d[i],4)}</td></tr>`;
+    document.getElementById('slv-table').querySelector('thead').innerHTML=th;
+    document.getElementById('slv-table').querySelector('tbody').innerHTML=tb;
+    tableBox.style.display='block';
+    const v=evalSpline(spl,xx);
+    resBox.innerHTML=`<strong>S(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+    plotSpline(spl,xs,ys,xx,v); return;
+  }
+  else if(m==='compare'){
+    const cV=vandermonde(xs,ys);
+    const {P:cL}=lagrange(xs,ys);
+    const {P:cN}=newtonPoly(xs,ys);
+    let html=`<table class="dt"><tr><th>Metodo</th><th>P(${xx})</th><th>Polinomio</th></tr>`;
+    html+=`<tr><td>Vandermonde</td><td>${fmt(evalPoly(cV,xx),6)}</td><td>${polyToString(cV)}</td></tr>`;
+    html+=`<tr><td>Lagrange</td><td>${fmt(evalPoly(cL,xx),6)}</td><td>${polyToString(cL)}</td></tr>`;
+    html+=`<tr><td>Newton DD</td><td>${fmt(evalPoly(cN,xx),6)}</td><td>${polyToString(cN)}</td></tr>`;
+    html+='</table>';
+    resBox.innerHTML=html;
+    plotPoly(cN,[Math.min(...xs),Math.max(...xs)],xx,evalPoly(cN,xx),xs,ys);
+    return;
+  }
+  if(P){
+    const v=evalPoly(P,xx);
+    resBox.innerHTML=`<strong>Polinomio:</strong> ${polyToString(P)}<br><strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+    plotPoly(P,[Math.min(...xs),Math.max(...xs)],xx,v,xs,ys);
+  }
+}
+
+function plotPoly(P,interval,xx,v,xs,ys){
+  const N=200, xmin=interval[0]-(interval[1]-interval[0])*0.05, xmax=interval[1]+(interval[1]-interval[0])*0.05;
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
+  let traces=[{x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276'}}];
+  if(xs) traces.unshift({x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'});
+  if(!isNaN(xx)) traces.push({x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`P(${xx})=${fmt(v,4)}`});
+  plotData('slv-plot',traces);
+}
+function plotSpline(spl,xs,ys,xx,v){
+  const N=300, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalSpline(spl,x));}
+  plotData('slv-plot',[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'Spline',line:{color:'#1a5276'}},
+    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`S(${xx})=${fmt(v,4)}`}
+  ]);
+}
+
+function runEvaluate(){
+  // evaluacion rapida
+  runSolver();
+}
+
+// ============== GENERADOR DE NOTEBOOK MATHEMATICA ==============
+function mmaList(arr){return '{'+arr.map(v=>{return Array.isArray(v)?mmaList(v):v.toString();}).join(', ')+'}';}
+
+function generateNotebook(){
+  const m=document.getElementById('slv-method').value;
+  const sup=parseSupport(document.getElementById('slv-sup').value);
+  const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
+  const xx=document.getElementById('slv-eval')?parseFloat(document.getElementById('slv-eval').value):3.5;
+
+  const methodName={
+    'vandermonde':'Calculo directo (Vandermonde)',
+    'lagrange':'Metodo de Lagrange',
+    'newton':'Diferencias divididas de Newton',
+    'newton-amp':'Newton: ampliacion del soporte',
+    'hermite':'Interpolacion de Hermite',
+    'spline':'Spline cubico',
+    'taylor':'Polinomio de Taylor',
+    'error':'Cota del error de interpolacion',
+    'compare':'Comparativa de metodos'
+  }[m]||'Interpolacion';
+
+  let body=`(* ::Package:: *)\n\n`;
+  body+=`(* ============================================================== *)\n`;
+  body+=`(* Generado desde el solver web - ${methodName}                   *)\n`;
+  body+=`(* ============================================================== *)\n\n`;
+
+  if(m==='taylor'){
+    const fn=document.getElementById('slv-fn').value;
+    const x0=parseFloat(document.getElementById('slv-x0').value);
+    const n=parseInt(document.getElementById('slv-n').value);
+    body+=`(* Funcion y datos *)\n`;
+    body+=`f[x_] := ${fn};\n`;
+    body+=`x0 = ${x0};\n`;
+    body+=`n = ${n};\n\n`;
+    body+=`(* Polinomio de Taylor *)\n`;
+    body+=`P = Normal[Series[f[x], {x, x0, n}]]\n`;
+    body+=`Print["Polinomio de Taylor de orden ", n, " en x0=", x0, ": ", P]\n\n`;
+    body+=`(* Evaluacion en t = ${xx} *)\n`;
+    body+=`t = ${xx};\n`;
+    body+=`Print["P(t) = ", P /. x -> t // N];\n`;
+    body+=`Print["f(t) = ", f[t] // N];\n`;
+    body+=`Print["|error| = ", Abs[(P /. x -> t) - f[t]] // N];\n\n`;
+    body+=`(* Grafica *)\n`;
+    body+=`Plot[{f[x], P}, {x, x0-3, x0+3}, PlotLegends -> {"f(x)", "Taylor"}]\n`;
+  } else if(m==='error'){
+    const fn=document.getElementById('slv-fn').value;
+    const [a,b]=document.getElementById('slv-ab').value.split(',').map(parseFloat);
+    const npts=parseInt(document.getElementById('slv-n').value);
+    const nn=npts-1;
+    body+=`f[x_] := ${fn};\n`;
+    body+=`a = ${a}; b = ${b}; npts = ${npts}; n = npts - 1;\n`;
+    body+=`t = ${xx};\n\n`;
+    body+=`(* Cota M = max |f^(n+1)(x)| en [a,b] *)\n`;
+    body+=`fdn = D[f[x], {x, n+1}];\n`;
+    body+=`Print["f^(", n+1, ")(x) = ", fdn];\n`;
+    body+=`M = NMaxValue[{Abs[fdn], a <= x <= b}, x];\n`;
+    body+=`Print["M = ", M];\n\n`;
+    body+=`(* Soporte equiespaciado *)\n`;
+    body+=`xs = Table[a + (b-a)*i/n, {i, 0, n}];\n`;
+    body+=`prod = Product[Abs[t - xs[[i]]], {i, 1, npts}];\n`;
+    body+=`Print["Soporte: ", xs];\n`;
+    body+=`Print["Producto |t-x_i|: ", prod];\n\n`;
+    body+=`cota = M/(n+1)! * prod;\n`;
+    body+=`Print["Cota E_A(t=", t, ") <= ", N[cota]];\n`;
+    body+=`cotaGen = M/(n+1)! * (b-a)^(n+1);\n`;
+    body+=`Print["Cota global E_A <= ", N[cotaGen]];\n`;
+  } else {
+    body+=`(* Soporte *)\n`;
+    body+=`xs = ${mmaList(xs)};\n`;
+    body+=`ys = ${mmaList(ys)};\n`;
+    body+=`soporte = Transpose[{xs, ys}];\n`;
+    body+=`MatrixForm[soporte]\n\n`;
+    body+=`t = ${xx};\n\n`;
+
+    if(m==='vandermonde'){
+      body+=`(* === Calculo directo via sistema de Vandermonde === *)\n`;
+      body+=`n = Length[xs];\n`;
+      body+=`V = Table[xs[[i]]^j, {i, n}, {j, 0, n-1}];\n`;
+      body+=`Print["Matriz de Vandermonde:"]; Print[MatrixForm[V]];\n`;
+      body+=`coefs = LinearSolve[V, ys];\n`;
+      body+=`P = Sum[coefs[[k+1]]*x^k, {k, 0, n-1}];\n`;
+      body+=`Print["P(x) = ", Expand[P]];\n`;
+      body+=`Print["P(", t, ") = ", P /. x -> t // N];\n`;
+    } else if(m==='lagrange'){
+      body+=`(* === Metodo de Lagrange === *)\n`;
+      body+=`n = Length[xs];\n`;
+      body+=`L[j_, x_] := Product[If[i == j, 1, (x - xs[[i]])/(xs[[j]] - xs[[i]])], {i, n}]\n`;
+      body+=`P = Expand[Sum[ys[[j]]*L[j, x], {j, n}]];\n`;
+      body+=`Print["P(x) = ", P];\n`;
+      body+=`Print["P(", t, ") = ", P /. x -> t // N];\n\n`;
+      body+=`(* Comprobacion con InterpolatingPolynomial *)\n`;
+      body+=`Pcheck = InterpolatingPolynomial[soporte, x];\n`;
+      body+=`Print["InterpolatingPolynomial: ", Expand[Pcheck]];\n\n`;
+      body+=`Plot[P, {x, Min[xs], Max[xs]}, Epilog -> {Red, PointSize[Large], Point[soporte]}]\n`;
+    } else if(m==='newton' || m==='newton-amp'){
+      body+=`(* === Diferencias divididas de Newton === *)\n`;
+      body+=`n = Length[xs];\n`;
+      body+=`(* tabla de diferencias divididas *)\n`;
+      body+=`dd = Table[0, {n}, {n}];\n`;
+      body+=`Do[dd[[i, 1]] = ys[[i]], {i, n}];\n`;
+      body+=`Do[\n`;
+      body+=`  Do[dd[[i, k+1]] = (dd[[i+1, k]] - dd[[i, k]])/(xs[[i+k]] - xs[[i]]);, {i, 1, n-k}];\n`;
+      body+=`, {k, 1, n-1}];\n`;
+      body+=`Print["Tabla DD:"]; Print[MatrixForm[dd]];\n\n`;
+      body+=`P = Expand[Sum[dd[[1, k+1]]*Product[(x - xs[[j]]), {j, k}], {k, 0, n-1}]];\n`;
+      body+=`Print["P(x) = ", P];\n`;
+      body+=`Print["P(", t, ") = ", P /. x -> t // N];\n\n`;
+      if(m==='newton-amp') body+=`(* Para ampliar el soporte: solo hay que calcular las nuevas DD que involucran al nuevo punto y anyadir el termino correspondiente. *)\n`;
+    } else if(m==='hermite'){
+      const yps=sup.map(p=>p[2]);
+      body+=`yps = ${mmaList(yps)};\n\n`;
+      body+=`(* === Hermite via diferencias divididas con soporte duplicado === *)\n`;
+      body+=`n = Length[xs];\n`;
+      body+=`zs = Flatten[Table[{xs[[i]], xs[[i]]}, {i, n}]];\n`;
+      body+=`fs = Flatten[Table[{ys[[i]], ys[[i]]}, {i, n}]];\n`;
+      body+=`m = Length[zs];\n`;
+      body+=`dd = Table[0, {m}, {m}];\n`;
+      body+=`Do[dd[[i, 1]] = fs[[i]], {i, m}];\n`;
+      body+=`Do[\n`;
+      body+=`  Do[\n`;
+      body+=`    If[k == 1 && zs[[i+1]] == zs[[i]], dd[[i, 2]] = yps[[Ceiling[i/2]]],\n`;
+      body+=`      dd[[i, k+1]] = (dd[[i+1, k]] - dd[[i, k]])/(zs[[i+k]] - zs[[i]])];\n`;
+      body+=`  , {i, 1, m-k}];\n`;
+      body+=`, {k, 1, m-1}];\n`;
+      body+=`Print["Tabla DD Hermite:"]; Print[MatrixForm[dd]];\n\n`;
+      body+=`H = Expand[Sum[dd[[1, k+1]]*Product[(x - zs[[j]]), {j, k}], {k, 0, m-1}]];\n`;
+      body+=`Print["H(x) = ", H];\n`;
+      body+=`Print["H(", t, ") = ", H /. x -> t // N];\n`;
+    } else if(m==='spline'){
+      const tp=document.getElementById('slv-spltype').value;
+      body+=`(* === Spline cubico ${tp} === *)\n`;
+      if(tp==='libre') body+=`spl = Interpolation[soporte, Method -> "Spline"];\n`;
+      else {
+        const fp=document.getElementById('slv-fp').value;
+        body+=`fp0 = ${fp.split(',')[0]}; fpn = ${fp.split(',')[1]};\n`;
+        body+=`(* Mathematica usa por defecto splines naturales con Interpolation+Spline *)\n`;
+        body+=`spl = Interpolation[soporte, Method -> "Spline"];\n`;
+      }
+      body+=`Print["S(", t, ") = ", spl[t]];\n`;
+      body+=`Plot[spl[x], {x, Min[xs], Max[xs]}, Epilog -> {Red, PointSize[Large], Point[soporte]}]\n`;
+    } else if(m==='compare'){
+      body+=`(* === Comparativa === *)\n`;
+      body+=`n = Length[xs];\n`;
+      body+=`P = InterpolatingPolynomial[soporte, x];\n`;
+      body+=`Print["Polinomio interpolador (unico): ", Expand[P]];\n`;
+      body+=`Print["P(", t, ") = ", P /. x -> t // N];\n`;
+    }
+  }
+  body+=`\n(* === FIN === *)\n`;
+  // descarga
+  const blob=new Blob([body],{type:'application/vnd.wolfram.mathematica'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='solver_'+m+'_datos.nb';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  document.getElementById('slv-result').innerHTML+=`<br><span style="color:var(--ok)"><strong>✓ Notebook generado:</strong> solver_${m}_datos.nb (descargado).</span>`;
+}
+
+// ============== TEST ==============
+const testQuestions=[
+  {q:'¿Que cumple un polinomio interpolador P_n para un soporte de n+1 puntos?',
+   opts:['P_n(x_i) = f(x_i) para todo punto del soporte','P_n(x) = f(x) para todo x','P_n tiene grado siempre n','El soporte debe ser equiespaciado'], a:0},
+  {q:'El sistema de Vandermonde tiene matriz de coeficientes con elementos:',
+   opts:['x_i^j','j! · x_i','f(x_i)/i!','δ_{ij}'], a:0},
+  {q:'Los polinomios auxiliares de Lagrange L_j(x) cumplen:',
+   opts:['L_j(x) = 1 para todo x','L_j(x_j)=1 y L_j(x_i)=0 si i≠j','L_j(x_i)=δ_{ij} solo si i ≤ j','L_j son siempre constantes'], a:1},
+  {q:'¿Cual es la principal ventaja de las diferencias divididas de Newton frente a Lagrange?',
+   opts:['Es mas preciso','Permite anyadir nuevos puntos al soporte sin recomputar todo','No usa division','Funciona sin soporte'], a:1},
+  {q:'La cota del error de interpolacion contiene el factor:',
+   opts:['(n+1)! solo','M/(n+1)! · prod|x-x_i|','f(x_n)','log(n)'], a:1},
+  {q:'El fenomeno de Runge afecta principalmente a:',
+   opts:['Soportes de 2 puntos','Soportes equiespaciados con muchos puntos cerca de los extremos','Splines cubicos','Polinomio de Taylor'], a:1},
+  {q:'Una solucion practica al fenomeno de Runge es:',
+   opts:['Aumentar mas el grado','Usar interpolacion polinomica segmentada (splines)','Usar Cholesky','Eliminar puntos del soporte'], a:1},
+  {q:'El polinomio de Taylor puede verse como:',
+   opts:['Un caso del polinomio interpolador con todos los puntos colapsados a x_0','Un caso de spline','Una funcion racional','Un polinomio de Lagrange con n=0'], a:0},
+  {q:'En la interpolacion de Hermite con n+1 puntos, el polinomio resultante tiene grado:',
+   opts:['n','n+1','2n+1','2n'], a:2},
+  {q:'En la interpolacion de Hermite via diferencias divididas, los puntos del soporte:',
+   opts:['Son distintos','Se duplican (z_{2k}=z_{2k+1}=x_k)','Se eliminan los repetidos','No se usan'], a:1},
+  {q:'Un spline cubico es una funcion polinomica a trozos de:',
+   opts:['Grado 1 y clase C^0','Grado 2 y clase C^1','Grado 3 y clase C^2','Grado 4 y clase C^3'], a:2},
+  {q:'Un spline cubico LIBRE (natural) impone como condicion en los extremos:',
+   opts:['S(x_0)=S(x_n)','S\'(x_0)=S\'(x_n)','S\'\'(x_0)=S\'\'(x_n)=0','S\'\'\'(x_0)=0'], a:2},
+  {q:'Un spline cubico SUJETO impone:',
+   opts:['S\'(x_0)=f\'(x_0) y S\'(x_n)=f\'(x_n)','S\'\'(x_0)=f\'\'(x_0)','S(x_0)=0','Nada en los extremos'], a:0},
+  {q:'¿Cuantas condiciones hay que imponer en un spline cubico con n subintervalos?',
+   opts:['n','2n','3n','4n (n por cada coeficiente)'], a:3},
+  {q:'Si f(x) es un polinomio de grado m y n+1 puntos del soporte tienen n>m, entonces P_n:',
+   opts:['Es f(x)','Es de grado n','No existe','Es 0'], a:0},
+];
+function renderTest(){
+  let html='';
+  testQuestions.forEach((q,i)=>{
+    html+=`<div class="question-card"><h3>P${i+1}. ${q.q}</h3><div class="options">`;
+    q.opts.forEach((o,j)=>{html+=`<label><input type="radio" name="q${i}" value="${j}">${o}</label>`;});
+    html+=`</div><div class="feedback" id="fb${i}"></div></div>`;
+  });
+  document.getElementById('test-questions').innerHTML=html;
+  document.getElementById('test-total').textContent=testQuestions.length;
+}
+function gradeTest(){
+  let s=0;
+  testQuestions.forEach((q,i)=>{
+    const sel=document.querySelector(`input[name=q${i}]:checked`);
+    const fb=document.getElementById('fb'+i);
+    if(!sel){fb.className='feedback incorrect'; fb.innerHTML='Sin respuesta. Correcta: '+q.opts[q.a]; return;}
+    if(parseInt(sel.value)===q.a){s++; fb.className='feedback correct'; fb.innerHTML='✓ Correcto';}
+    else {fb.className='feedback incorrect'; fb.innerHTML='✗ Correcta: '+q.opts[q.a];}
+  });
+  document.getElementById('test-score').textContent=s;
+}
+
+// ============== PROBLEMAS ==============
+function showSol(id,html){
+  const el=document.getElementById('sol-'+id);
+  el.innerHTML=html; el.classList.add('show');
+  renderMathInElement(el,mathOpts);
+}
+function solveP(n){
+  if(n===1){
+    const xs=[8,9,10,11,12,13,14,15,16];
+    const ys=[0,11,16,9,7,11,8,13,5];
+    const {P}=lagrange(xs,ys);
+    const v=evalPoly(P,11.5);
+    let h=`<p>Soporte de 9 puntos: polinomio interpolador P_8(x).</p>`;
+    h+=`<p><strong>Estimacion incidencias a las 11:30:</strong> P(11.5) ≈ ${fmt(v,4)}</p>`;
+    h+=`<p>El polinomio puede oscilar mucho con tantos puntos (ver fenomeno de Runge). Una interpolacion segmentada de grado 2-3 es preferible.</p>`;
+    showSol(1,h); return;
+  }
+  if(n===2){
+    const xs=[0,2,4,6,8], ys=[0,18,28,35,40];
+    const {P:cL}=lagrange(xs,ys);
+    const r4=newtonPoly(xs.slice(0,4),ys.slice(0,4));
+    const r5=newtonPoly(xs,ys);
+    let h=`<p><strong>Lagrange (5 ptos):</strong> ${polyToString(cL)}</p>`;
+    h+=`<p><strong>Newton 4 ptos:</strong> ${polyToString(r4.P)}</p>`;
+    h+=`<p><strong>Newton 5 ptos:</strong> ${polyToString(r5.P)}</p>`;
+    h+=`<p>El polinomio de Newton con 5 puntos es el de 4 puntos + el termino correspondiente al nuevo punto x=8.</p>`;
+    showSol(2,h); return;
+  }
+  if(n===3){
+    let h='<p>f(x)=2/(3+5x²) en [-2,2]. Vamos con 4 puntos (n=3): necesitamos f<sup>(4)</sup>; con 5 puntos (n=4): f<sup>(5)</sup>.</p>';
+    const fn='2/(3+5*x^2)';
+    [4,5].forEach(npts=>{
+      const nn=npts-1; let M=0;
+      for(let k=0;k<=200;k++){const x=-2+4*k/200; const dv=Math.abs(numDeriv(fn,x,nn+1)); if(dv>M)M=dv;}
+      const cota=M/factorial(nn+1)*Math.pow(4,nn+1);
+      h+=`<p><strong>${npts} puntos (n=${nn}):</strong> M ≈ ${fmt(M,3)}, E_A ≤ ${fmt(M,3)}/${nn+1}! · 4<sup>${nn+1}</sup> ≈ ${fmt(cota,4)}</p>`;
+    });
+    h+='<p>Para Hermite con 4 puntos (n=3): error con f<sup>(8)</sup>/(8!) · prod(x-x_i)². Para 5 puntos: f<sup>(10)</sup>/(10!).</p>';
+    h+='<p>La interpolacion de Hermite reduce significativamente la cota del error frente a la polinomica simple, gracias al exponente cuadratico.</p>';
+    showSol(3,h); return;
+  }
+  if(n===4){
+    let h='<p>f(x)=7/(2+4x²) en [-1,1]. Soporte equiespaciado.</p>';
+    const fn='7/(2+4*x^2)';
+    [4,5].forEach(npts=>{
+      const nn=npts-1; let M=0;
+      for(let k=0;k<=200;k++){const x=-1+2*k/200; const dv=Math.abs(numDeriv(fn,x,nn+1)); if(dv>M)M=dv;}
+      const cota=M/factorial(nn+1)*Math.pow(2,nn+1);
+      h+=`<p><strong>n+1=${npts}:</strong> M ≈ ${fmt(M,3)}, cota ≈ ${fmt(cota,4)}</p>`;
+    });
+    // P_4(0.2)
+    const xs=[-1,-0.5,0,0.5,1];
+    const ys=xs.map(x=>evalFn(fn,x));
+    const {P}=newtonPoly(xs,ys);
+    const v=evalPoly(P,0.2); const real=evalFn(fn,0.2);
+    h+=`<p><strong>P_4(0.2) =</strong> ${fmt(v,5)}, <strong>f(0.2) =</strong> ${fmt(real,5)}, <strong>|error real|</strong> = ${fmt(Math.abs(v-real),5)}</p>`;
+    showSol(4,h); return;
+  }
+  if(n===5){
+    const xs=[0,Math.PI/4,Math.PI/2,3*Math.PI/4,Math.PI];
+    const ys=xs.map(x=>Math.sin(x));
+    const {P}=lagrange(xs,ys);
+    const v=evalPoly(P,Math.PI/3);
+    const real=Math.sin(Math.PI/3);
+    let h=`<p><strong>P_4(x) =</strong> ${polyToString(P)}</p>`;
+    h+=`<p><strong>P_4(π/3) =</strong> ${fmt(v,6)}, <strong>sin(π/3) =</strong> ${fmt(real,6)}, |error| = ${fmt(Math.abs(v-real),6)}</p>`;
+    h+=`<p>Cota: |sin<sup>(5)</sup>(c)| ≤ 1, E_A ≤ 1/5! · prod|π/3-x_i| ≈ ${fmt(xs.reduce((p,xi)=>p*Math.abs(Math.PI/3-xi),1)/120,5)}</p>`;
+    showSol(5,h); return;
+  }
+  if(n===6){
+    const xs=[0,0.25,0.5,0.75,1], ys=xs.map(x=>Math.exp(x));
+    const {P,dd}=newtonPoly(xs,ys);
+    const v=evalPoly(P,0.6);
+    const real=Math.exp(0.6);
+    let h='<p><strong>Tabla de DD:</strong></p><table class="dt"><tr><th>x_i</th>';
+    for(let k=0;k<dd.length;k++) h+=`<th>orden ${k}</th>`;
+    h+='</tr>';
+    for(let i=0;i<xs.length;i++){
+      h+=`<tr><td>${xs[i]}</td>`;
+      for(let k=0;k<dd.length;k++) h+= dd[k][i]!==undefined?`<td>${fmt(dd[k][i],5)}</td>`:'<td></td>';
+      h+='</tr>';
+    }
+    h+='</table>';
+    h+=`<p><strong>P_4(x) =</strong> ${polyToString(P)}</p>`;
+    h+=`<p><strong>P_4(0.6) =</strong> ${fmt(v,8)}, <strong>e^{0.6} =</strong> ${fmt(real,8)}, |error| = ${fmt(Math.abs(v-real),5)}</p>`;
+    h+=`<p>Cota: M = e^1 ≈ 2.7183, E_A ≤ 2.7183/5! · prod|0.6-x_i| ≈ ${fmt(2.7183/120*xs.reduce((p,xi)=>p*Math.abs(0.6-xi),1),5)}</p>`;
+    showSol(6,h); return;
+  }
+  if(n===7){
+    const xs=[0.5,1.0,1.5,2.0,2.5,3.0], ys=[1.0,1.7,1.9,2.0,1.8,1.5];
+    const spl=cubicSpline(xs,ys,'libre');
+    let h='<table class="dt"><tr><th>i</th><th>x_i</th><th>a_i</th><th>b_i</th><th>c_i</th><th>d_i</th></tr>';
+    for(let i=0;i<spl.a.length;i++) h+=`<tr><td>${i}</td><td>${fmt(spl.xs[i],3)}</td><td>${fmt(spl.a[i],4)}</td><td>${fmt(spl.b[i],4)}</td><td>${fmt(spl.c[i],4)}</td><td>${fmt(spl.d[i],4)}</td></tr>`;
+    h+='</table>';
+    h+=`<p><strong>S(1.7) =</strong> ${fmt(evalSpline(spl,1.7),5)}, <strong>S(2.4) =</strong> ${fmt(evalSpline(spl,2.4),5)}</p>`;
+    showSol(7,h); return;
+  }
+  if(n===8){
+    const xs=[Math.PI/4,Math.PI/3,Math.PI/2];
+    const ys=xs.map(x=>Math.cos(x));
+    const yps=xs.map(x=>-Math.sin(x));
+    const {P}=hermiteDD(xs,ys,yps);
+    const v=evalPoly(P,1.2);
+    const real=Math.cos(1.2);
+    let h=`<p><strong>H_5(x) =</strong> ${polyToString(P)}</p>`;
+    h+=`<p><strong>H_5(1.2) =</strong> ${fmt(v,8)}, <strong>cos(1.2) =</strong> ${fmt(real,8)}, |error| = ${fmt(Math.abs(v-real),6)}</p>`;
+    const cota=xs.reduce((p,xi)=>p*Math.pow(1.2-xi,2),1)/720;
+    h+=`<p>Cota: |f<sup>(6)</sup>(c)|=|−cos(c)|≤1, E_A ≤ 1/6! · ∏(1.2-x_i)² ≈ ${fmt(Math.abs(cota),5)}</p>`;
+    showSol(8,h); return;
+  }
+  if(n===9){
+    let h='<p>Genera la grafica con 5, 9 y 13 puntos para ver el fenomeno: el polinomio oscila cada vez mas cerca de los extremos.</p>';
+    h+='<button class="btn btn-primary" onclick="document.getElementById(\'runge-grados\').value=\'4,8,12\';showTopic(\'t5\');runRunge();">Ver grafica en seccion teorica</button>';
+    showSol(9,h); return;
+  }
+  if(n===10){
+    const xs=[0,1,4,7], ys=[0,0.5,2.5,4.1];
+    const c=vandermonde(xs,ys);
+    const v=evalPoly(c,3.5);
+    let h='<p><strong>Sistema de Vandermonde:</strong></p>';
+    h+='<div class="matrix-display">| 1  0  0   0  | a_0 |   | 0   |\n| 1  1  1   1  | a_1 | = | 0.5 |\n| 1  4  16  64 | a_2 |   | 2.5 |\n| 1  7  49 343 | a_3 |   | 4.1 |</div>';
+    h+=`<p><strong>P_3(t) =</strong> ${polyToString(c)}</p>`;
+    h+=`<p><strong>P_3(3.5) =</strong> <span class="val">${fmt(v,5)}</span> m/s</p>`;
+    showSol(10,h); return;
+  }
+}
+
+renderTest();
+document.addEventListener('DOMContentLoaded',()=>{renderMathInElement(document.body,mathOpts);});
+window.addEventListener('load',()=>{renderMathInElement(document.body,mathOpts);});
+</script>
+</body>
+</html>

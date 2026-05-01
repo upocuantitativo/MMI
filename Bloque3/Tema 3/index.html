@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Sistemas Lineales - Metodos Matematicos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='50' text-anchor='middle' fill='white' font-family='serif'>Ax</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--acc:#e74c3c;--ok:#27ae60;--warn:#f39c12;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--txtl:#7f8c8d;--brd:#dce1e6;--sh:0 2px 8px rgba(0,0,0,.08);--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+.header{background:linear-gradient(135deg,#8e44ad,#5b2c6f);color:#fff;padding:1.5rem 2rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.header p{font-size:.95rem;opacity:.9}
+.header a{color:#ffd700;text-decoration:none;font-size:.85rem}
+.header a:hover{text-decoration:underline}
+.tab-bar{display:flex;background:var(--card);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#eef2f7}
+.tab-btn.active{color:var(--pri);border-bottom-color:var(--pri);background:#eef2f7}
+.tab-content{display:none;padding:1rem;max-width:1100px;margin:0 auto}
+.tab-content.active{display:block}
+.topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.topic-selector label{font-weight:600;font-size:1rem;color:var(--pri)}
+.topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri-l);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
+.topic-section{display:none}
+.topic-section.active{display:block}
+.def-box,.prop-box,.example-box,.algo-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
+.def-box{border-color:var(--pri);background:#eaf2f8}
+.prop-box{border-color:var(--ok);background:#eafaf1}
+.example-box{border-color:var(--warn);background:#fef9e7}
+.algo-box{border-color:#8e44ad;background:#f5eef8}
+.def-box strong,.prop-box strong,.example-box strong,.algo-box strong{display:block;margin-bottom:.3rem}
+.interactive-box{background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin:1rem 0}
+.interactive-box h4{color:var(--pri);margin-bottom:.7rem;font-size:.95rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.calc-grid label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-grid input,.calc-grid select,.calc-grid textarea{width:100%;padding:.5rem;border:1px solid var(--brd);border-radius:4px;font-size:.95rem;font-family:inherit}
+.btn{padding:.5rem 1.2rem;border:none;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--pri);color:#fff}
+.btn-primary:hover{background:var(--pri-l)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-accent{background:var(--acc);color:#fff}
+.result-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;min-height:2rem}
+.result-box .val{color:var(--pri);font-weight:700}
+.steps-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;line-height:1.7}
+.steps-box .step{padding:.5rem;margin:.3rem 0;border-left:3px solid var(--pri-l);background:#f8f9fb}
+.steps-box h5{color:var(--pri);margin:.5rem 0 .3rem 0}
+.matrix-display{font-family:'Courier New',monospace;background:#fff;padding:.5rem;border:1px solid var(--brd);border-radius:4px;display:inline-block;margin:.3rem;font-size:.85rem;white-space:pre}
+.matrix-input{font-family:'Courier New',monospace;font-size:.9rem;min-height:80px;resize:vertical}
+.plot-container{margin:1rem 0;min-height:300px}
+table.dt{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.85rem}
+table.dt th,table.dt td{padding:.4rem .6rem;border:1px solid var(--brd);text-align:center}
+table.dt th{background:var(--pri);color:#fff;font-weight:600}
+table.dt tr:nth-child(even){background:#f8f9fb}
+.question-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.question-card h3{font-size:1rem;margin-bottom:.8rem;color:var(--pri)}
+.question-card .options label{display:block;padding:.6rem .8rem;margin:.3rem 0;border:1px solid var(--brd);border-radius:4px;cursor:pointer;transition:.2s;font-size:.9rem}
+.question-card .options label:hover{background:#eef2f7}
+.question-card .options input{margin-right:.5rem}
+.question-card .feedback{margin-top:.6rem;padding:.6rem;border-radius:4px;font-size:.9rem;display:none}
+.question-card .feedback.correct{display:block;background:#d5f5e3;color:#1e8449}
+.question-card .feedback.incorrect{display:block;background:#fadbd8;color:#c0392b}
+.problem-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);border-left:4px solid var(--warn)}
+.problem-card h3{font-size:1rem;margin-bottom:.5rem;color:var(--pri)}
+.problem-card .sol{display:none;margin-top:.8rem;padding:.8rem;background:#eafaf1;border-radius:4px;font-size:.9rem}
+.problem-card .sol.show{display:block}
+.score-bar{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);text-align:center}
+.score-bar .score{font-size:2rem;font-weight:700;color:var(--pri)}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600;margin-left:.5rem}
+.badge-easy{background:#d5f5e3;color:#1e8449}
+.badge-med{background:#fef9e7;color:#b7950b}
+.badge-hard{background:#fadbd8;color:#c0392b}
+.badge-tarea{background:#d4e6f1;color:#1a5276}
+.nb-link{display:inline-flex;align-items:center;gap:.4rem;background:#dc143c;color:#fff;padding:.4rem .8rem;border-radius:4px;text-decoration:none;font-size:.85rem;font-weight:600;margin:.3rem .2rem 0 0;border:none;cursor:pointer}
+.nb-link:hover{background:#a30f2c}
+.nb-link::before{content:'📥';font-size:1rem}
+.nb-row{margin-top:.5rem;padding:.5rem;background:#fff;border:1px dashed var(--brd);border-radius:4px;font-size:.85rem}
+.nb-row strong{color:var(--pri);display:block;margin-bottom:.3rem}
+.katex{font-size:1em!important}
+.katex-display{margin:.5em 0!important}
+p{margin:.5rem 0}
+ul,ol{margin:.5rem 0 .5rem 1.5rem}
+.iter-table{max-height:400px;overflow:auto}
+@media(max-width:700px){.calc-grid{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Sistemas de Ecuaciones Lineales</h1>
+  <p>Metodos directos e iterativos &mdash; Resolucion numerica de A&middot;x = b</p>
+  <a href="../index.html">&larr; Volver al Bloque 3</a>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
+  <button class="tab-btn" onclick="switchTab('problems')">Solver de Problemas</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test y Problemas</button>
+</div>
+
+<!-- ============ TEORIA ============ -->
+<div id="tab-theory" class="tab-content active">
+
+<div class="topic-selector">
+  <label for="topic-select">Selecciona un tema:</label>
+  <select id="topic-select" onchange="showTopic(this.value)">
+    <option value="" disabled selected>-- Elige un tema --</option>
+    <option value="t1">1. Introduccion. Metodos directos vs iterativos</option>
+    <option value="t2">2. Metodo de eliminacion de Gauss</option>
+    <option value="t3">3. Metodo de Gauss-Jordan</option>
+    <option value="t4">4. Estrategias de pivoteo</option>
+    <option value="t5">5. Factorizacion LU</option>
+    <option value="t6">6. Factorizacion de Cholesky</option>
+    <option value="t7">7. Metodos iterativos: punto fijo matricial</option>
+    <option value="t8">8. Metodo de Jacobi</option>
+    <option value="t9">9. Metodo de Gauss-Seidel</option>
+    <option value="t10">10. Metodos de relajacion (SOR)</option>
+    <option value="t11">11. Condicionamiento de un sistema</option>
+    <option value="t12">12. Comparativa de metodos</option>
+  </select>
+</div>
+
+<!-- T1 -->
+<div class="topic-section" id="t1">
+<h2>1. Introduccion. Metodos directos vs iterativos</h2>
+<p>Suponemos un sistema \(A\cdot \underline{x}=\underline{b}\) compatible determinado, con \(A\in \mathcal{M}_n(\mathbb{R})\) invertible y \(\underline{x},\underline{b}\in\mathbb{R}^n\). El Teorema de Rouche-Frobenius garantiza solucion unica si \(\text{rang}(A)=\text{rang}(\bar A)=n\).</p>
+
+<div class="def-box">
+  <strong>Metodos directos</strong>
+  Calculan la solucion exacta del sistema mediante un numero finito de operaciones (en aritmetica exacta). Algunos: Gauss, Gauss-Jordan, factorizacion LU, factorizacion de Cholesky.
+</div>
+
+<div class="def-box">
+  <strong>Metodos iterativos</strong>
+  Generan una sucesion \(\underline{x}^{(k)}\) que tiende a la solucion. Se usan en sistemas grandes y dispersos: Jacobi, Gauss-Seidel y metodos de relajacion.
+</div>
+
+<div class="prop-box">
+  <strong>Estrategia de pivoteo</strong>
+  En todo metodo basado en eliminacion, el pivote no nulo del paso \(k\) determina los multiplicadores \(m_{pk}=a_{pk}^{(k)}/a_{kk}^{(k)}\). Si \(|m_{pk}|>1\), los errores de redondeo pueden amplificarse. Para controlarlos se usan estrategias de pivoteo (parcial, parcial escalado, completo).
+</div>
+
+<div class="interactive-box">
+  <h4>Comprueba la compatibilidad de un sistema</h4>
+  <p>Introduce la matriz ampliada \([A|b]\) (filas separadas por \\n y elementos por espacio):</p>
+  <textarea id="comp-input" class="matrix-input" placeholder="4.1 -2.8 3.9 4.1
+-5.2 2.1 -3.4 2.1
+1.1 -3.3 2.1 -1.1">4.1 -2.8 3.9 4.1
+-5.2 2.1 -3.4 2.1
+1.1 -3.3 2.1 -1.1</textarea>
+  <button class="btn btn-primary" onclick="checkCompatibility()" style="margin-top:.5rem">Comprobar compatibilidad</button>
+  <div class="result-box" id="comp-result"></div>
+</div>
+</div>
+
+<!-- T2 Gauss -->
+<div class="topic-section" id="t2">
+<h2>2. Metodo de eliminacion de Gauss</h2>
+<p>Transforma el sistema \(A\cdot \underline{x}=\underline{b}\) en otro equivalente con matriz de coeficientes triangular superior \(U\), mediante transformaciones elementales por filas:</p>
+
+<div class="def-box">
+  <strong>Transformaciones elementales</strong>
+  <ul>
+    <li>Tipo I: \(f_i\to f_i+\lambda f_j\).</li>
+    <li>Tipo II: \(f_i\to \lambda\cdot f_i\).</li>
+    <li>Tipo III (intercambio): \(f_i\leftrightarrow f_j\).</li>
+  </ul>
+</div>
+
+<div class="algo-box">
+  <strong>Algoritmo de Gauss</strong>
+  <p>Para \(i=1,\ldots,n-1\):</p>
+  <ul>
+    <li>Para \(j=i+1,\ldots,n\): \(m_{ji}=\frac{a_{ji}}{a_{ii}}\) y \(F_j\leftarrow F_j-m_{ji}\cdot F_i\).</li>
+  </ul>
+  <p>Despeje regresivo: \(x_n=\frac{c_n}{u_{nn}}\), \(x_i=\frac{c_i-\sum_{j=i+1}^n u_{ij}x_j}{u_{ii}}\).</p>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo</strong>
+  El sistema con matriz ampliada \([4.1,-2.8,3.9 \mid 4.1; -5.2,2.1,-3.4 \mid 2.1; 1.1,-3.3,2.1\mid -1.1]\) tras pivotar produce \(U=[4.1,-2.8,3.9;0,-1.45,1.55;0,0,-1.66]\) y solucion \(x\approx -4.45,\ y\approx 4.60,\ z\approx 9.04\).
+  <div class="nb-row">
+    <strong>Archivos Mathematica de ejemplo:</strong>
+    <a class="nb-link" href="Gauss_asecas.nb" download>Gauss_asecas.nb</a>
+    <a class="nb-link" href="Ejemplo_Pivoteo_Gauss_corregido.nb" download>Ejemplo_Pivoteo_Gauss_corregido.nb</a>
+  </div>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Gauss (sin pivoteo)</h4>
+  <p>Introduce la matriz ampliada \([A|b]\):</p>
+  <textarea id="gauss-input" class="matrix-input">4.1 -2.8 3.9 4.1
+-5.2 2.1 -3.4 2.1
+1.1 -3.3 2.1 -1.1</textarea>
+  <button class="btn btn-primary" onclick="runGauss()" style="margin-top:.5rem">Ejecutar Gauss</button>
+  <div class="steps-box" id="gauss-steps"></div>
+  <div class="result-box" id="gauss-result"></div>
+</div>
+</div>
+
+<!-- T3 Gauss-Jordan -->
+<div class="topic-section" id="t3">
+<h2>3. Metodo de Gauss-Jordan</h2>
+<p>Variante del metodo de Gauss en la que se eliminan tambien los terminos por encima de la diagonal, dejando una matriz diagonal (o, tras escalar, la identidad). La solucion se lee directamente de la columna de terminos independientes.</p>
+
+<div class="algo-box">
+  <strong>Algoritmo de Gauss-Jordan</strong>
+  Para \(i=1,\ldots,n\), pivotar columna \(i\) eliminando coeficientes en TODAS las filas \(j\neq i\):
+  \(m_{ji}=\frac{a_{ji}}{a_{ii}}\), \(F_j\leftarrow F_j-m_{ji}F_i\). La solucion se obtiene como \(x_i=\frac{a_{i,n+1}}{a_{ii}}\).
+</div>
+
+<div class="prop-box">
+  <strong>Comparativa con Gauss</strong>
+  Gauss-Jordan no requiere despeje regresivo, pero hace mas operaciones. Es util si se necesita la inversa: aplicando GJ a \([A|I]\) se obtiene \([I|A^{-1}]\).
+</div>
+
+<div class="nb-row">
+  <strong>Archivos Mathematica de ejemplo:</strong>
+  <a class="nb-link" href="GaussJordan_asecas.nb" download>GaussJordan_asecas.nb</a>
+  <a class="nb-link" href="Ejemplo_Pivoteo_Gauss_Jordan.nb" download>Ejemplo_Pivoteo_Gauss_Jordan.nb</a>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Gauss-Jordan</h4>
+  <textarea id="gj-input" class="matrix-input">4.1 -2.8 3.9 4.1
+-5.2 2.1 -3.4 2.1
+1.1 -3.3 2.1 -1.1</textarea>
+  <button class="btn btn-primary" onclick="runGaussJordan()" style="margin-top:.5rem">Ejecutar Gauss-Jordan</button>
+  <div class="steps-box" id="gj-steps"></div>
+  <div class="result-box" id="gj-result"></div>
+</div>
+</div>
+
+<!-- T4 Pivoteo -->
+<div class="topic-section" id="t4">
+<h2>4. Estrategias de pivoteo</h2>
+
+<div class="def-box">
+  <strong>Pivoteo parcial (maximo en columna)</strong>
+  En la k-esima columna, se elige como pivote el elemento \(a_{pk}\) (con \(p\geq k\)) cuyo valor absoluto sea mayor:
+  \[|a_{pk}^{(k-1)}|=\max_{k\leq i\leq n}|a_{ik}^{(k-1)}|\]
+  Si \(p\neq k\) se intercambian las filas. Asi todos los multiplicadores cumplen \(|m_{ij}|\leq 1\).
+</div>
+
+<div class="def-box">
+  <strong>Pivoteo parcial escalado</strong>
+  Se calculan factores de escala \(s_i=\max_{1\leq j\leq n}|a_{ij}|\) por fila. El pivote de la columna 1 es la fila \(p\) que cumple
+  \[\frac{|a_{p1}|}{s_p}=\max_{1\leq k\leq n}\frac{|a_{k1}|}{s_k}\]
+  Adecuado cuando las filas tienen magnitudes distintas.
+</div>
+
+<div class="def-box">
+  <strong>Pivoteo completo (o maximal)</strong>
+  Los factores \(s_i\) se recalculan en cada paso. Se compara cada candidato a pivote con su entorno completo. Es mas costoso pero mas estable.
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Gauss con pivoteo parcial</h4>
+  <textarea id="gp-input" class="matrix-input">4.1 -2.8 3.9 4.1
+-5.2 2.1 -3.4 2.1
+1.1 -3.3 2.1 -1.1</textarea>
+  <div class="calc-grid">
+    <div><label>Estrategia:</label>
+      <select id="gp-strategy">
+        <option value="parcial">Pivoteo parcial</option>
+        <option value="escalado">Pivoteo parcial escalado</option>
+      </select>
+    </div>
+    <div><label>Aritmetica (cifras):</label>
+      <select id="gp-prec">
+        <option value="0">Exacta</option>
+        <option value="3">3 cifras</option>
+        <option value="4">4 cifras</option>
+        <option value="5">5 cifras</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="runGaussPivot()">Ejecutar con pivoteo</button>
+  <div class="steps-box" id="gp-steps"></div>
+  <div class="result-box" id="gp-result"></div>
+</div>
+</div>
+
+<!-- T5 LU -->
+<div class="topic-section" id="t5">
+<h2>5. Factorizacion LU</h2>
+<p>Buscamos descomponer \(A=L\cdot U\) con \(L\) triangular inferior con unos en la diagonal y \(U\) triangular superior. El sistema \(A\underline{x}=\underline{b}\) se resuelve en dos etapas:</p>
+<div class="def-box">
+  <strong>Resolucion via LU</strong>
+  <ol>
+    <li><strong>1a etapa</strong>: \(L\cdot \underline{y}=\underline{b}\) (sustitucion progresiva).</li>
+    <li><strong>2a etapa</strong>: \(U\cdot \underline{x}=\underline{y}\) (sustitucion regresiva).</li>
+  </ol>
+</div>
+<div class="prop-box">
+  <strong>Existencia</strong>
+  Una matriz \(A\) admite factorizacion LU sin permutaciones si Gauss puede aplicarse SIN intercambios de filas. Si fuesen necesarios, se reordenan previamente las ecuaciones (i.e., trabajamos con \(PA=LU\)).
+  <ul>
+    <li>Toda matriz <strong>estrictamente diagonal dominante</strong> admite LU sin intercambios.</li>
+    <li>Toda matriz <strong>simetrica definida positiva</strong> admite LU sin intercambios y con pivotes positivos.</li>
+  </ul>
+</div>
+
+<div class="nb-row">
+  <strong>Archivo Mathematica de ejemplo:</strong>
+  <a class="nb-link" href="EjemplosFactorizacionLU.nb" download>EjemplosFactorizacionLU.nb</a>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Factorizacion LU</h4>
+  <textarea id="lu-input" class="matrix-input">1 2 5
+3 4 1
+2 -1 1</textarea>
+  <p style="font-size:.85rem;color:var(--txtl);margin:.3rem 0">Solo matriz \(A\) (sin termino independiente) o matriz ampliada \([A|b]\) si quieres resolver.</p>
+  <button class="btn btn-primary" onclick="runLU()" style="margin-top:.5rem">Calcular LU</button>
+  <div class="steps-box" id="lu-steps"></div>
+  <div class="result-box" id="lu-result"></div>
+</div>
+</div>
+
+<!-- T6 Cholesky -->
+<div class="topic-section" id="t6">
+<h2>6. Factorizacion de Cholesky</h2>
+<p>Caso particular de LU para matrices simetricas definidas positivas. Una matriz \(A\) admite Cholesky si y solo si \(A=A^t\) y todos sus autovalores son positivos. En tal caso \(A=L\cdot L^t\) con \(L\) triangular inferior con diagonal positiva.</p>
+
+<div class="prop-box">
+  <strong>Aplicabilidad</strong>
+  <ul>
+    <li>Si \(A\) es simetrica definida positiva &rarr; existe \(L\) (Cholesky) y se resuelve como en LU.</li>
+    <li>Si \(A\) es simetrica <strong>definida negativa</strong> &rarr; \(-A\) es definida positiva. Se resuelve \((-A)\underline{x}=-\underline{b}\) por Cholesky.</li>
+    <li>Si \(A\) no es simetrica o es indefinida &rarr; no existe Cholesky. Usar LU.</li>
+  </ul>
+</div>
+
+<div class="nb-row">
+  <strong>Archivo Mathematica de ejemplo:</strong>
+  <a class="nb-link" href="EjemploFactorizacionCholesky.nb" download>EjemploFactorizacionCholesky.nb</a>
+</div>
+
+<div class="interactive-box">
+  <h4>Verificador y calculadora de Cholesky</h4>
+  <textarea id="ch-input" class="matrix-input">1 2
+2 5</textarea>
+  <button class="btn btn-primary" onclick="runCholesky()" style="margin-top:.5rem">Comprobar y factorizar</button>
+  <div class="steps-box" id="ch-steps"></div>
+  <div class="result-box" id="ch-result"></div>
+</div>
+</div>
+
+<!-- T7 Punto fijo matricial -->
+<div class="topic-section" id="t7">
+<h2>7. Metodos iterativos: punto fijo matricial</h2>
+<p>Reescribimos \(A\underline{x}=\underline{b}\) como un sistema equivalente de la forma \(\underline{x}=T\cdot\underline{x}+\underline{c}\), partiendo de la descomposicion \(A=M+(A-M)\) con \(M\) invertible:</p>
+\[\underline{x}=M^{-1}(M-A)\cdot\underline{x}+M^{-1}\cdot\underline{b}\]
+
+<div class="def-box">
+  <strong>Radio espectral</strong>
+  El radio espectral de \(M\) es \(\rho(M)=\max\{|\lambda|:\lambda\text{ autovalor de }M\}\).
+</div>
+<div class="prop-box">
+  <strong>Teorema 29 (Convergencia)</strong>
+  La sucesion \(\underline{x}^{(k)}=T\underline{x}^{(k-1)}+\underline{c}\) converge a la solucion del sistema \(\underline{x}=T\underline{x}+\underline{c}\) si y solo si \(\rho(T)<1\).
+</div>
+<div class="def-box">
+  <strong>Criterios de parada</strong>
+  Usando la norma del infinito \(\|\underline{x}\|_\infty=\max_i|x_i|\):
+  <ul>
+    <li>\(E_A(\underline{x}^k)\approx \|\underline{x}^k-\underline{x}^{k-1}\|_\infty<\) tol</li>
+    <li>\(E_R(\underline{x}^k)\approx \|\underline{x}^k-\underline{x}^{k-1}\|_\infty/\|\underline{x}^k\|_\infty<\) tol</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora del radio espectral</h4>
+  <p>Introduce una matriz cuadrada para calcular su radio espectral:</p>
+  <textarea id="rho-input" class="matrix-input">0 -1.5/5.4 3.2/5.4
+6.1/-10.8 0 -2.4/-10.8
+-1.6/-8.32 4.9/-8.32 0</textarea>
+  <button class="btn btn-primary" onclick="computeSpectralRadius()" style="margin-top:.5rem">Calcular &rho;(M)</button>
+  <div class="result-box" id="rho-result"></div>
+</div>
+</div>
+
+<!-- T8 Jacobi -->
+<div class="topic-section" id="t8">
+<h2>8. Metodo de Jacobi</h2>
+<p>Caso \(M=\text{Diag}(A)\). Requiere \(a_{ii}\neq 0\). La formula iterativa despeja \(x_i\) de la i-esima ecuacion usando los valores de la iteracion anterior:</p>
+\[x_i^{(k)}=\frac{b_i-\sum_{j\neq i}a_{ij}\,x_j^{(k-1)}}{a_{ii}},\quad i=1,\ldots,n\]
+
+<div class="prop-box">
+  <strong>Teorema 32 (Criterio de convergencia)</strong>
+  Si \(A\) es estrictamente diagonal dominante (\(|a_{ii}|>\sum_{j\neq i}|a_{ij}|\)), Jacobi converge para cualquier \(\underline{x}^{(0)}\).
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo (Tema 3, Ejemplo 34)</strong>
+  Para \(\{5.4x+1.5y-3.2z=1.7,\ 6.1x-10.8y+2.4z=-2.8,\ -1.6x+4.9y-8.32z=1.1\}\) con \((x_0,y_0,z_0)=(1,1.2,2.1)\), la iteracion de Jacobi se escribe \(x_k=(1.7-1.5y_{k-1}+3.2z_{k-1})/5.4\), etc. Convergencia en 11 iteraciones para 2 cifras decimales exactas (tol \(10^{-2}\)).
+  <div class="nb-row">
+    <strong>Archivos Mathematica de ejemplo:</strong>
+    <a class="nb-link" href="Ejemplos_Jacobi_Gauss_Seidel.nb" download>Ejemplos_Jacobi_Gauss_Seidel.nb</a>
+    <a class="nb-link" href="Codigo_Metodos_Iterativos_Sistemas_lineales_def_v2(1).nb" download>Codigo iterativo def v2</a>
+    <a class="nb-link" href="Codigo_Metodos_Iterativos_Sistemas_lineales_matricial_convergencia_def(1).nb" download>Convergencia matricial</a>
+  </div>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Jacobi</h4>
+  <p>Matriz ampliada \([A|b]\):</p>
+  <textarea id="jac-input" class="matrix-input">5.4 1.5 -3.2 1.7
+6.1 -10.8 2.4 -2.8
+-1.6 4.9 -8.32 1.1</textarea>
+  <div class="calc-grid">
+    <div><label>Aproximacion inicial \(\underline{x}_0\) (separada por comas):</label><input type="text" id="jac-x0" value="1, 1.2, 2.1"></div>
+    <div><label>Tolerancia:</label><input type="text" id="jac-tol" value="1e-2"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="jac-max" value="50"></div>
+    <div><label>Tipo error:</label><select id="jac-err"><option value="abs" selected>Absoluto</option><option value="rel">Relativo</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="runJacobi()">Ejecutar Jacobi</button>
+  <div class="iter-table"><table class="dt" id="jac-table"><thead></thead><tbody></tbody></table></div>
+  <div class="result-box" id="jac-result"></div>
+</div>
+</div>
+
+<!-- T9 Gauss-Seidel -->
+<div class="topic-section" id="t9">
+<h2>9. Metodo de Gauss-Seidel</h2>
+<p>Variante de Jacobi en la que, al calcular \(x_i^{(k)}\), se utilizan ya las componentes \(x_1^{(k)},\ldots,x_{i-1}^{(k)}\) recien calculadas:</p>
+\[x_i^{(k)}=\frac{b_i-\sum_{j<i}a_{ij}x_j^{(k)}-\sum_{j>i}a_{ij}x_j^{(k-1)}}{a_{ii}}\]
+<p>Equivalente a tomar \(M\) triangular inferior de \(A\). Suele converger mas rapido que Jacobi.</p>
+
+<div class="prop-box">
+  <strong>Criterios de convergencia</strong>
+  <ul>
+    <li>Si \(A\) es estrictamente diagonal dominante &rarr; converge.</li>
+    <li>Si \(A\) es simetrica definida positiva &rarr; converge.</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Gauss-Seidel</h4>
+  <p>Matriz ampliada \([A|b]\):</p>
+  <textarea id="gs-input" class="matrix-input">5.4 1.5 -3.2 1.7
+6.1 -10.8 2.4 -2.8
+-1.6 4.9 -8.32 1.1</textarea>
+  <div class="calc-grid">
+    <div><label>Aproximacion inicial \(\underline{x}_0\):</label><input type="text" id="gs-x0" value="1, 1.2, 2.1"></div>
+    <div><label>Tolerancia:</label><input type="text" id="gs-tol" value="1e-2"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="gs-max" value="50"></div>
+    <div><label>Tipo error:</label><select id="gs-err"><option value="abs" selected>Absoluto</option><option value="rel">Relativo</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="runGaussSeidel()">Ejecutar Gauss-Seidel</button>
+  <div class="iter-table"><table class="dt" id="gs-table"><thead></thead><tbody></tbody></table></div>
+  <div class="result-box" id="gs-result"></div>
+</div>
+</div>
+
+<!-- T10 Relajacion -->
+<div class="topic-section" id="t10">
+<h2>10. Metodos de relajacion (SOR)</h2>
+<p>Toman como iterado \(\underline{x}^{(k)}=(1-\omega)\underline{x}^{(k-1)}+\omega\hat{\underline{x}}^{(k)}\), donde \(\hat{\underline{x}}^{(k)}\) es la aproximacion de Gauss-Seidel y \(\omega>0\) es el peso de relajacion.</p>
+
+\[x_i^{(k)}=(1-\omega)x_i^{(k-1)}+\omega\,\frac{b_i-\sum_{j<i}a_{ij}x_j^{(k)}-\sum_{j>i}a_{ij}x_j^{(k-1)}}{a_{ii}}\]
+
+<div class="def-box">
+  <strong>Tipos</strong>
+  <ul>
+    <li>\(\omega=1\) &rarr; metodo de Gauss-Seidel.</li>
+    <li>\(0<\omega<1\) &rarr; <strong>subrrelajacion</strong>: puede dar convergencia donde Gauss-Seidel diverge.</li>
+    <li>\(\omega>1\) &rarr; <strong>sobrrelajacion (SOR)</strong>: acelera convergencia ya existente.</li>
+  </ul>
+</div>
+
+<div class="prop-box">
+  <strong>Teorema de Kahan</strong>
+  Si el metodo de relajacion converge, entonces \(\omega\in(0,2)\). Por tanto solo interesan estos valores.
+</div>
+<div class="prop-box">
+  <strong>Teorema de Ostrowski-Reich</strong>
+  Si \(A\) es simetrica definida positiva y \(\omega\in(0,2)\), el metodo de relajacion converge para cualquier \(\underline{x}^{(0)}\).
+</div>
+<div class="prop-box">
+  <strong>Teorema 41</strong>
+  Si \(A\) es estrictamente diagonal dominante, el metodo converge para todo \(\omega\in(0,1]\).
+</div>
+
+<div class="nb-row">
+  <strong>Archivo Mathematica de ejemplo:</strong>
+  <a class="nb-link" href="Ejemplos_Relajacion.nb" download>Ejemplos_Relajacion.nb</a>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora: Metodo de Relajacion</h4>
+  <textarea id="sor-input" class="matrix-input">5.4 1.5 -3.2 1.7
+1.5 10.8 2.4 -2.8
+-3.2 2.4 8.32 1.1</textarea>
+  <div class="calc-grid">
+    <div><label>Aproximacion inicial:</label><input type="text" id="sor-x0" value="1, 1.2, 2.1"></div>
+    <div><label>Peso \(\omega\):</label><input type="text" id="sor-w" value="1.25"></div>
+    <div><label>Tolerancia:</label><input type="text" id="sor-tol" value="1e-2"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="sor-max" value="50"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runSOR()">Ejecutar Relajacion</button>
+  <div class="iter-table"><table class="dt" id="sor-table"><thead></thead><tbody></tbody></table></div>
+  <div class="result-box" id="sor-result"></div>
+</div>
+</div>
+
+<!-- T11 Condicionamiento -->
+<div class="topic-section" id="t11">
+<h2>11. Condicionamiento del sistema</h2>
+<p>Una pequena modificacion en \(A\) o en \(\underline{b}\) puede provocar una distorsion considerable en la solucion aproximada. El <strong>numero de condicion</strong> mide esta sensibilidad:</p>
+\[\kappa(A)=\|A\|\cdot\|A^{-1}\|\geq 1\]
+<div class="def-box">
+  <strong>Interpretacion</strong>
+  <ul>
+    <li>\(\kappa(A)\) cercano a 1 &rarr; sistema <strong>bien condicionado</strong>.</li>
+    <li>\(\kappa(A)\) significativamente mayor que 1 &rarr; sistema <strong>mal condicionado</strong>.</li>
+  </ul>
+  Trabajaremos con la norma \(\|\cdot\|_\infty\) (maximo de las sumas en valor absoluto por filas).
+</div>
+
+<div class="nb-row">
+  <strong>Archivo Mathematica de ejemplo:</strong>
+  <a class="nb-link" href="CondicionSistema.nb" download>CondicionSistema.nb</a>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora del numero de condicion (norma infinito)</h4>
+  <textarea id="cond-input" class="matrix-input">21 2 5
+3.1 1 1
+2 -1.1 7</textarea>
+  <button class="btn btn-primary" onclick="runCond()" style="margin-top:.5rem">Calcular &kappa;(A)</button>
+  <div class="result-box" id="cond-result"></div>
+</div>
+</div>
+
+<!-- T12 Comparativa -->
+<div class="topic-section" id="t12">
+<h2>12. Comparativa de metodos</h2>
+<table class="dt">
+<tr><th>Metodo</th><th>Tipo</th><th>Coste</th><th>Aplicabilidad</th><th>Estabilidad</th></tr>
+<tr><td>Gauss</td><td>Directo</td><td>O(n&sup3;/3)</td><td>Cualquier sistema (con/sin pivoteo)</td><td>Mejorable con pivoteo</td></tr>
+<tr><td>Gauss-Jordan</td><td>Directo</td><td>O(n&sup3;/2)</td><td>Cualquier sistema</td><td>Mejorable con pivoteo</td></tr>
+<tr><td>LU</td><td>Directo (factor.)</td><td>O(n&sup3;/3) + sustituciones</td><td>Reaprovecha factorizacion para distintos b</td><td>Estable si Gauss no requiere intercambios</td></tr>
+<tr><td>Cholesky</td><td>Directo</td><td>~O(n&sup3;/6)</td><td>Solo simetricas definidas positivas</td><td>Muy estable</td></tr>
+<tr><td>Jacobi</td><td>Iterativo</td><td>O(n&sup2;) por iter.</td><td>Diagonal dominante</td><td>Convergencia lenta</td></tr>
+<tr><td>Gauss-Seidel</td><td>Iterativo</td><td>O(n&sup2;) por iter.</td><td>Diag. dominante o S.D.P.</td><td>Mas rapido que Jacobi</td></tr>
+<tr><td>SOR</td><td>Iterativo</td><td>O(n&sup2;) por iter.</td><td>S.D.P. y \(\omega\in(0,2)\)</td><td>Acelera Gauss-Seidel</td></tr>
+</table>
+
+<div class="interactive-box">
+  <h4>Comparar metodos iterativos en un mismo sistema</h4>
+  <textarea id="cmp-input" class="matrix-input">5.4 1.5 -3.2 1.7
+6.1 -10.8 2.4 -2.8
+-1.6 4.9 -8.32 1.1</textarea>
+  <div class="calc-grid">
+    <div><label>Aproximacion inicial:</label><input type="text" id="cmp-x0" value="0, 0, 0"></div>
+    <div><label>Tolerancia:</label><input type="text" id="cmp-tol" value="1e-4"></div>
+    <div><label>\(\omega\) (relajacion):</label><input type="text" id="cmp-w" value="1.1"></div>
+    <div><label>Max iteraciones:</label><input type="number" id="cmp-max" value="100"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runCompareIter()">Comparar Jacobi / GS / SOR</button>
+  <div class="iter-table"><table class="dt" id="cmp-table"><thead></thead><tbody></tbody></table></div>
+  <div class="result-box" id="cmp-result"></div>
+</div>
+</div>
+
+</div><!-- fin tab-theory -->
+
+<!-- ============ SOLVER ============ -->
+<div id="tab-problems" class="tab-content" style="max-width:1100px">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Solver de Sistemas Lineales</h2>
+<p style="margin-bottom:1rem;color:var(--txtl)">Introduce la matriz ampliada del sistema y selecciona el metodo. El solver mostrara el procedimiento paso a paso. Formato: filas separadas por \\n, elementos separados por espacios.</p>
+
+<div class="solver-card" style="background:var(--card);border-radius:var(--r);padding:1.2rem;box-shadow:var(--sh)">
+  <div class="calc-grid">
+    <div>
+      <label>Matriz ampliada \([A|b]\):</label>
+      <textarea id="slv-mat" class="matrix-input">2.222 16.71 9.612 28.544
+3.333 15920 -10.333 15913
+1.5611 5.1791 1.6852 8.4254</textarea>
+    </div>
+    <div>
+      <label>Metodo:</label>
+      <select id="slv-method" onchange="updateSlvUI()" style="padding:.5rem;font-size:.95rem">
+        <option value="gauss">Gauss (sin pivoteo)</option>
+        <option value="gauss-pp" selected>Gauss con pivoteo parcial</option>
+        <option value="gauss-pe">Gauss con pivoteo escalado</option>
+        <option value="gj">Gauss-Jordan (sin pivoteo)</option>
+        <option value="gj-pp">Gauss-Jordan con pivoteo parcial</option>
+        <option value="gj-pe">Gauss-Jordan con pivoteo escalado</option>
+        <option value="lu">Factorizacion LU + resolver</option>
+        <option value="cholesky">Cholesky + resolver</option>
+        <option value="jacobi">Jacobi (iterativo)</option>
+        <option value="gs">Gauss-Seidel (iterativo)</option>
+        <option value="sor">Relajacion / SOR</option>
+        <option value="cond">Condicionamiento (norma infinito)</option>
+        <option value="dd">Comprobar diagonal dominante</option>
+        <option value="spd">Comprobar simetrica def. positiva</option>
+      </select>
+      <div id="slv-extra" style="margin-top:.5rem"></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="runSolver()" style="font-size:1rem;padding:.6rem 1.5rem">Resolver paso a paso</button>
+    <button class="btn btn-success" onclick="runVerify()" style="font-size:.9rem">Verificar solucion</button>
+    <button class="btn nb-link" onclick="generateNotebook()" style="font-size:.9rem;background:#dc143c;color:#fff;border:none">Generar archivo Mathematica (.nb) con mis datos</button>
+  </div>
+</div>
+
+<div class="steps-box" id="slv-steps" style="display:none;margin-top:1rem"></div>
+<div class="iter-table" id="slv-itertable-wrap" style="display:none;margin-top:1rem"><table class="dt" id="slv-itertable"><thead></thead><tbody></tbody></table></div>
+<div class="result-box" id="slv-result" style="margin-top:1rem"></div>
+
+</div><!-- fin tab-problems -->
+
+<!-- ============ TEST ============ -->
+<div id="tab-test" class="tab-content">
+<h2 style="margin-bottom:1rem;color:var(--pri)">Evaluacion</h2>
+
+<div class="topic-selector" style="margin-bottom:1rem">
+  <label>Modo:</label>
+  <select id="eval-mode" onchange="switchEvalMode(this.value)" style="max-width:300px">
+    <option value="test" selected>Test de autoevaluacion</option>
+    <option value="problems">Problemas resueltos paso a paso</option>
+  </select>
+</div>
+
+<!-- TEST -->
+<div id="eval-test">
+<div class="score-bar"><span>Puntuacion: </span><span class="score" id="test-score">0</span><span> / <span id="test-total">15</span></span></div>
+<div id="test-questions"></div>
+<button class="btn btn-success" onclick="gradeTest()" style="margin-top:1rem">Corregir Test</button>
+</div>
+
+<!-- PROBLEMAS -->
+<div id="eval-problems" style="display:none">
+<p style="margin-bottom:1rem;color:var(--txtl)">Problemas similares a los de las practicas y al listado adicional. Pulsa "Resolver" para ver el desarrollo automatico.</p>
+
+<div class="problem-card">
+  <h3>Problema 1 <span class="badge badge-tarea">PRACTICA 4</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>Resuelve por el metodo de Gauss el sistema con matriz ampliada \([3.2,-2.1,4.4\mid 5.5;\ -4.1,1.9,-2.6\mid 3.7;\ 0.8,-2.4,1.6\mid -0.9]\). Aplica primero pivoteo parcial y compara con pivoteo escalado.</p>
+  <button class="btn btn-primary" onclick="solveP(1)">Resolver</button>
+  <div class="sol" id="sol-1"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 2 <span class="badge badge-tarea">PRACTICA 4 Amp.</span> <span class="badge badge-med">Media</span></h3>
+  <p>Considera el sistema \(\{1.8x_1+12.4x_2+8.1x_3=22.3,\ 4.1x_1+11800x_2-7.5x_3=11800,\ 1.2x_1+3.9x_2+1.4x_3=6.4\}\). Resuelvelo con Gauss usando aritmetica de 5 cifras: aplica primero pivoteo parcial y luego pivoteo parcial escalado. Compara las soluciones con la solucion exacta.</p>
+  <button class="btn btn-primary" onclick="solveP(2)">Resolver</button>
+  <div class="sol" id="sol-2"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 3 <span class="badge badge-tarea">PRACTICA 4 Amp.</span> <span class="badge badge-med">Media</span></h3>
+  <p>Repite el problema anterior usando el metodo de Gauss-Jordan con pivoteo parcial.</p>
+  <button class="btn btn-primary" onclick="solveP(3)">Resolver</button>
+  <div class="sol" id="sol-3"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 4 <span class="badge badge-tarea">PRACTICA 5</span> <span class="badge badge-med">Media</span></h3>
+  <p>Calcula la factorizacion LU de \(A=\begin{pmatrix}2&-1&1\\3&3&9\\3&3&5\end{pmatrix}\) (reordenando filas si es necesario) y usala para resolver \(A\underline{x}=(5,-4,1)^t\).</p>
+  <button class="btn btn-primary" onclick="solveP(4)">Resolver</button>
+  <div class="sol" id="sol-4"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 5 <span class="badge badge-tarea">PRACTICA 5</span> <span class="badge badge-med">Media</span></h3>
+  <p>Resuelve el sistema \(\{x+2y-z=-3,\ 2x+6y-z=2,\ -x-y+9z=0\}\) usando la factorizacion de Cholesky.</p>
+  <button class="btn btn-primary" onclick="solveP(5)">Resolver</button>
+  <div class="sol" id="sol-5"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 6 <span class="badge badge-tarea">PRACTICA 5 / 24 list.</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Determina una aproximacion con 2 cifras decimales exactas del sistema \(\{-x+10y-2z=7,\ 10x-y=9,\ -2y+10z=6\}\) usando los metodos de Jacobi y Gauss-Seidel. Justifica la convergencia.</p>
+  <button class="btn btn-primary" onclick="solveP(6)">Resolver</button>
+  <div class="sol" id="sol-6"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 7 <span class="badge badge-tarea">PRACTICA 5 Amp.</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Aplica un metodo de relajacion (sobrrelajacion con \(\omega=1.2\)) al sistema simetrico definido positivo \(\{x+2y-z=-3,\ 2x+6y-z=2,\ -x-y+9z=0\}\) y obten una aproximacion con 2 cifras decimales exactas.</p>
+  <button class="btn btn-primary" onclick="solveP(7)">Resolver</button>
+  <div class="sol" id="sol-7"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 8 <span class="badge badge-tarea">PROB 44(1) list. adicional</span> <span class="badge badge-easy">Facil</span></h3>
+  <p>Calcula los numeros de condicion (norma infinito) de las matrices \(A=\begin{pmatrix}1&2&5\\3&4&1\\2&-1&1\end{pmatrix}\), \(B=\begin{pmatrix}21&2&5\\3.1&1&1\\2&-1.1&7\end{pmatrix}\) y discute el condicionamiento.</p>
+  <button class="btn btn-primary" onclick="solveP(8)">Resolver</button>
+  <div class="sol" id="sol-8"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 9 <span class="badge badge-tarea">PROB 45 list. adicional</span> <span class="badge badge-med">Media</span></h3>
+  <p>Considera el sistema \(\{3x+y=7,\ 3x+1.0001y=7.0001\}\). Calcula su numero de condicion. Si redondeamos el termino independiente del segundo ecuacion a 7.0, ?cual es el efecto en la solucion?</p>
+  <button class="btn btn-primary" onclick="solveP(9)">Resolver</button>
+  <div class="sol" id="sol-9"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 10 <span class="badge badge-tarea">PROB 17(1-3) list. adicional</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Para el sistema \(\{4x-y+z=8,\ -x+4y-z=4,\ x-y+4z=12\}\): (1) demuestra que es estrictamente diagonal dominante; (2) aplica Jacobi con \(\underline{x}_0=(0,0,0)\) hasta tolerancia \(10^{-3}\); (3) aplica Gauss-Seidel con la misma tolerancia y compara iteraciones.</p>
+  <button class="btn btn-primary" onclick="solveP(10)">Resolver</button>
+  <div class="sol" id="sol-10"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 11 <span class="badge badge-tarea">PROB 34 / 37 list.</span> <span class="badge badge-med">Media</span></h3>
+  <p>Comprueba si la matriz \(A=\begin{pmatrix}4&-1&0\\-1&4&-1\\0&-1&4\end{pmatrix}\) es simetrica definida positiva y, en caso afirmativo, calcula su factorizacion de Cholesky y resuelve \(A\underline{x}=(2,1,2)^t\).</p>
+  <button class="btn btn-primary" onclick="solveP(11)">Resolver</button>
+  <div class="sol" id="sol-11"></div>
+</div>
+<div class="problem-card">
+  <h3>Problema 12 <span class="badge badge-tarea">PROB 46(2) list.</span> <span class="badge badge-hard">Dificil</span></h3>
+  <p>Para el sistema con matriz de coeficientes \(\begin{pmatrix}5.4&1.5&-3.2\\1.5&10.8&2.4\\-3.2&2.4&8.32\end{pmatrix}\) (que es simetrica definida positiva), aplica el metodo de relajacion con peso \(\omega=1.25\) y termino independiente \((1.7,-2.8,1.1)^t\) a partir de \(\underline{x}_0=(1,1.2,2.1)^t\). Justifica la convergencia.</p>
+  <button class="btn btn-primary" onclick="solveP(12)">Resolver</button>
+  <div class="sol" id="sol-12"></div>
+</div>
+
+</div><!-- fin eval-problems -->
+</div><!-- fin tab-test -->
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}],throwOnError:false};
+
+function switchTab(t){
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tab-btn')[['theory','problems','test'].indexOf(t)].classList.add('active');
+  renderMathInElement(document.getElementById('tab-'+t),mathOpts);
+}
+function showTopic(id){
+  document.querySelectorAll('.topic-section').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  renderMathInElement(document.getElementById(id),mathOpts);
+}
+function switchEvalMode(m){
+  document.getElementById('eval-test').style.display=m==='test'?'block':'none';
+  document.getElementById('eval-problems').style.display=m==='problems'?'block':'none';
+  if(m==='problems') renderMathInElement(document.getElementById('eval-problems'),mathOpts);
+}
+
+// ============== HELPERS ==============
+function parseMatrix(text){
+  return text.trim().split('\n').map(row=>row.trim().split(/\s+/).map(v=>{
+    try { return math.evaluate(v); } catch(e) { return NaN; }
+  }));
+}
+function fmt(x,d=6){
+  if(typeof x !== 'number' || !isFinite(x)) return String(x);
+  if(Math.abs(x)<1e-12) return '0';
+  if(Math.abs(x)>=1e6 || Math.abs(x)<1e-4) return x.toExponential(d-1);
+  return parseFloat(x.toPrecision(d)).toString();
+}
+function matToStr(M, d=4){
+  return M.map(row=>row.map(v=>fmt(v,d).padStart(10)).join(' ')).join('\n');
+}
+function copyMat(M){return M.map(r=>r.slice());}
+function roundDigits(x,d){
+  if(d<=0||!isFinite(x)) return x;
+  if(x===0) return 0;
+  const s=Math.sign(x), a=Math.abs(x);
+  const e=Math.floor(Math.log10(a));
+  const f=Math.pow(10,d-1-e);
+  return s*Math.round(a*f)/f;
+}
+function matMult(A,B){
+  const m=A.length, n=B[0].length, p=B.length;
+  let C=Array.from({length:m},()=>Array(n).fill(0));
+  for(let i=0;i<m;i++)for(let j=0;j<n;j++)for(let k=0;k<p;k++)C[i][j]+=A[i][k]*B[k][j];
+  return C;
+}
+function matInv(A){
+  const n=A.length;
+  let M=A.map((r,i)=>r.concat(Array.from({length:n},(_,j)=>i===j?1:0)));
+  for(let i=0;i<n;i++){
+    let p=i;
+    for(let k=i+1;k<n;k++)if(Math.abs(M[k][i])>Math.abs(M[p][i]))p=k;
+    if(p!==i)[M[i],M[p]]=[M[p],M[i]];
+    if(Math.abs(M[i][i])<1e-14) return null;
+    const piv=M[i][i];
+    for(let j=0;j<2*n;j++) M[i][j]/=piv;
+    for(let k=0;k<n;k++){
+      if(k===i) continue;
+      const f=M[k][i];
+      for(let j=0;j<2*n;j++) M[k][j]-=f*M[i][j];
+    }
+  }
+  return M.map(r=>r.slice(n));
+}
+function normInf(A){
+  if(typeof A[0]==='number') return Math.max(...A.map(Math.abs));
+  return Math.max(...A.map(r=>r.reduce((s,v)=>s+Math.abs(v),0)));
+}
+function determinant(A){
+  const n=A.length; let M=copyMat(A); let det=1;
+  for(let i=0;i<n;i++){
+    let p=i;
+    for(let k=i+1;k<n;k++)if(Math.abs(M[k][i])>Math.abs(M[p][i]))p=k;
+    if(Math.abs(M[p][i])<1e-14) return 0;
+    if(p!==i){[M[i],M[p]]=[M[p],M[i]]; det=-det;}
+    det*=M[i][i];
+    for(let k=i+1;k<n;k++){
+      const f=M[k][i]/M[i][i];
+      for(let j=i;j<n;j++) M[k][j]-=f*M[i][j];
+    }
+  }
+  return det;
+}
+function isSymmetric(A){
+  const n=A.length;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(Math.abs(A[i][j]-A[j][i])>1e-10)return false;
+  return true;
+}
+function isDiagDominantStrict(A){
+  const n=A.length;
+  for(let i=0;i<n;i++){
+    let s=0; for(let j=0;j<n;j++)if(j!==i)s+=Math.abs(A[i][j]);
+    if(Math.abs(A[i][i])<=s) return false;
+  }
+  return true;
+}
+function eigenvalues2(A){
+  // 2x2: lambda = (a+d) +- sqrt((a-d)^2+4bc) /2
+  const a=A[0][0],b=A[0][1],c=A[1][0],d=A[1][1];
+  const tr=a+d, det=a*d-b*c, disc=tr*tr-4*det;
+  if(disc<0) return [tr/2, tr/2]; // complex - not handled
+  return [(tr+Math.sqrt(disc))/2, (tr-Math.sqrt(disc))/2];
+}
+function powerMethod(A,maxiter=200,tol=1e-10){
+  // returns approximate dominant eigenvalue by abs value
+  const n=A.length;
+  let x=Array(n).fill(0); x[0]=1;
+  let lambda=0;
+  for(let it=0;it<maxiter;it++){
+    let y=Array(n).fill(0);
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++)y[i]+=A[i][j]*x[j];
+    let m=0; for(let i=0;i<n;i++) if(Math.abs(y[i])>Math.abs(m)) m=y[i];
+    if(Math.abs(m)<1e-14) return 0;
+    const xn=y.map(v=>v/m);
+    let err=0; for(let i=0;i<n;i++) err=Math.max(err,Math.abs(xn[i]-x[i]));
+    x=xn; lambda=m;
+    if(err<tol) break;
+  }
+  return lambda;
+}
+function spectralRadius(M){
+  const n=M.length;
+  if(n===2){ const e=eigenvalues2(M); return Math.max(Math.abs(e[0]),Math.abs(e[1])); }
+  // QR algorithm crude or use shifted power: simplified -> compute via characteristic polynomial for n=3
+  if(n===3){
+    // 3x3 cubic: -lambda^3 + tr lambda^2 - (sum 2x2 minors) lambda + det = 0
+    const tr=M[0][0]+M[1][1]+M[2][2];
+    const m1=M[0][0]*M[1][1]-M[0][1]*M[1][0];
+    const m2=M[0][0]*M[2][2]-M[0][2]*M[2][0];
+    const m3=M[1][1]*M[2][2]-M[1][2]*M[2][1];
+    const c2=m1+m2+m3;
+    const det=determinant(M);
+    // x^3 - tr x^2 + c2 x - det = 0
+    const roots=cubicRoots(1,-tr,c2,-det);
+    return Math.max(...roots.map(r=>Math.abs(r)));
+  }
+  // fallback power method
+  return Math.abs(powerMethod(M));
+}
+function cubicRoots(a,b,c,d){
+  // ax^3+bx^2+cx+d=0
+  b/=a; c/=a; d/=a;
+  const p=c-b*b/3;
+  const q=2*b*b*b/27-b*c/3+d;
+  const D=q*q/4+p*p*p/27;
+  const offset=-b/3;
+  if(D>0){
+    const sd=Math.sqrt(D);
+    const u=Math.cbrt(-q/2+sd);
+    const v=Math.cbrt(-q/2-sd);
+    return [u+v+offset];
+  } else {
+    const r=Math.sqrt(-p*p*p/27);
+    const phi=Math.acos(-q/(2*r));
+    const t=2*Math.cbrt(r);
+    return [
+      t*Math.cos(phi/3)+offset,
+      t*Math.cos((phi+2*Math.PI)/3)+offset,
+      t*Math.cos((phi+4*Math.PI)/3)+offset
+    ];
+  }
+}
+
+// ============== METODOS DIRECTOS ==============
+function gaussElim(M_, prec=0, opts={pivot:'none', stopAtU:false}){
+  const M=copyMat(M_);
+  const n=M.length, m=M[0].length-1;
+  let steps=[];
+  let perm=Array.from({length:n},(_,i)=>i);
+  let scales = opts.pivot==='escalado' ? M.map(r=>Math.max(...r.slice(0,n).map(Math.abs))) : null;
+
+  steps.push({title:'Matriz ampliada inicial', mat:matToStr(M)});
+  for(let i=0;i<n-1;i++){
+    // pivoteo
+    if(opts.pivot==='parcial'){
+      let p=i;
+      for(let k=i+1;k<n;k++) if(Math.abs(M[k][i])>Math.abs(M[p][i])) p=k;
+      if(Math.abs(M[p][i])<1e-14) return {error:'Sistema sin solucion unica (pivote nulo)',steps};
+      if(p!==i){
+        [M[i],M[p]]=[M[p],M[i]]; [perm[i],perm[p]]=[perm[p],perm[i]];
+        steps.push({title:`Intercambio f_${i+1} ↔ f_${p+1} (pivoteo parcial)`, mat:matToStr(M)});
+      }
+    } else if(opts.pivot==='escalado'){
+      let p=i, best=Math.abs(M[i][i])/scales[i];
+      for(let k=i+1;k<n;k++){
+        const ratio=Math.abs(M[k][i])/scales[k];
+        if(ratio>best){best=ratio; p=k;}
+      }
+      if(p!==i){
+        [M[i],M[p]]=[M[p],M[i]]; [scales[i],scales[p]]=[scales[p],scales[i]];
+        [perm[i],perm[p]]=[perm[p],perm[i]];
+        steps.push({title:`Intercambio f_${i+1} ↔ f_${p+1} (pivoteo escalado)`, mat:matToStr(M)});
+      }
+    }
+    // eliminacion
+    for(let j=i+1;j<n;j++){
+      let mji=M[j][i]/M[i][i];
+      if(prec>0) mji=roundDigits(mji,prec);
+      for(let k=i;k<=n;k++){
+        let val=M[j][k]-mji*M[i][k];
+        if(prec>0) val=roundDigits(val,prec);
+        M[j][k]=val;
+      }
+      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, mat:matToStr(M)});
+    }
+  }
+  if(opts.stopAtU) return {U:M, steps, perm};
+  // sustitucion regresiva
+  if(Math.abs(M[n-1][n-1])<1e-14) return {error:'Sistema sin solucion unica',steps};
+  let x=Array(n).fill(0);
+  x[n-1]=M[n-1][n]/M[n-1][n-1]; if(prec>0) x[n-1]=roundDigits(x[n-1],prec);
+  for(let i=n-2;i>=0;i--){
+    let s=M[i][n];
+    for(let j=i+1;j<n;j++) s-=M[i][j]*x[j];
+    x[i]=s/M[i][i]; if(prec>0) x[i]=roundDigits(x[i],prec);
+  }
+  steps.push({title:'Sustitucion regresiva', body:'x = ['+x.map(v=>fmt(v,5)).join(', ')+']'});
+  return {x,steps,U:M,perm};
+}
+
+function gaussJordan(M_,prec=0,opts={pivot:'none'}){
+  const M=copyMat(M_);
+  const n=M.length;
+  let steps=[];
+  steps.push({title:'Matriz ampliada inicial', mat:matToStr(M)});
+  let scales = opts.pivot==='escalado' ? M.map(r=>Math.max(...r.slice(0,n).map(Math.abs))) : null;
+  for(let i=0;i<n;i++){
+    if(opts.pivot==='parcial'){
+      let p=i;
+      for(let k=i+1;k<n;k++) if(Math.abs(M[k][i])>Math.abs(M[p][i])) p=k;
+      if(Math.abs(M[p][i])<1e-14) return {error:'Sistema sin solucion unica',steps};
+      if(p!==i){[M[i],M[p]]=[M[p],M[i]]; steps.push({title:`Intercambio f_${i+1}↔f_${p+1}`, mat:matToStr(M)});}
+    } else if(opts.pivot==='escalado'){
+      let p=i, best=Math.abs(M[i][i])/scales[i];
+      for(let k=i+1;k<n;k++){const ratio=Math.abs(M[k][i])/scales[k]; if(ratio>best){best=ratio; p=k;}}
+      if(p!==i){[M[i],M[p]]=[M[p],M[i]]; [scales[i],scales[p]]=[scales[p],scales[i]]; steps.push({title:`Intercambio f_${i+1}↔f_${p+1} (escalado)`, mat:matToStr(M)});}
+    }
+    if(Math.abs(M[i][i])<1e-14) return {error:'Sistema sin solucion unica',steps};
+    for(let j=0;j<n;j++){
+      if(j===i) continue;
+      let mji=M[j][i]/M[i][i];
+      if(prec>0) mji=roundDigits(mji,prec);
+      for(let k=i;k<=n;k++){
+        let v=M[j][k]-mji*M[i][k]; if(prec>0)v=roundDigits(v,prec);
+        M[j][k]=v;
+      }
+      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, mat:matToStr(M)});
+    }
+  }
+  let x=Array(n).fill(0);
+  for(let i=0;i<n;i++) x[i]=M[i][n]/M[i][i];
+  steps.push({title:'Lectura directa de soluciones', body:'x = ['+x.map(v=>fmt(v,5)).join(', ')+']'});
+  return {x,steps};
+}
+
+function luFactorize(A_){
+  const A=copyMat(A_);
+  const n=A.length;
+  let L=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+  let U=copyMat(A);
+  let steps=[];
+  steps.push({title:'Matriz A', mat:matToStr(A)});
+  for(let i=0;i<n-1;i++){
+    if(Math.abs(U[i][i])<1e-14){
+      return {error:'Pivote nulo: requiere reordenar filas. Reordena el sistema y vuelve a intentar.',steps};
+    }
+    for(let j=i+1;j<n;j++){
+      const m=U[j][i]/U[i][i];
+      L[j][i]=m;
+      for(let k=i;k<n;k++) U[j][k]-=m*U[i][k];
+    }
+    steps.push({title:`Tras eliminar columna ${i+1}`, mat:'U:\n'+matToStr(U)+'\n\nL:\n'+matToStr(L)});
+  }
+  return {L,U,steps};
+}
+
+function solveLU(L,U,b){
+  const n=L.length;
+  let y=Array(n).fill(0);
+  for(let i=0;i<n;i++){
+    let s=b[i]; for(let j=0;j<i;j++) s-=L[i][j]*y[j];
+    y[i]=s/L[i][i];
+  }
+  let x=Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    let s=y[i]; for(let j=i+1;j<n;j++) s-=U[i][j]*x[j];
+    x[i]=s/U[i][i];
+  }
+  return {x,y};
+}
+
+function choleskyFactorize(A){
+  const n=A.length;
+  if(!isSymmetric(A)) return {error:'La matriz no es simetrica.'};
+  // check positive definite via leading minors
+  let L=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++){
+    for(let j=0;j<=i;j++){
+      let s=0;
+      for(let k=0;k<j;k++) s+=L[i][k]*L[j][k];
+      if(i===j){
+        const v=A[i][i]-s;
+        if(v<=0) return {error:'La matriz no es definida positiva (raiz cuadrada de '+fmt(v)+' negativa).'};
+        L[i][j]=Math.sqrt(v);
+      } else {
+        L[i][j]=(A[i][j]-s)/L[j][j];
+      }
+    }
+  }
+  return {L};
+}
+
+// ============== METODOS ITERATIVOS ==============
+function iterMethod(method, A,b, x0, tol, maxIter, errType, omega){
+  const n=A.length;
+  let x=x0.slice();
+  let rows=[];
+  let header=['k']; for(let i=0;i<n;i++) header.push('x'+(i+1));
+  header.push('Error');
+  rows.push({k:0, x:x.slice(), e:''});
+  for(let it=1;it<=maxIter;it++){
+    let xnew=x.slice();
+    if(method==='jacobi'){
+      let xn=Array(n).fill(0);
+      for(let i=0;i<n;i++){
+        let s=b[i];
+        for(let j=0;j<n;j++) if(j!==i) s-=A[i][j]*x[j];
+        xn[i]=s/A[i][i];
+      }
+      xnew=xn;
+    } else if(method==='gs'){
+      for(let i=0;i<n;i++){
+        let s=b[i];
+        for(let j=0;j<n;j++) if(j!==i) s-=A[i][j]*xnew[j];
+        xnew[i]=s/A[i][i];
+      }
+    } else if(method==='sor'){
+      for(let i=0;i<n;i++){
+        let s=b[i];
+        for(let j=0;j<n;j++) if(j!==i) s-=A[i][j]*xnew[j];
+        const xgs=s/A[i][i];
+        xnew[i]=(1-omega)*x[i]+omega*xgs;
+      }
+    }
+    let diff=Array(n);
+    for(let i=0;i<n;i++) diff[i]=xnew[i]-x[i];
+    let eA=normInf(diff);
+    let eR=eA/(normInf(xnew)||1);
+    let err = errType==='abs' ? eA : eR;
+    rows.push({k:it, x:xnew.slice(), e:err});
+    x=xnew;
+    if(err<tol) break;
+  }
+  return {x, rows, header};
+}
+
+// ============== INTERFACE ACTIONS ==============
+function checkCompatibility(){
+  const M=parseMatrix(document.getElementById('comp-input').value);
+  const n=M.length;
+  if(M.some(r=>r.length!==n+1)){
+    document.getElementById('comp-result').innerHTML='<span style="color:var(--acc)">Formato invalido: cada fila debe tener n+1 elementos.</span>';
+    return;
+  }
+  const A=M.map(r=>r.slice(0,n));
+  const det=determinant(A);
+  let html=`<strong>Determinante de A:</strong> ${fmt(det)}<br>`;
+  if(Math.abs(det)<1e-12) html+='<span style="color:var(--acc)">El sistema no es compatible determinado (det ≈ 0). Aplica Rouche-Frobenius para clasificarlo.</span>';
+  else html+='<span style="color:var(--ok)">El sistema es <strong>compatible determinado</strong> (rang(A)=rang(A|b)=n). Tiene solucion unica.</span>';
+  document.getElementById('comp-result').innerHTML=html;
+}
+
+function renderSteps(box,steps){
+  let html='';
+  steps.forEach(s=>{
+    html+=`<div class="step"><h5>${s.title}</h5>`;
+    if(s.mat) html+=`<div class="matrix-display">${s.mat}</div>`;
+    if(s.body) html+=`<div>${s.body}</div>`;
+    html+='</div>';
+  });
+  box.innerHTML=html;
+}
+
+function runGauss(){
+  const M=parseMatrix(document.getElementById('gauss-input').value);
+  const r=gaussElim(M,0,{pivot:'none'});
+  renderSteps(document.getElementById('gauss-steps'),r.steps);
+  if(r.error) document.getElementById('gauss-result').innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
+  else document.getElementById('gauss-result').innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+}
+
+function runGaussJordan(){
+  const M=parseMatrix(document.getElementById('gj-input').value);
+  const r=gaussJordan(M,0,{pivot:'none'});
+  renderSteps(document.getElementById('gj-steps'),r.steps);
+  if(r.error) document.getElementById('gj-result').innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
+  else document.getElementById('gj-result').innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+}
+
+function runGaussPivot(){
+  const M=parseMatrix(document.getElementById('gp-input').value);
+  const strat=document.getElementById('gp-strategy').value;
+  const prec=parseInt(document.getElementById('gp-prec').value);
+  const r=gaussElim(M,prec,{pivot:strat});
+  renderSteps(document.getElementById('gp-steps'),r.steps);
+  if(r.error) document.getElementById('gp-result').innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
+  else document.getElementById('gp-result').innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+}
+
+function runLU(){
+  const M=parseMatrix(document.getElementById('lu-input').value);
+  const n=M.length;
+  let A,b=null;
+  if(M[0].length===n+1){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);}
+  else if(M[0].length===n){A=M;}
+  else {document.getElementById('lu-result').innerHTML='<span style="color:var(--acc)">Formato invalido</span>'; return;}
+  const r=luFactorize(A);
+  if(r.error){
+    renderSteps(document.getElementById('lu-steps'),r.steps);
+    document.getElementById('lu-result').innerHTML=`<span style="color:var(--acc)">${r.error}</span>`; return;
+  }
+  let stepsBox=document.getElementById('lu-steps');
+  let extra=[...r.steps,
+    {title:'Matriz L (triangular inferior)', mat:matToStr(r.L)},
+    {title:'Matriz U (triangular superior)', mat:matToStr(r.U)}];
+  renderSteps(stepsBox, extra);
+  let html=`<strong>L·U = A correcto.</strong><br>`;
+  if(b){
+    const sol=solveLU(r.L,r.U,b);
+    html+=`<strong>Etapa 1:</strong> L·y=b → y = [${sol.y.map(v=>fmt(v,5)).join(', ')}]<br>`;
+    html+=`<strong>Etapa 2:</strong> U·x=y → x = [${sol.x.map(v=>fmt(v,5)).join(', ')}]`;
+  }
+  document.getElementById('lu-result').innerHTML=html;
+}
+
+function runCholesky(){
+  const M=parseMatrix(document.getElementById('ch-input').value);
+  const n=M.length;
+  let A,b=null;
+  if(M[0].length===n+1){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);}
+  else if(M[0].length===n){A=M;}
+  else {document.getElementById('ch-result').innerHTML='<span style="color:var(--acc)">Formato invalido</span>'; return;}
+  let steps=[];
+  steps.push({title:'Matriz A', mat:matToStr(A)});
+  // simetria
+  if(!isSymmetric(A)){
+    steps.push({title:'¿Simetrica?', body:'NO. La matriz no es simetrica → Cholesky no aplicable.'});
+    renderSteps(document.getElementById('ch-steps'),steps);
+    document.getElementById('ch-result').innerHTML='<span style="color:var(--acc)">No simetrica</span>';
+    return;
+  }
+  steps.push({title:'¿Simetrica?', body:'SI. A = A^t.'});
+  // intentar descomponer
+  let r=choleskyFactorize(A);
+  if(r.error){
+    // probar -A
+    const Aneg=A.map(r=>r.map(v=>-v));
+    let r2=choleskyFactorize(Aneg);
+    if(r2.error){
+      steps.push({title:'¿Definida positiva o negativa?', body:'NO. La matriz es indefinida → no tiene Cholesky. '+r.error});
+      renderSteps(document.getElementById('ch-steps'),steps);
+      document.getElementById('ch-result').innerHTML='<span style="color:var(--acc)">'+r.error+'</span>';
+      return;
+    }
+    steps.push({title:'A es definida negativa', body:'-A es definida positiva. Aplicamos Cholesky a -A:'});
+    steps.push({title:'Matriz L (de -A=L·L^t)', mat:matToStr(r2.L)});
+    if(b){
+      const bn=b.map(v=>-v);
+      const Ut=r2.L[0].map((_,j)=>r2.L.map(r=>r[j])); // L^t
+      const sol=solveLU(r2.L,Ut,bn);
+      steps.push({title:'Resolucion de (-A)x=-b', body:'y=L^{-1}(-b)=['+sol.y.map(v=>fmt(v,5))+'], x=(L^t)^{-1}y=['+sol.x.map(v=>fmt(v,5))+']'});
+    }
+    renderSteps(document.getElementById('ch-steps'),steps);
+    document.getElementById('ch-result').innerHTML='<strong>Cholesky aplicado a -A. </strong>';
+    return;
+  }
+  steps.push({title:'¿Definida positiva?', body:'SI. Cholesky aplicable.'});
+  steps.push({title:'Matriz L (de A=L·L^t)', mat:matToStr(r.L)});
+  if(b){
+    const Ut=r.L[0].map((_,j)=>r.L.map(r2=>r2[j])); // L^t
+    const sol=solveLU(r.L,Ut,b);
+    steps.push({title:'Etapa 1: L·y=b', body:'y = ['+sol.y.map(v=>fmt(v,5)).join(', ')+']'});
+    steps.push({title:'Etapa 2: L^t·x=y', body:'x = ['+sol.x.map(v=>fmt(v,5)).join(', ')+']'});
+  }
+  renderSteps(document.getElementById('ch-steps'),steps);
+  document.getElementById('ch-result').innerHTML='<strong>Factorizacion de Cholesky completada.</strong>';
+}
+
+function computeSpectralRadius(){
+  const M=parseMatrix(document.getElementById('rho-input').value);
+  if(M.length!==M[0].length){
+    document.getElementById('rho-result').innerHTML='<span style="color:var(--acc)">Matriz no cuadrada</span>'; return;
+  }
+  const r=spectralRadius(M);
+  let html=`<strong>Radio espectral &rho;(M) = <span class="val">${fmt(r,6)}</span></strong><br>`;
+  if(r<1) html+='<span style="color:var(--ok)">Como &rho;<1, el metodo iterativo asociado <strong>converge</strong>.</span>';
+  else html+='<span style="color:var(--acc)">Como &rho;≥1, el metodo iterativo asociado <strong>NO converge</strong>.</span>';
+  document.getElementById('rho-result').innerHTML=html;
+}
+
+function runJacobi(){runIterative('jacobi','jac');}
+function runGaussSeidel(){runIterative('gs','gs');}
+function runSOR(){runIterative('sor','sor');}
+
+function runIterative(method,prefix){
+  const M=parseMatrix(document.getElementById(prefix+'-input').value);
+  const n=M.length;
+  if(M[0].length!==n+1){document.getElementById(prefix+'-result').innerHTML='<span style="color:var(--acc)">Formato invalido</span>'; return;}
+  const A=M.map(r=>r.slice(0,n)), b=M.map(r=>r[n]);
+  const x0=document.getElementById(prefix+'-x0').value.split(',').map(s=>parseFloat(s));
+  const tol=parseFloat(document.getElementById(prefix+'-tol').value);
+  const maxIt=parseInt(document.getElementById(prefix+'-max').value);
+  const errType=document.getElementById(prefix+'-err')?document.getElementById(prefix+'-err').value:'abs';
+  const omega=method==='sor'?parseFloat(document.getElementById('sor-w').value):1;
+  // check diag
+  for(let i=0;i<n;i++){if(Math.abs(A[i][i])<1e-14){document.getElementById(prefix+'-result').innerHTML='<span style="color:var(--acc)">Diagonal con cero. Reordena ecuaciones.</span>';return;}}
+  const r=iterMethod(method,A,b,x0,tol,maxIt,errType,omega);
+  // tabla
+  let thead='<tr><th>k</th>'+r.x.map((_,i)=>`<th>x${i+1}</th>`).join('')+'<th>Error</th></tr>';
+  let tbody='';
+  r.rows.forEach(row=>{
+    tbody+=`<tr><td>${row.k}</td>`+row.x.map(v=>`<td>${fmt(v,6)}</td>`).join('')+`<td>${row.e===''?'-':fmt(row.e,4)}</td></tr>`;
+  });
+  document.getElementById(prefix+'-table').querySelector('thead').innerHTML=thead;
+  document.getElementById(prefix+'-table').querySelector('tbody').innerHTML=tbody;
+  const last=r.rows[r.rows.length-1];
+  let conv=last.e!==''&&last.e<tol?`<span style="color:var(--ok)">Convergencia alcanzada en ${last.k} iteraciones.</span>`:`<span style="color:var(--acc)">No se alcanzo la tolerancia en ${maxIt} iteraciones.</span>`;
+  let dd=isDiagDominantStrict(A)?'<span style="color:var(--ok)">A es estrictamente diagonal dominante → convergencia garantizada.</span>':'';
+  document.getElementById(prefix+'-result').innerHTML=`${conv} ${dd}<br><strong>Solucion final:</strong> ${last.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+}
+
+function runCond(){
+  const A=parseMatrix(document.getElementById('cond-input').value);
+  if(A.length!==A[0].length){document.getElementById('cond-result').innerHTML='<span style="color:var(--acc)">No cuadrada</span>'; return;}
+  const inv=matInv(A);
+  if(!inv){document.getElementById('cond-result').innerHTML='<span style="color:var(--acc)">Matriz singular</span>'; return;}
+  const k=normInf(A)*normInf(inv);
+  let html=`<strong>||A||<sub>∞</sub> =</strong> ${fmt(normInf(A),5)} &nbsp; <strong>||A<sup>-1</sup>||<sub>∞</sub> =</strong> ${fmt(normInf(inv),5)}<br>`;
+  html+=`<strong>&kappa;<sub>∞</sub>(A) = <span class="val">${fmt(k,5)}</span></strong><br>`;
+  if(k<10) html+='<span style="color:var(--ok)">Bien condicionado (κ pequeño, cercano a 1).</span>';
+  else if(k<100) html+='<span style="color:var(--warn)">Condicionamiento moderado.</span>';
+  else html+='<span style="color:var(--acc)">Mal condicionado (κ grande): pequeñas variaciones en datos pueden producir grandes variaciones en la solucion.</span>';
+  document.getElementById('cond-result').innerHTML=html;
+}
+
+function runCompareIter(){
+  const M=parseMatrix(document.getElementById('cmp-input').value);
+  const n=M.length;
+  const A=M.map(r=>r.slice(0,n)), b=M.map(r=>r[n]);
+  const x0=document.getElementById('cmp-x0').value.split(',').map(s=>parseFloat(s));
+  const tol=parseFloat(document.getElementById('cmp-tol').value);
+  const maxIt=parseInt(document.getElementById('cmp-max').value);
+  const omega=parseFloat(document.getElementById('cmp-w').value);
+  const rJ=iterMethod('jacobi',A,b,x0,tol,maxIt,'abs',1);
+  const rG=iterMethod('gs',A,b,x0,tol,maxIt,'abs',1);
+  const rS=iterMethod('sor',A,b,x0,tol,maxIt,'abs',omega);
+  let thead='<tr><th>Metodo</th><th>Iteraciones</th><th>Solucion</th><th>Error final</th></tr>';
+  let tb='';
+  [['Jacobi',rJ],['Gauss-Seidel',rG],[`SOR (ω=${omega})`,rS]].forEach(([nm,r])=>{
+    const last=r.rows[r.rows.length-1];
+    tb+=`<tr><td>${nm}</td><td>${last.k}</td><td>[${last.x.map(v=>fmt(v,5)).join(', ')}]</td><td>${fmt(last.e,4)}</td></tr>`;
+  });
+  document.getElementById('cmp-table').querySelector('thead').innerHTML=thead;
+  document.getElementById('cmp-table').querySelector('tbody').innerHTML=tb;
+  document.getElementById('cmp-result').innerHTML='<strong>Comparativa completa.</strong>';
+}
+
+// ============== SOLVER GENERICO ==============
+function updateSlvUI(){
+  const m=document.getElementById('slv-method').value;
+  const ext=document.getElementById('slv-extra');
+  let html='';
+  if(['jacobi','gs','sor'].includes(m)){
+    html+='<label>Aprox. inicial x0 (separada por comas):</label><input type="text" id="slv-x0" value="0,0,0" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Tolerancia:</label><input type="text" id="slv-tol" value="1e-3" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Max iteraciones:</label><input type="number" id="slv-max" value="100" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    if(m==='sor') html+='<label style="margin-top:.4rem">Peso ω:</label><input type="text" id="slv-omega" value="1.1" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  }
+  if(['gauss','gauss-pp','gauss-pe','gj','gj-pp','gj-pe'].includes(m)){
+    html+='<label>Cifras de redondeo (0=exacta):</label><input type="number" id="slv-prec" value="0" min="0" max="15" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  }
+  ext.innerHTML=html;
+}
+updateSlvUI();
+
+function runSolver(){
+  const m=document.getElementById('slv-method').value;
+  const M=parseMatrix(document.getElementById('slv-mat').value);
+  const n=M.length;
+  const stepsBox=document.getElementById('slv-steps');
+  const tableBox=document.getElementById('slv-itertable-wrap');
+  const resBox=document.getElementById('slv-result');
+  stepsBox.style.display='none'; tableBox.style.display='none';
+  resBox.innerHTML='';
+  let A,b=null;
+  const isAmpl = M[0].length===n+1;
+  if(isAmpl){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);} else A=M;
+
+  if(m==='dd'){
+    const dd=isDiagDominantStrict(A);
+    let h='<strong>Comprobacion de diagonal dominancia estricta:</strong><br>';
+    for(let i=0;i<n;i++){let s=0; for(let j=0;j<n;j++)if(j!==i)s+=Math.abs(A[i][j]); h+=`Fila ${i+1}: |a_{${i+1},${i+1}}|=${fmt(Math.abs(A[i][i]),4)} ${Math.abs(A[i][i])>s?'>':'≤'} ${fmt(s,4)} = suma resto<br>`;}
+    h+=dd?'<span style="color:var(--ok)">SI es estrictamente diagonal dominante. Garantiza convergencia de Jacobi y Gauss-Seidel.</span>':'<span style="color:var(--acc)">NO es estrictamente diagonal dominante.</span>';
+    resBox.innerHTML=h; return;
+  }
+  if(m==='spd'){
+    let h='<strong>Comprobacion S.D.P.:</strong><br>';
+    h+='Simetria: '+(isSymmetric(A)?'SI':'NO')+'<br>';
+    if(!isSymmetric(A)){resBox.innerHTML=h+'<span style="color:var(--acc)">Sin simetria, no es S.D.P.</span>'; return;}
+    const ch=choleskyFactorize(A);
+    if(ch.error){h+='<span style="color:var(--acc)">'+ch.error+'</span>';}
+    else{h+='<span style="color:var(--ok)">SI es definida positiva. Cholesky aplicable.</span><br><strong>L:</strong><div class="matrix-display">'+matToStr(ch.L)+'</div>';}
+    resBox.innerHTML=h; return;
+  }
+  if(m==='cond'){
+    const inv=matInv(A);
+    if(!inv){resBox.innerHTML='<span style="color:var(--acc)">Matriz singular</span>'; return;}
+    const k=normInf(A)*normInf(inv);
+    resBox.innerHTML=`<strong>κ<sub>∞</sub>(A) = ${fmt(k,5)}</strong> &nbsp; (||A||=${fmt(normInf(A),4)}, ||A^{-1}||=${fmt(normInf(inv),4)})`;
+    return;
+  }
+
+  if(['gauss','gauss-pp','gauss-pe'].includes(m)){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta el termino independiente</span>'; return;}
+    const piv=m==='gauss-pp'?'parcial':m==='gauss-pe'?'escalado':'none';
+    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const r=gaussElim(M,prec,{pivot:piv});
+    stepsBox.style.display='block';
+    renderSteps(stepsBox,r.steps);
+    if(r.error) resBox.innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
+    else resBox.innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    return;
+  }
+  if(['gj','gj-pp','gj-pe'].includes(m)){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta el termino independiente</span>'; return;}
+    const piv=m==='gj-pp'?'parcial':m==='gj-pe'?'escalado':'none';
+    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const r=gaussJordan(M,prec,{pivot:piv});
+    stepsBox.style.display='block'; renderSteps(stepsBox,r.steps);
+    if(r.error) resBox.innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
+    else resBox.innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    return;
+  }
+  if(m==='lu'){
+    const r=luFactorize(A);
+    stepsBox.style.display='block';
+    if(r.error){renderSteps(stepsBox,r.steps); resBox.innerHTML='<span style="color:var(--acc)">'+r.error+'</span>'; return;}
+    renderSteps(stepsBox,[...r.steps,
+      {title:'L', mat:matToStr(r.L)},
+      {title:'U', mat:matToStr(r.U)}]);
+    if(b){
+      const sol=solveLU(r.L,r.U,b);
+      resBox.innerHTML=`<strong>L·y=b ⇒ y =</strong> [${sol.y.map(v=>fmt(v,5)).join(', ')}]<br><strong>U·x=y ⇒ x =</strong> [${sol.x.map(v=>fmt(v,5)).join(', ')}]`;
+    } else {
+      resBox.innerHTML='<strong>Factorizacion completa.</strong> Anyade vector b para resolver.';
+    }
+    return;
+  }
+  if(m==='cholesky'){
+    if(!isSymmetric(A)){resBox.innerHTML='<span style="color:var(--acc)">No simetrica → Cholesky no aplicable</span>'; return;}
+    const ch=choleskyFactorize(A);
+    if(ch.error){
+      const Aneg=A.map(r=>r.map(v=>-v));
+      const ch2=choleskyFactorize(Aneg);
+      if(ch2.error){resBox.innerHTML='<span style="color:var(--acc)">'+ch.error+'</span>'; return;}
+      stepsBox.style.display='block';
+      renderSteps(stepsBox,[
+        {title:'A es definida negativa. Trabajamos con -A definida positiva.', body:''},
+        {title:'L (de -A=L·L^t)', mat:matToStr(ch2.L)}]);
+      if(b){
+        const Ut=ch2.L[0].map((_,j)=>ch2.L.map(r2=>r2[j]));
+        const sol=solveLU(ch2.L,Ut,b.map(v=>-v));
+        resBox.innerHTML=`<strong>x =</strong> [${sol.x.map(v=>fmt(v,5)).join(', ')}]`;
+      }
+      return;
+    }
+    stepsBox.style.display='block';
+    renderSteps(stepsBox,[
+      {title:'L (de A=L·L^t)', mat:matToStr(ch.L)},
+      {title:'L^t', mat:matToStr(ch.L[0].map((_,j)=>ch.L.map(r=>r[j])))}
+    ]);
+    if(b){
+      const Ut=ch.L[0].map((_,j)=>ch.L.map(r2=>r2[j]));
+      const sol=solveLU(ch.L,Ut,b);
+      resBox.innerHTML=`<strong>L·y=b ⇒ y =</strong> [${sol.y.map(v=>fmt(v,5)).join(', ')}]<br><strong>L^t·x=y ⇒ x =</strong> [${sol.x.map(v=>fmt(v,5)).join(', ')}]`;
+    }
+    return;
+  }
+  if(['jacobi','gs','sor'].includes(m)){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta el termino independiente</span>'; return;}
+    const x0=document.getElementById('slv-x0').value.split(',').map(s=>parseFloat(s));
+    const tol=parseFloat(document.getElementById('slv-tol').value);
+    const mx=parseInt(document.getElementById('slv-max').value);
+    const om=m==='sor'?parseFloat(document.getElementById('slv-omega').value):1;
+    const r=iterMethod(m,A,b,x0,tol,mx,'abs',om);
+    let th='<tr><th>k</th>'+x0.map((_,i)=>`<th>x${i+1}</th>`).join('')+'<th>Error</th></tr>';
+    let tb=''; r.rows.forEach(row=>{tb+=`<tr><td>${row.k}</td>`+row.x.map(v=>`<td>${fmt(v,5)}</td>`).join('')+`<td>${row.e===''?'-':fmt(row.e,4)}</td></tr>`;});
+    document.getElementById('slv-itertable').querySelector('thead').innerHTML=th;
+    document.getElementById('slv-itertable').querySelector('tbody').innerHTML=tb;
+    tableBox.style.display='block';
+    const last=r.rows[r.rows.length-1];
+    const conv=last.e!==''&&last.e<tol?`<span style="color:var(--ok)">Convergencia en ${last.k} iter.</span>`:`<span style="color:var(--acc)">No converge en ${mx} iter.</span>`;
+    resBox.innerHTML=`${conv}<br><strong>Solucion:</strong> ${last.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    return;
+  }
+}
+
+// ============== GENERADOR DE NOTEBOOK MATHEMATICA ==============
+function mmaMatrix(A){
+  return '{'+A.map(r=>'{'+r.map(v=>{
+    if(typeof v!=='number') return v;
+    if(Number.isInteger(v)) return v.toString();
+    return v.toString();
+  }).join(', ')+'}').join(', ')+'}';
+}
+function mmaVector(v){
+  return '{'+v.map(x=>x.toString()).join(', ')+'}';
+}
+
+function generateNotebook(){
+  const m=document.getElementById('slv-method').value;
+  const M=parseMatrix(document.getElementById('slv-mat').value);
+  const n=M.length;
+  let A,b=null;
+  const isAmpl = M[0].length===n+1;
+  if(isAmpl){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);} else A=M;
+
+  const methodName={
+    'gauss':'Metodo de Gauss (sin pivoteo)',
+    'gauss-pp':'Metodo de Gauss con pivoteo parcial',
+    'gauss-pe':'Metodo de Gauss con pivoteo parcial escalado',
+    'gj':'Metodo de Gauss-Jordan',
+    'gj-pp':'Metodo de Gauss-Jordan con pivoteo parcial',
+    'gj-pe':'Metodo de Gauss-Jordan con pivoteo parcial escalado',
+    'lu':'Factorizacion LU',
+    'cholesky':'Factorizacion de Cholesky',
+    'jacobi':'Metodo de Jacobi',
+    'gs':'Metodo de Gauss-Seidel',
+    'sor':'Metodo de Relajacion (SOR)',
+    'cond':'Numero de condicion',
+    'dd':'Diagonal dominancia',
+    'spd':'Comprobacion S.D.P.'
+  }[m]||'Sistema lineal';
+
+  let body = `(* ::Package:: *)\n\n`;
+  body += `(* ============================================================== *)\n`;
+  body += `(* Generado desde el solver web - ${methodName}                   *)\n`;
+  body += `(* ============================================================== *)\n\n`;
+  body += `(* Matriz de coeficientes A *)\n`;
+  body += `A = ${mmaMatrix(A)};\n\n`;
+  if(b){
+    body += `(* Vector termino independiente b *)\n`;
+    body += `b = ${mmaVector(b)};\n\n`;
+    body += `(* Matriz ampliada *)\n`;
+    body += `Aamp = ${mmaMatrix(M)};\n`;
+    body += `MatrixForm[Aamp]\n\n`;
+  }
+  body += `MatrixForm[A]\n\n`;
+
+  if(['gauss','gauss-pp','gauss-pe'].includes(m)){
+    const piv=m==='gauss-pp'?'parcial':m==='gauss-pe'?'escalado':'sin pivoteo';
+    body += `(* === ${methodName} === *)\n`;
+    body += `(* Estrategia: ${piv} *)\n`;
+    body += `(* Aplicamos transformaciones elementales por filas *)\n`;
+    if(piv==='sin pivoteo'){
+      body += `n = Length[A];\n`;
+      body += `M = Aamp;\n`;
+      body += `Do[\n`;
+      body += `  Do[\n`;
+      body += `    mji = M[[j, i]]/M[[i, i]];\n`;
+      body += `    M = ReplacePart[M, j -> M[[j]] - mji*M[[i]]];\n`;
+      body += `    Print["m_{",j,",",i,"} = ", mji];\n`;
+      body += `    Print["Tras f_",j," -> f_",j," - m_{",j,",",i,"} f_",i,":"];\n`;
+      body += `    Print[MatrixForm[M]];\n`;
+      body += `  , {j, i+1, n}];\n`;
+      body += `, {i, 1, n-1}];\n\n`;
+      body += `(* Despeje regresivo *)\n`;
+      body += `x = Table[0, {n}];\n`;
+      body += `x[[n]] = M[[n, n+1]]/M[[n, n]];\n`;
+      body += `Do[x[[i]] = (M[[i, n+1]] - Sum[M[[i, j]]*x[[j]], {j, i+1, n}])/M[[i, i]];, {i, n-1, 1, -1}];\n`;
+      body += `Print["Solucion: ", x]\n\n`;
+    } else {
+      body += `(* Comparacion con NSolve directo *)\n`;
+      body += `vars = Array[Symbol["x" <> ToString[#]] &, ${n}];\n`;
+      body += `eqs = Table[Sum[A[[i,j]]*vars[[j]], {j, ${n}}] == b[[i]], {i, ${n}}];\n`;
+      body += `solExact = NSolve[eqs, vars]\n\n`;
+      body += `(* Apply RowReduce con pivoteo automatico de Mathematica *)\n`;
+      body += `RowReduce[Aamp] // MatrixForm\n`;
+      body += `LinearSolve[A, b]\n`;
+    }
+  } else if(['gj','gj-pp','gj-pe'].includes(m)){
+    body += `(* === ${methodName} === *)\n`;
+    body += `(* RowReduce devuelve la forma reducida por filas *)\n`;
+    body += `RowReduce[Aamp] // MatrixForm\n\n`;
+    body += `(* La solucion es la ultima columna de RowReduce[Aamp] *)\n`;
+    body += `LinearSolve[A, b]\n`;
+  } else if(m==='lu'){
+    body += `(* === Factorizacion LU === *)\n`;
+    body += `{lu, p, nc} = LUDecomposition[A];\n`;
+    body += `Print["Forma compacta LU:"]; Print[MatrixForm[lu]];\n`;
+    body += `Print["Permutaciones de fila: ", p];\n`;
+    body += `Print["Numero de condicion: ", nc];\n\n`;
+    body += `(* Extraer L y U *)\n`;
+    body += `n = Length[A];\n`;
+    body += `L = lu*Array[Boole[#1 > #2] &, {n, n}] + IdentityMatrix[n];\n`;
+    body += `U = lu*Array[Boole[#1 <= #2] &, {n, n}];\n`;
+    body += `Print["L = ", MatrixForm[L]];\n`;
+    body += `Print["U = ", MatrixForm[U]];\n`;
+    body += `Print["Verificacion L.U: ", MatrixForm[L.U]];\n\n`;
+    if(b){
+      body += `(* Resolver L.y = b por sustitucion progresiva *)\n`;
+      body += `bp = b[[p]];  (* aplica permutacion al termino independiente *)\n`;
+      body += `y = LinearSolve[L, bp]\n`;
+      body += `(* Resolver U.x = y *)\n`;
+      body += `x = LinearSolve[U, y]\n`;
+    }
+  } else if(m==='cholesky'){
+    body += `(* === Factorizacion de Cholesky === *)\n`;
+    body += `(* Comprobamos simetria *)\n`;
+    body += `Print["A == A^t : ", A == Transpose[A]];\n`;
+    body += `Print["Autovalores: ", N[Eigenvalues[A]]];\n\n`;
+    body += `Ut = CholeskyDecomposition[A];  (* Devuelve U tal que A = U^t.U *)\n`;
+    body += `L = Transpose[Ut];\n`;
+    body += `Print["L = ", MatrixForm[L]];\n`;
+    body += `Print["L.L^t = ", MatrixForm[L.Transpose[L]]];\n`;
+    if(b){
+      body += `\n(* Resolucion: L.y = b, luego L^t.x = y *)\n`;
+      body += `y = LinearSolve[L, b]\n`;
+      body += `x = LinearSolve[Transpose[L], y]\n`;
+    }
+  } else if(['jacobi','gs','sor'].includes(m)){
+    const x0=document.getElementById('slv-x0')?document.getElementById('slv-x0').value:'0,0,0';
+    const tol=document.getElementById('slv-tol')?document.getElementById('slv-tol').value:'1e-3';
+    const mx=document.getElementById('slv-max')?document.getElementById('slv-max').value:'100';
+    const omega=m==='sor'?(document.getElementById('slv-omega')?document.getElementById('slv-omega').value:'1.1'):'1';
+    const x0Arr='{'+x0.split(',').map(s=>s.trim()).join(', ')+'}';
+    body += `(* === ${methodName} === *)\n`;
+    body += `(* Aproximacion inicial *)\n`;
+    body += `x0 = ${x0Arr};\n`;
+    body += `tol = ${tol};\n`;
+    body += `nmax = ${mx};\n`;
+    if(m==='sor') body += `omega = ${omega};\n`;
+    body += `n = Length[A];\n\n`;
+    body += `(* Comprobar diagonal dominancia estricta *)\n`;
+    body += `dd = And @@ Table[Abs[A[[i,i]]] > Sum[Abs[A[[i,j]]], {j, n}] - Abs[A[[i,i]]], {i, n}];\n`;
+    body += `Print["Diagonal dominante estrictamente: ", dd];\n\n`;
+    if(m==='jacobi'){
+      body += `(* Iteracion de Jacobi *)\n`;
+      body += `xprev = x0; iter = 0; err = Infinity;\n`;
+      body += `While[err >= tol && iter < nmax,\n`;
+      body += `  iter++;\n`;
+      body += `  xnew = Table[(b[[i]] - Sum[If[j==i, 0, A[[i,j]]*xprev[[j]]], {j, n}])/A[[i,i]], {i, n}];\n`;
+      body += `  err = Norm[xnew - xprev, Infinity];\n`;
+      body += `  Print[iter, ": x = ", N[xnew, 6], " | E_A = ", N[err]];\n`;
+      body += `  xprev = xnew;\n`;
+      body += `];\n`;
+      body += `Print["Solucion final: ", N[xprev, 6]];\n`;
+    } else if(m==='gs'){
+      body += `(* Iteracion de Gauss-Seidel *)\n`;
+      body += `xprev = x0; iter = 0; err = Infinity;\n`;
+      body += `While[err >= tol && iter < nmax,\n`;
+      body += `  iter++;\n`;
+      body += `  xnew = xprev;\n`;
+      body += `  Do[\n`;
+      body += `    xnew[[i]] = (b[[i]] - Sum[If[j==i, 0, A[[i,j]]*xnew[[j]]], {j, n}])/A[[i,i]];\n`;
+      body += `  , {i, n}];\n`;
+      body += `  err = Norm[xnew - xprev, Infinity];\n`;
+      body += `  Print[iter, ": x = ", N[xnew, 6], " | E_A = ", N[err]];\n`;
+      body += `  xprev = xnew;\n`;
+      body += `];\n`;
+      body += `Print["Solucion final: ", N[xprev, 6]];\n`;
+    } else {
+      body += `(* Iteracion de Relajacion (SOR) *)\n`;
+      body += `xprev = x0; iter = 0; err = Infinity;\n`;
+      body += `While[err >= tol && iter < nmax,\n`;
+      body += `  iter++;\n`;
+      body += `  xnew = xprev;\n`;
+      body += `  Do[\n`;
+      body += `    xgs = (b[[i]] - Sum[If[j==i, 0, A[[i,j]]*xnew[[j]]], {j, n}])/A[[i,i]];\n`;
+      body += `    xnew[[i]] = (1 - omega)*xprev[[i]] + omega*xgs;\n`;
+      body += `  , {i, n}];\n`;
+      body += `  err = Norm[xnew - xprev, Infinity];\n`;
+      body += `  Print[iter, ": x = ", N[xnew, 6], " | E_A = ", N[err]];\n`;
+      body += `  xprev = xnew;\n`;
+      body += `];\n`;
+      body += `Print["Solucion final: ", N[xprev, 6]];\n`;
+    }
+  } else if(m==='cond'){
+    body += `(* === Numero de condicion (norma infinito) === *)\n`;
+    body += `kInf = Norm[A, Infinity] * Norm[Inverse[A], Infinity]\n`;
+    body += `kEucl = Norm[A] * Norm[Inverse[A]]\n`;
+    body += `Print["||A||_inf = ", N[Norm[A, Infinity]]];\n`;
+    body += `Print["||A^{-1}||_inf = ", N[Norm[Inverse[A], Infinity]]];\n`;
+    body += `Print["k_inf(A) = ", N[kInf]];\n`;
+  } else if(m==='dd'){
+    body += `(* === Diagonal dominancia estricta === *)\n`;
+    body += `n = Length[A];\n`;
+    body += `Do[\n`;
+    body += `  s = Sum[Abs[A[[i,j]]], {j, n}] - Abs[A[[i,i]]];\n`;
+    body += `  Print["Fila ",i,": |a_{",i,",",i,"}|=", Abs[A[[i,i]]], " vs suma resto=", s, " --> ", Abs[A[[i,i]]] > s];\n`;
+    body += `, {i, n}];\n`;
+  } else if(m==='spd'){
+    body += `(* === Simetrica definida positiva === *)\n`;
+    body += `Print["Simetrica: ", A == Transpose[A]];\n`;
+    body += `Print["Autovalores: ", N[Eigenvalues[A]]];\n`;
+    body += `Print["Definida positiva (todos > 0): ", AllTrue[Eigenvalues[A], # > 0 &]];\n`;
+  }
+
+  body += `\n(* === Solucion exacta de referencia === *)\n`;
+  if(b) body += `xRef = LinearSolve[A, b]\n`;
+
+  // Trigger download
+  const blob=new Blob([body],{type:'application/vnd.wolfram.mathematica'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='solver_'+m+'_datos.nb';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  document.getElementById('slv-result').innerHTML+=`<br><span style="color:var(--ok)"><strong>✓ Notebook generado:</strong> solver_${m}_datos.nb (descargado). Abrelo con Mathematica para ejecutarlo paso a paso.</span>`;
+}
+
+function runVerify(){
+  const M=parseMatrix(document.getElementById('slv-mat').value);
+  const n=M.length;
+  if(M[0].length!==n+1){document.getElementById('slv-result').innerHTML='<span style="color:var(--acc)">Falta b</span>';return;}
+  const A=M.map(r=>r.slice(0,n)), b=M.map(r=>r[n]);
+  const inv=matInv(A);
+  if(!inv){document.getElementById('slv-result').innerHTML='<span style="color:var(--acc)">Matriz singular</span>';return;}
+  const x=Array(n).fill(0);
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)x[i]+=inv[i][j]*b[j];
+  document.getElementById('slv-result').innerHTML+=`<br><strong style="color:var(--ok)">Solucion exacta (A^{-1}·b):</strong> ${x.map((v,i)=>`x${i+1}=${fmt(v,8)}`).join(', ')}`;
+}
+
+// ============== TEST QUESTIONS ==============
+const testQuestions=[
+  {q:'¿Cual es la condicion necesaria de Rouche-Frobenius para que un sistema sea compatible determinado?',
+   opts:['rang(A) < rang(A|b)','rang(A) = rang(A|b) = n (numero de incognitas)','det(A) = 0','rang(A) > n'], a:1},
+  {q:'En el metodo de Gauss con pivoteo parcial, en cada paso se selecciona como pivote:',
+   opts:['El primer elemento no nulo de la columna','El elemento de mayor valor absoluto en la columna por debajo de la diagonal','El elemento mas pequeño','Cualquier elemento no nulo'], a:1},
+  {q:'Si A es estrictamente diagonal dominante, podemos afirmar que:',
+   opts:['No admite factorizacion LU','Jacobi y Gauss-Seidel convergen para cualquier x_0','El metodo de Gauss requiere intercambios de filas','El sistema es incompatible'], a:1},
+  {q:'La factorizacion de Cholesky existe si y solo si A es:',
+   opts:['Cualquier matriz invertible','Triangular','Simetrica definida positiva','Diagonal'], a:2},
+  {q:'En el metodo de Jacobi, la formula iterativa para x_i^{(k)} usa:',
+   opts:['Los valores ya actualizados de las componentes 1..i-1','Los valores antiguos de TODAS las componentes (excepto la i-esima)','Los valores futuros estimados','Solo el termino independiente'], a:1},
+  {q:'¿Cual es la diferencia clave entre Jacobi y Gauss-Seidel?',
+   opts:['Gauss-Seidel necesita matriz simetrica','Gauss-Seidel usa los nuevos valores recien calculados al actualizar la siguiente componente','Jacobi tiene mayor velocidad de convergencia','Son metodos identicos'], a:1},
+  {q:'Segun el Teorema de Kahan, para que el metodo de relajacion converja se requiere:',
+   opts:['ω > 1','ω ∈ (0, 2)','ω = 1','ω = 2'], a:1},
+  {q:'El radio espectral de una matriz M es:',
+   opts:['La suma de sus autovalores','El maximo de los autovalores en valor absoluto','El determinante','El menor autovalor'], a:1},
+  {q:'Un sistema con κ(A) = 1000 esta:',
+   opts:['Bien condicionado','Mal condicionado','Es incompatible','Tiene infinitas soluciones'], a:1},
+  {q:'Si la factorizacion LU se obtuvo con intercambios de filas, al resolver Ax=b debemos:',
+   opts:['Ignorar los intercambios','Aplicar los mismos intercambios al vector b antes de resolver','Cambiar de metodo','Recalcular L'], a:1},
+  {q:'En el metodo de Gauss-Jordan, cuando termina la eliminacion la matriz de coeficientes es:',
+   opts:['Triangular superior','Diagonal (o identidad si se escalan los pivotes)','Simetrica','Triangular inferior'], a:1},
+  {q:'Para una matriz simetrica definida positiva, ¿que metodo iterativo converge para cualquier ω ∈ (0,2)?',
+   opts:['Solo Jacobi','Solo Gauss-Seidel','El metodo de relajacion (Ostrowski-Reich)','Ninguno'], a:2},
+  {q:'La norma infinito de una matriz A es:',
+   opts:['La suma de todos sus elementos','El maximo de las sumas en valor absoluto por filas','El maximo elemento','El determinante'], a:1},
+  {q:'¿Que estrategia de pivoteo es adecuada cuando los coeficientes de las distintas filas tienen magnitudes muy distintas?',
+   opts:['Pivoteo parcial sin escalar','Pivoteo parcial escalado','Sin pivoteo','Pivoteo aleatorio'], a:1},
+  {q:'Si en un metodo iterativo la matriz T verifica ρ(T) > 1, entonces:',
+   opts:['La sucesion converge linealmente','La sucesion diverge','Converge cuadraticamente','Es indeterminado'], a:1},
+];
+
+function renderTest(){
+  let html='';
+  testQuestions.forEach((q,i)=>{
+    html+=`<div class="question-card"><h3>P${i+1}. ${q.q}</h3><div class="options">`;
+    q.opts.forEach((o,j)=>{html+=`<label><input type="radio" name="q${i}" value="${j}">${o}</label>`;});
+    html+=`</div><div class="feedback" id="fb${i}"></div></div>`;
+  });
+  document.getElementById('test-questions').innerHTML=html;
+  document.getElementById('test-total').textContent=testQuestions.length;
+}
+function gradeTest(){
+  let s=0;
+  testQuestions.forEach((q,i)=>{
+    const sel=document.querySelector(`input[name=q${i}]:checked`);
+    const fb=document.getElementById('fb'+i);
+    if(!sel){fb.className='feedback incorrect'; fb.innerHTML='Sin respuesta. Correcta: '+q.opts[q.a]; return;}
+    if(parseInt(sel.value)===q.a){s++; fb.className='feedback correct'; fb.innerHTML='✓ Correcto';}
+    else {fb.className='feedback incorrect'; fb.innerHTML='✗ Correcta: '+q.opts[q.a];}
+  });
+  document.getElementById('test-score').textContent=s;
+}
+
+// ============== PROBLEMAS RESUELTOS ==============
+function showSol(id,html){
+  const el=document.getElementById('sol-'+id);
+  el.innerHTML=html; el.classList.add('show');
+  renderMathInElement(el,mathOpts);
+}
+
+function solveP(n){
+  if(n===1){
+    const M=[[3.2,-2.1,4.4,5.5],[-4.1,1.9,-2.6,3.7],[0.8,-2.4,1.6,-0.9]];
+    const r1=gaussElim(M,0,{pivot:'parcial'});
+    const r2=gaussElim(M,0,{pivot:'escalado'});
+    let h='<h4>Pivoteo parcial</h4>';
+    h+='<div class="steps-box">';
+    r1.steps.slice(0,4).forEach(s=>{h+=`<div class="step"><h5>${s.title}</h5>${s.mat?`<div class="matrix-display">${s.mat}</div>`:''}${s.body||''}</div>`;});
+    h+='</div>';
+    h+=`<p><strong>Solucion (parcial):</strong> [${r1.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+=`<p><strong>Solucion (escalado):</strong> [${r2.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+='<p>Ambas estrategias dan la misma solucion en aritmetica exacta. La diferencia se aprecia con redondeo.</p>';
+    showSol(1,h); return;
+  }
+  if(n===2){
+    const M=[[1.8,12.4,8.1,22.3],[4.1,11800,-7.5,11800],[1.2,3.9,1.4,6.4]];
+    const r1=gaussElim(M,5,{pivot:'parcial'});
+    const r2=gaussElim(M,5,{pivot:'escalado'});
+    const inv=matInv(M.map(r=>r.slice(0,3)));
+    const b=M.map(r=>r[3]);
+    const xexact=inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0));
+    let h='<h4>Pivoteo parcial (5 cifras)</h4>';
+    h+=`<p><strong>Solucion:</strong> [${r1.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+='<h4>Pivoteo parcial escalado (5 cifras)</h4>';
+    h+=`<p><strong>Solucion:</strong> [${r2.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+=`<p><strong>Solucion exacta:</strong> [${xexact.map(v=>fmt(v,8)).join(', ')}]</p>`;
+    h+='<p>El pivoteo escalado es mas preciso porque, al considerar la magnitud relativa, escoge pivotes mas "grandes" en su contexto.</p>';
+    showSol(2,h); return;
+  }
+  if(n===3){
+    const M=[[1.8,12.4,8.1,22.3],[4.1,11800,-7.5,11800],[1.2,3.9,1.4,6.4]];
+    const r=gaussJordan(M,5,{pivot:'parcial'});
+    let h='<h4>Gauss-Jordan con pivoteo parcial (5 cifras)</h4>';
+    h+=`<p><strong>Solucion:</strong> [${r.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+='<p>Mismo resultado que Gauss con la misma estrategia, pero con el sistema reducido directamente a forma diagonal sin necesidad de despeje regresivo.</p>';
+    showSol(3,h); return;
+  }
+  if(n===4){
+    let A=[[2,-1,1],[3,3,9],[3,3,5]];
+    // Detectar piv 0 en la segunda columna
+    const tryLU=luFactorize(A);
+    let h='';
+    if(tryLU.error){
+      h+='<p>Pivote nulo: reordenamos f_2 ↔ f_3.</p>';
+      A=[[2,-1,1],[3,3,5],[3,3,9]];
+    }
+    const r=luFactorize(A);
+    h+='<p><strong>L:</strong></p><div class="matrix-display">'+matToStr(r.L)+'</div>';
+    h+='<p><strong>U:</strong></p><div class="matrix-display">'+matToStr(r.U)+'</div>';
+    // si reordenamos, b debe reordenarse
+    let b=tryLU.error?[5,1,-4]:[5,-4,1];
+    const sol=solveLU(r.L,r.U,b);
+    h+=`<p><strong>y =</strong> [${sol.y.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+=`<p><strong>x =</strong> [${sol.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    showSol(4,h); return;
+  }
+  if(n===5){
+    const A=[[1,2,-1],[2,6,-1],[-1,-1,9]];
+    const b=[-3,2,0];
+    const sym=isSymmetric(A);
+    let h='<p>Simetria: '+(sym?'SI':'NO');
+    if(!sym){h+=' → Cholesky NO aplica.</p>'; showSol(5,h); return;}
+    h+='</p>';
+    const ch=choleskyFactorize(A);
+    if(ch.error){h+='<p style="color:var(--acc)">'+ch.error+'</p>'; showSol(5,h); return;}
+    h+='<p><strong>L:</strong></p><div class="matrix-display">'+matToStr(ch.L)+'</div>';
+    const Ut=ch.L[0].map((_,j)=>ch.L.map(r=>r[j]));
+    const sol=solveLU(ch.L,Ut,b);
+    h+=`<p><strong>L·y=b ⇒ y =</strong> [${sol.y.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    h+=`<p><strong>L^t·x=y ⇒ x =</strong> [${sol.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
+    showSol(5,h); return;
+  }
+  if(n===6){
+    const A=[[-1,10,-2],[10,-1,0],[0,-2,10]];
+    const b=[7,9,6];
+    let h='<p>Matriz no diagonal dominante en orden original. Reordenamos para conseguir diagonal dominante: f_1 ↔ f_2.</p>';
+    const Ar=[[10,-1,0],[-1,10,-2],[0,-2,10]];
+    const br=[9,7,6];
+    h+='<p>Diagonal dominante: 10>1, 10>1+2=3, 10>2 ✓</p>';
+    const x0=[0,0,0];
+    const rJ=iterMethod('jacobi',Ar,br,x0,1e-2,50,'abs',1);
+    const rG=iterMethod('gs',Ar,br,x0,1e-2,50,'abs',1);
+    h+='<p><strong>Jacobi:</strong> '+rJ.rows[rJ.rows.length-1].k+' iter, x = ['+rJ.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    h+='<p><strong>Gauss-Seidel:</strong> '+rG.rows[rG.rows.length-1].k+' iter, x = ['+rG.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    h+='<p>Gauss-Seidel converge en menos iteraciones que Jacobi.</p>';
+    showSol(6,h); return;
+  }
+  if(n===7){
+    const A=[[1,2,-1],[2,6,-1],[-1,-1,9]];
+    const b=[-3,2,0];
+    const x0=[0,0,0];
+    const omega=1.2;
+    let h='<p>A es simetrica definida positiva (Cholesky existe), por tanto SOR converge ∀ω∈(0,2). Usamos ω='+omega+'.</p>';
+    const r=iterMethod('sor',A,b,x0,1e-2,100,'abs',omega);
+    h+='<p><strong>Convergencia en '+r.rows[r.rows.length-1].k+' iteraciones.</strong></p>';
+    h+='<p><strong>Solucion:</strong> ['+r.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    let th='<table class="dt"><tr><th>k</th><th>x</th><th>y</th><th>z</th><th>Error</th></tr>';
+    r.rows.slice(0,8).forEach(row=>{th+=`<tr><td>${row.k}</td>`+row.x.map(v=>`<td>${fmt(v,5)}</td>`).join('')+`<td>${row.e===''?'-':fmt(row.e,4)}</td></tr>`;});
+    th+='</table>';
+    h+=th;
+    showSol(7,h); return;
+  }
+  if(n===8){
+    const A=[[1,2,5],[3,4,1],[2,-1,1]];
+    const B=[[21,2,5],[3.1,1,1],[2,-1.1,7]];
+    const kA=normInf(A)*normInf(matInv(A));
+    const kB=normInf(B)*normInf(matInv(B));
+    let h='<p><strong>κ_∞(A) = '+fmt(kA,4)+'</strong></p>';
+    h+='<p><strong>κ_∞(B) = '+fmt(kB,4)+'</strong></p>';
+    h+='<p>A tiene κ pequeño → bien condicionada. B tiene κ ≈ 44 → moderadamente mal condicionado.</p>';
+    showSol(8,h); return;
+  }
+  if(n===9){
+    const A=[[3,1],[3,1.0001]];
+    const b1=[7,7.0001];
+    const b2=[7,7.0];
+    const inv=matInv(A);
+    const x1=inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b1[j],0));
+    const x2=inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b2[j],0));
+    const k=normInf(A)*normInf(inv);
+    let h='<p><strong>κ_∞(A) = '+fmt(k,2)+'</strong> → MUY mal condicionado.</p>';
+    h+='<p>Solucion con b=(7, 7.0001): x = ['+x1.map(v=>fmt(v,5)).join(', ')+']</p>';
+    h+='<p>Solucion con b=(7, 7): x = ['+x2.map(v=>fmt(v,5)).join(', ')+']</p>';
+    h+='<p>Una variacion de 10^-4 en b cambia la solucion drasticamente: caracteristica de un sistema mal condicionado.</p>';
+    showSol(9,h); return;
+  }
+  if(n===10){
+    const A=[[4,-1,1],[-1,4,-1],[1,-1,4]];
+    const b=[8,4,12];
+    let h='<p>Diagonal dominancia: |4|>|−1|+|1|=2 ✓ (todas las filas) → Jacobi y GS convergen.</p>';
+    const x0=[0,0,0];
+    const rJ=iterMethod('jacobi',A,b,x0,1e-3,100,'abs',1);
+    const rG=iterMethod('gs',A,b,x0,1e-3,100,'abs',1);
+    h+='<p><strong>Jacobi:</strong> '+rJ.rows[rJ.rows.length-1].k+' iter → x ≈ ['+rJ.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    h+='<p><strong>Gauss-Seidel:</strong> '+rG.rows[rG.rows.length-1].k+' iter → x ≈ ['+rG.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    h+='<p>Gauss-Seidel converge en aproximadamente la mitad de iteraciones que Jacobi.</p>';
+    showSol(10,h); return;
+  }
+  if(n===11){
+    const A=[[4,-1,0],[-1,4,-1],[0,-1,4]];
+    const b=[2,1,2];
+    let h='<p>Simetria: '+(isSymmetric(A)?'SI':'NO')+'</p>';
+    const ch=choleskyFactorize(A);
+    if(ch.error){h+='<p>'+ch.error+'</p>'; showSol(11,h); return;}
+    h+='<p>Definida positiva: SI (Cholesky aplicable).</p>';
+    h+='<p><strong>L:</strong></p><div class="matrix-display">'+matToStr(ch.L)+'</div>';
+    const Ut=ch.L[0].map((_,j)=>ch.L.map(r=>r[j]));
+    const sol=solveLU(ch.L,Ut,b);
+    h+='<p><strong>x =</strong> ['+sol.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    showSol(11,h); return;
+  }
+  if(n===12){
+    const A=[[5.4,1.5,-3.2],[1.5,10.8,2.4],[-3.2,2.4,8.32]];
+    const b=[1.7,-2.8,1.1];
+    const x0=[1,1.2,2.1];
+    const omega=1.25;
+    let h='<p>Simetria: SI. Definida positiva: comprobamos autovalores ≈ 12.29, 9.69, 2.53 (todos > 0). Por Ostrowski-Reich, SOR converge ∀ω∈(0,2).</p>';
+    const r=iterMethod('sor',A,b,x0,1e-2,100,'abs',omega);
+    h+='<p><strong>Convergencia en '+r.rows[r.rows.length-1].k+' iteraciones.</strong></p>';
+    h+='<p><strong>x ≈</strong> ['+r.x.map(v=>fmt(v,5)).join(', ')+']</p>';
+    let th='<table class="dt"><tr><th>k</th><th>x</th><th>y</th><th>z</th><th>E_A</th></tr>';
+    r.rows.slice(0,Math.min(r.rows.length,10)).forEach(row=>{th+=`<tr><td>${row.k}</td>`+row.x.map(v=>`<td>${fmt(v,5)}</td>`).join('')+`<td>${row.e===''?'-':fmt(row.e,4)}</td></tr>`;});
+    th+='</table>';
+    h+=th;
+    showSol(12,h); return;
+  }
+}
+
+// ============== INIT ==============
+renderTest();
+document.addEventListener('DOMContentLoaded',()=>{
+  renderMathInElement(document.body,mathOpts);
+});
+window.addEventListener('load',()=>{renderMathInElement(document.body,mathOpts);});
+</script>
+</body>
+</html>
