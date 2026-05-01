@@ -440,6 +440,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   </div>
   <button class="btn btn-primary" onclick="runJacobi()">Ejecutar Jacobi</button>
   <div class="iter-table"><table class="dt" id="jac-table"><thead></thead><tbody></tbody></table></div>
+  <div id="jac-plot" class="plot-container" style="min-height:280px;display:none"></div>
   <div class="result-box" id="jac-result"></div>
 </div>
 </div>
@@ -471,6 +472,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   </div>
   <button class="btn btn-primary" onclick="runGaussSeidel()">Ejecutar Gauss-Seidel</button>
   <div class="iter-table"><table class="dt" id="gs-table"><thead></thead><tbody></tbody></table></div>
+  <div id="gs-plot" class="plot-container" style="min-height:280px;display:none"></div>
   <div class="result-box" id="gs-result"></div>
 </div>
 </div>
@@ -520,6 +522,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   </div>
   <button class="btn btn-primary" onclick="runSOR()">Ejecutar Relajacion</button>
   <div class="iter-table"><table class="dt" id="sor-table"><thead></thead><tbody></tbody></table></div>
+  <div id="sor-plot" class="plot-container" style="min-height:280px;display:none"></div>
   <div class="result-box" id="sor-result"></div>
 </div>
 </div>
@@ -547,6 +550,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   <h4>Calculadora del numero de condicion (norma infinito)</h4>
   <div id="cond-wrapper"></div>
   <button class="btn btn-primary" onclick="runCond()" style="margin-top:.5rem">Calcular &kappa;(A)</button>
+  <button class="btn btn-success" onclick="plotMatrixHeatmap('cond')" style="margin-top:.5rem">Visualizar matriz (heatmap)</button>
+  <div id="cond-plot" class="plot-container" style="min-height:300px;display:none"></div>
   <div class="result-box" id="cond-result"></div>
 </div>
 </div>
@@ -576,6 +581,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   </div>
   <button class="btn btn-primary" onclick="runCompareIter()">Comparar Jacobi / GS / SOR</button>
   <div class="iter-table"><table class="dt" id="cmp-table"><thead></thead><tbody></tbody></table></div>
+  <div id="cmp-plot" class="plot-container" style="min-height:320px;display:none"></div>
   <div class="result-box" id="cmp-result"></div>
 </div>
 </div>
@@ -1381,6 +1387,29 @@ function runIterative(method,prefix){
   let conv=last.e!==''&&last.e<tol?`<span style="color:var(--ok)">Convergencia alcanzada en ${last.k} iteraciones.</span>`:`<span style="color:var(--acc)">No se alcanzo la tolerancia en ${maxIt} iteraciones.</span>`;
   let dd=isDiagDominantStrict(A)?'<span style="color:var(--ok)">A es estrictamente diagonal dominante → convergencia garantizada.</span>':'';
   document.getElementById(prefix+'-result').innerHTML=`${conv} ${dd}<br><strong>Solucion final:</strong> ${last.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+  // Plot de convergencia: error en escala log
+  const plotDiv=document.getElementById(prefix+'-plot');
+  if(plotDiv){
+    const its=r.rows.slice(1).map(rr=>rr.k);
+    const errs=r.rows.slice(1).map(rr=>rr.e);
+    const xsTraces=[];
+    for(let i=0;i<r.x.length;i++){
+      xsTraces.push({x:r.rows.map(rr=>rr.k), y:r.rows.map(rr=>rr.x[i]), name:'x'+(i+1), mode:'lines+markers', yaxis:'y2'});
+    }
+    Plotly.newPlot(plotDiv,[
+      {x:its, y:errs, name:'Error', mode:'lines+markers', line:{color:'#e74c3c',width:2}, marker:{size:6}},
+      ...xsTraces
+    ],{
+      title:'Convergencia: error y componentes vs iteracion',
+      xaxis:{title:'Iteracion'},
+      yaxis:{title:'Error', type:'log', side:'left'},
+      yaxis2:{title:'Componentes x_i', overlaying:'y', side:'right'},
+      legend:{orientation:'h',y:-0.2},
+      margin:{t:40,b:60,l:50,r:50},
+      height:280
+    },{responsive:true,displayModeBar:false});
+    plotDiv.style.display='block';
+  }
 }
 
 function runCond(){
@@ -1395,6 +1424,30 @@ function runCond(){
   else if(k<100) html+='<span style="color:var(--warn)">Condicionamiento moderado.</span>';
   else html+='<span style="color:var(--acc)">Mal condicionado (κ grande): pequeñas variaciones en datos pueden producir grandes variaciones en la solucion.</span>';
   document.getElementById('cond-result').innerHTML=html;
+}
+
+function plotMatrixHeatmap(prefix){
+  const A=getAB(prefix,'A').A;
+  if(!A) return;
+  const n=A.length;
+  const xs=Array.from({length:A[0].length},(_,i)=>'col '+(i+1));
+  const ys=Array.from({length:n},(_,i)=>'fila '+(i+1));
+  // Diagonal dominant check info
+  let ddInfo=isDiagDominantStrict(A)?'Diagonal dominante: SI':'Diagonal dominante: NO';
+  let symInfo = A.length===A[0].length && isSymmetric(A) ? ' &middot; Simetrica' : '';
+  const plotDiv=document.getElementById(prefix+'-plot');
+  Plotly.newPlot(plotDiv,[
+    {z:A, x:xs, y:ys.slice().reverse(), type:'heatmap', colorscale:'RdBu', reversescale:true, zmid:0,
+     hovertemplate:'A[%{y},%{x}] = %{z}<extra></extra>',
+     showscale:true}
+  ],{
+    title:'Heatmap de la matriz A &mdash; '+ddInfo+symInfo,
+    xaxis:{title:'',side:'top'},
+    yaxis:{title:'',autorange:'reversed'},
+    margin:{t:60,b:20,l:60,r:20},
+    height:300
+  },{responsive:true,displayModeBar:false});
+  plotDiv.style.display='block';
 }
 
 function runCompareIter(){
@@ -1417,6 +1470,24 @@ function runCompareIter(){
   document.getElementById('cmp-table').querySelector('thead').innerHTML=thead;
   document.getElementById('cmp-table').querySelector('tbody').innerHTML=tb;
   document.getElementById('cmp-result').innerHTML='<strong>Comparativa completa.</strong>';
+  // Plot de convergencia comparada
+  const plotDiv=document.getElementById('cmp-plot');
+  if(plotDiv){
+    Plotly.newPlot(plotDiv,[
+      {x:rJ.rows.slice(1).map(r=>r.k), y:rJ.rows.slice(1).map(r=>r.e), name:'Jacobi', mode:'lines+markers', line:{color:'#1a5276'}},
+      {x:rG.rows.slice(1).map(r=>r.k), y:rG.rows.slice(1).map(r=>r.e), name:'Gauss-Seidel', mode:'lines+markers', line:{color:'#27ae60'}},
+      {x:rS.rows.slice(1).map(r=>r.k), y:rS.rows.slice(1).map(r=>r.e), name:`SOR (ω=${omega})`, mode:'lines+markers', line:{color:'#e74c3c'}}
+    ],{
+      title:'Comparativa: error vs iteracion (escala log)',
+      xaxis:{title:'Iteracion'},
+      yaxis:{title:'Error', type:'log'},
+      legend:{orientation:'h',y:-0.2},
+      shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:tol,y1:tol,line:{color:'gray',dash:'dash'}}],
+      margin:{t:40,b:60,l:50,r:20},
+      height:320
+    },{responsive:true,displayModeBar:false});
+    plotDiv.style.display='block';
+  }
 }
 
 // ============== SOLVER GENERICO ==============

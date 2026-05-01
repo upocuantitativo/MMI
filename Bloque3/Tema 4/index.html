@@ -83,6 +83,25 @@ table.dt tr:nth-child(even){background:#f8f9fb}
 .nb-link::before{content:'📥';font-size:1rem}
 .nb-row{margin-top:.5rem;padding:.5rem;background:#fff;border:1px dashed var(--brd);border-radius:4px;font-size:.85rem}
 .nb-row strong{color:var(--pri);display:block;margin-bottom:.3rem}
+.mat-controls{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.85rem}
+.mat-controls input[type=number]{width:60px;padding:.3rem;border:1px solid var(--brd);border-radius:4px;text-align:center}
+.mat-controls .lbl{font-weight:600;color:var(--pri)}
+.mat-grid{display:inline-block;position:relative;padding:.6rem 1.2rem;margin:.3rem 0;background:#fff;border-radius:4px}
+.mat-grid::before,.mat-grid::after{content:'';position:absolute;top:6px;bottom:6px;width:14px;border:2px solid var(--pri)}
+.mat-grid::before{left:0;border-right:none;border-radius:8px 0 0 8px}
+.mat-grid::after{right:0;border-left:none;border-radius:0 8px 8px 0}
+.mat-grid table{border-collapse:separate;border-spacing:4px}
+.mat-grid input{width:75px;padding:.35rem;text-align:center;border:1px solid var(--brd);border-radius:3px;font-family:'Courier New',monospace;font-size:.85rem;background:#fafbfc}
+.mat-grid input:focus{outline:2px solid var(--pri-l);background:#fff}
+.mat-grid th{font-weight:600;color:var(--pri);font-size:.8rem;padding:0 4px}
+.matrix-display{position:relative;display:inline-block;padding:.5rem 1.1rem!important;font-family:'Courier New',monospace;font-size:.85rem;background:#fff;border:1px solid var(--brd);border-radius:4px;white-space:pre;line-height:1.4;margin:.3rem}
+.matrix-display::before,.matrix-display::after{content:'';position:absolute;top:4px;bottom:4px;width:11px;border:2px solid var(--pri)}
+.matrix-display::before{left:0;border-right:none;border-radius:7px 0 0 7px}
+.matrix-display::after{right:0;border-left:none;border-radius:0 7px 7px 0}
+.vec-display{position:relative;display:inline-block;padding:.4rem 1rem;font-family:'Courier New',monospace;font-size:.9rem;background:#fff;border:1px solid var(--brd);border-radius:4px}
+.vec-display::before,.vec-display::after{content:'';position:absolute;top:3px;bottom:3px;width:8px;border:2px solid var(--ok)}
+.vec-display::before{left:0;border-right:none;border-radius:5px 0 0 5px}
+.vec-display::after{right:0;border-left:none;border-radius:0 5px 5px 0}
 .katex{font-size:1em!important}
 .katex-display{margin:.5em 0!important}
 p{margin:.5rem 0}
@@ -144,10 +163,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Visualizacion: interpolacion lineal a trozos vs polinomio unico</h4>
-  <div class="calc-grid">
-    <div><label>Soporte (x_i, y_i) separado por ;</label>
-      <input type="text" id="vis-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
-  </div>
+  <div id="vis-wrapper"></div>
   <button class="btn btn-primary" onclick="visTipos()">Comparar</button>
   <div id="vis-plot" class="plot-container"></div>
 </div>
@@ -200,11 +216,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora directa (Vandermonde)</h4>
-  <div class="calc-grid">
-    <div><label>Soporte (x;y) separados por coma:</label>
-      <input type="text" id="van-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
-    <div><label>Evaluar P(t):</label><input type="text" id="van-eval" value="3.5"></div>
-  </div>
+  <div id="van-wrapper"></div>
+  <div class="calc-grid"><div><label>Evaluar P(t):</label><input type="text" id="van-eval" value="3.5"></div></div>
   <button class="btn btn-primary" onclick="runVandermonde()">Calcular polinomio</button>
   <div id="van-plot" class="plot-container"></div>
   <div class="result-box" id="van-result"></div>
@@ -328,10 +341,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora Lagrange</h4>
-  <div class="calc-grid">
-    <div><label>Soporte (x;y separados por coma):</label><input type="text" id="lag-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
-    <div><label>Evaluar P(t):</label><input type="text" id="lag-eval" value="3.5"></div>
-  </div>
+  <div id="lag-wrapper"></div>
+  <div class="calc-grid"><div><label>Evaluar P(t):</label><input type="text" id="lag-eval" value="3.5"></div></div>
   <button class="btn btn-primary" onclick="runLagrange()">Calcular Lagrange</button>
   <div id="lag-plot" class="plot-container"></div>
   <div class="result-box" id="lag-result"></div>
@@ -372,10 +383,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora Newton (diferencias divididas)</h4>
-  <div class="calc-grid">
-    <div><label>Soporte (x;y separados por coma):</label><input type="text" id="new-sup" value="1,5; 2,2; 3,1; 4,3"></div>
-    <div><label>Evaluar P(t):</label><input type="text" id="new-eval" value="2.5"></div>
-  </div>
+  <div id="new-wrapper"></div>
+  <div class="calc-grid"><div><label>Evaluar P(t):</label><input type="text" id="new-eval" value="2.5"></div></div>
   <button class="btn btn-primary" onclick="runNewton()">Calcular Newton</button>
   <div id="new-plot" class="plot-container"></div>
   <div class="result-box" id="new-result"></div>
@@ -418,11 +427,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora de Hermite (con diferencias divididas)</h4>
-  <p style="font-size:.85rem;color:var(--txtl)">Formato: x,y,y' separado por ; (un punto por triplete)</p>
-  <div class="calc-grid">
-    <div><label>Soporte (x,f(x),f'(x)):</label><input type="text" id="her-sup" value="0.7854,0.707105,-0.707108; 1.047,0.500171,-0.865927; 1.571,-0.000204,-1"></div>
-    <div><label>Evaluar H(t):</label><input type="text" id="her-eval" value="1.2"></div>
-  </div>
+  <div id="her-wrapper"></div>
+  <div class="calc-grid"><div><label>Evaluar H(t):</label><input type="text" id="her-eval" value="1.2"></div></div>
   <button class="btn btn-primary" onclick="runHermite()">Calcular Hermite</button>
   <div id="her-plot" class="plot-container"></div>
   <div class="result-box" id="her-result"></div>
@@ -465,8 +471,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora de spline cubico</h4>
+  <div id="spl-wrapper"></div>
   <div class="calc-grid">
-    <div><label>Soporte (x;y separados por coma):</label><input type="text" id="spl-sup" value="0.8,1.2; 1.2,1.4; 1.7,1.95; 2.3,2.23; 2.5,2.0; 3.0,2.4; 4.1,2.1"></div>
     <div><label>Tipo extremos:</label>
       <select id="spl-type">
         <option value="libre" selected>Libre (natural, S''(x_0)=S''(x_n)=0)</option>
@@ -498,10 +504,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Comparar metodos en un mismo soporte</h4>
-  <div class="calc-grid">
-    <div><label>Soporte (x;y):</label><input type="text" id="cmp-sup" value="0,0; 1,0.5; 4,2.5; 7,4.1"></div>
-    <div><label>Evaluar t:</label><input type="text" id="cmp-eval" value="3.5"></div>
-  </div>
+  <div id="cmp-wrapper"></div>
+  <div class="calc-grid"><div><label>Evaluar t:</label><input type="text" id="cmp-eval" value="3.5"></div></div>
   <button class="btn btn-primary" onclick="runCompareInt()">Comparar Vandermonde/Lagrange/Newton</button>
   <div id="cmp-plot" class="plot-container"></div>
   <div class="result-box" id="cmp-result"></div>
@@ -518,12 +522,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div class="solver-card" style="background:var(--card);border-radius:var(--r);padding:1.2rem;box-shadow:var(--sh)">
   <div class="calc-grid">
     <div>
-      <label>Soporte (formato x,y o x,y,y' para Hermite, separados por ;):</label>
-      <textarea id="slv-sup" class="matrix-input">0,0
-1,0.5
-4,2.5
-7,4.1</textarea>
-      <div style="font-size:.8rem;color:var(--txtl);margin-top:.3rem">Una linea por punto, o separados por ;</div>
+      <label>Soporte (puntos del soporte de la interpolacion):</label>
+      <div id="slv-wrapper"></div>
     </div>
     <div>
       <label>Metodo:</label>
@@ -670,6 +670,88 @@ function parseSupport(text){
   return text.split(sep).map(s=>s.trim()).filter(s=>s.length).map(s=>s.split(',').map(v=>{
     try{return math.evaluate(v.trim());}catch(e){return NaN;}
   }));
+}
+
+// === Grid de soporte (n puntos x M columnas: 2=x,y; 3=x,y,y') ===
+function buildSupGrid(prefix,n,cols,defaults){
+  const cont=document.getElementById(prefix+'-grid');
+  if(!cont) return;
+  const labels=cols===3?['x','f(x)',"f'(x)"]:['x','f(x)'];
+  let html='<table><tr>';
+  labels.forEach(l=>html+=`<th>${l}</th>`);
+  html+='</tr>';
+  for(let i=0;i<n;i++){
+    html+='<tr>';
+    for(let j=0;j<cols;j++){
+      const v=(defaults&&defaults[i]&&defaults[i][j]!==undefined)?defaults[i][j]:0;
+      html+=`<td><input type="text" id="${prefix}-c${i}-${j}" value="${v}"></td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  cont.innerHTML=html;
+}
+
+function readSupGrid(prefix,n,cols){
+  let out=[];
+  for(let i=0;i<n;i++){
+    let row=[];
+    for(let j=0;j<cols;j++){
+      const el=document.getElementById(`${prefix}-c${i}-${j}`);
+      if(!el) return null;
+      try{row.push(math.evaluate(el.value));}catch(e){row.push(NaN);}
+    }
+    out.push(row);
+  }
+  return out;
+}
+
+function setupSupBlock(prefix,n,cols,defaults){
+  const wrap=document.getElementById(prefix+'-wrapper');
+  if(!wrap) return;
+  let html=`<div class="mat-controls">
+    <span class="lbl">Numero de puntos:</span><input type="number" id="${prefix}-n" value="${n}" min="2" max="20">
+    <span class="lbl">Tipo:</span><select id="${prefix}-cols"><option value="2"${cols===2?' selected':''}>x, f(x)</option><option value="3"${cols===3?' selected':''}>x, f(x), f'(x) (Hermite)</option></select>
+    <button class="btn btn-primary" style="padding:.3rem .8rem;font-size:.8rem" onclick="rebuildSup('${prefix}')">Aplicar</button>
+  </div>
+  <div id="${prefix}-grid" class="mat-grid"></div>`;
+  wrap.innerHTML=html;
+  buildSupGrid(prefix,n,cols,defaults);
+}
+
+function rebuildSup(prefix){
+  const n=parseInt(document.getElementById(prefix+'-n').value);
+  const cols=parseInt(document.getElementById(prefix+'-cols').value);
+  // try preserve
+  let prev=null;
+  try{
+    prev=[];
+    for(let i=0;i<20;i++){let row=[]; let any=false;
+      for(let j=0;j<3;j++){const el=document.getElementById(`${prefix}-c${i}-${j}`); if(el){row.push(el.value); any=true;}}
+      if(any) prev.push(row);
+    }
+  }catch(e){}
+  buildSupGrid(prefix,n,cols,prev);
+}
+
+function getSup(prefix){
+  const n=parseInt(document.getElementById(prefix+'-n').value);
+  const cols=parseInt(document.getElementById(prefix+'-cols').value);
+  return readSupGrid(prefix,n,cols);
+}
+
+function renderMat(M,opts){
+  opts=opts||{};
+  const d=opts.digits||4;
+  if(!Array.isArray(M)) return String(M);
+  const rows=M.map(row=>row.map(v=>typeof v==='number'?fmt(v,d).padStart(10):String(v).padStart(10)).join('  ')).join('\n');
+  return `<span class="matrix-display">${rows}</span>`;
+}
+function renderVec(v,opts){
+  opts=opts||{};
+  const d=opts.digits||5;
+  const rows=v.map(x=>typeof x==='number'?fmt(x,d):String(x)).join('\n');
+  return `<span class="vec-display">${rows}</span>`;
 }
 function fmt(x,d=6){
   if(typeof x !== 'number' || !isFinite(x)) return String(x);
@@ -898,8 +980,37 @@ function plotData(divId,traces,layout){
   Plotly.newPlot(divId,traces,Object.assign({margin:{t:20,b:40,l:50,r:20},height:350,xaxis:{title:'x'},yaxis:{title:'y'}},layout||{}),{responsive:true,displayModeBar:false});
 }
 
+// Plot polinomio interpolador con eventual error vs funcion conocida
+function plotPolyDual(divId,xs,ys,P,xx,vEval,fnExpr){
+  const N=300, xmin=Math.min(...xs), xmax=Math.max(...xs);
+  const pad=(xmax-xmin)*0.05;
+  let xp=[],yp=[];
+  for(let i=0;i<=N;i++){const x=xmin-pad+((xmax-xmin)+2*pad)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
+  let traces=[
+    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+    {x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276',width:2}}
+  ];
+  if(!isNaN(xx)) traces.push({x:[xx],y:[vEval],mode:'markers',marker:{size:13,color:'#27ae60',symbol:'star'},name:`P(${xx})=${fmt(vEval,4)}`});
+  if(fnExpr){
+    let yf=xp.map(x=>evalFn(fnExpr,x));
+    let yerr=xp.map((x,i)=>Math.abs(yf[i]-yp[i]));
+    traces.push({x:xp,y:yf,mode:'lines',name:'f(x)',line:{color:'#000',width:2,dash:'dot'}});
+    // error en eje secundario
+    traces.push({x:xp,y:yerr,mode:'lines',name:'|f-P|',line:{color:'#d35400',width:1.5},yaxis:'y2'});
+    Plotly.newPlot(divId,traces,{
+      margin:{t:20,b:40,l:50,r:50},height:400,
+      xaxis:{title:'x'},
+      yaxis:{title:'f(x), P(x)'},
+      yaxis2:{title:'|error|',overlaying:'y',side:'right',type:'log'},
+      legend:{orientation:'h',y:-0.15}
+    },{responsive:true,displayModeBar:false});
+  } else {
+    plotData(divId,traces);
+  }
+}
+
 function visTipos(){
-  const sup=parseSupport(document.getElementById('vis-sup').value);
+  const sup=getSup('vis');
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   // lineal
   const xline=[], yline=[];
@@ -918,7 +1029,7 @@ function visTipos(){
 }
 
 function runVandermonde(){
-  const sup=parseSupport(document.getElementById('van-sup').value);
+  const sup=getSup('van');
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   const c=vandermonde(xs,ys);
   const xx=parseFloat(document.getElementById('van-eval').value);
@@ -1006,7 +1117,7 @@ function runTaylor(){
 }
 
 function runLagrange(){
-  const sup=parseSupport(document.getElementById('lag-sup').value);
+  const sup=getSup('lag');
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   const xx=parseFloat(document.getElementById('lag-eval').value);
   const {P,Ls}=lagrange(xs,ys);
@@ -1016,19 +1127,11 @@ function runLagrange(){
   html+=`<div class="step"><strong>P(x) = Σ y_j·L_j(x) =</strong> ${polyToString(P)}</div>`;
   document.getElementById('lag-steps').innerHTML=html;
   document.getElementById('lag-result').innerHTML=`<strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
-  // plot
-  const N=200, xmin=Math.min(...xs), xmax=Math.max(...xs);
-  let xp=[],yp=[];
-  for(let i=0;i<=N;i++){const x=xmin+(xmax-xmin)*i/N; xp.push(x); yp.push(evalPoly(P,x));}
-  plotData('lag-plot',[
-    {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
-    {x:xp,y:yp,mode:'lines',name:'P(x)',line:{color:'#1a5276'}},
-    {x:[xx],y:[v],mode:'markers',marker:{size:12,color:'#27ae60',symbol:'star'},name:`P(${xx})`}
-  ]);
+  plotPolyDual('lag-plot',xs,ys,P,xx,v,null);
 }
 
 function runNewton(){
-  const sup=parseSupport(document.getElementById('new-sup').value);
+  const sup=getSup('new');
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   const xx=parseFloat(document.getElementById('new-eval').value);
   const {P,dd}=newtonPoly(xs,ys);
@@ -1061,8 +1164,8 @@ function runNewton(){
 }
 
 function runHermite(){
-  const sup=parseSupport(document.getElementById('her-sup').value);
-  if(sup[0].length<3){document.getElementById('her-result').innerHTML='<span style="color:var(--acc)">Cada punto debe tener formato x,y,y\'</span>'; return;}
+  const sup=getSup('her');
+  if(!sup||sup[0].length<3){document.getElementById('her-result').innerHTML='<span style="color:var(--acc)">Selecciona "x, f(x), f\'(x)" en el tipo</span>'; return;}
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]), yps=sup.map(p=>p[2]);
   const xx=parseFloat(document.getElementById('her-eval').value);
   const {P,zs,dd}=hermiteDD(xs,ys,yps);
@@ -1087,7 +1190,7 @@ document.getElementById('spl-type')&&document.getElementById('spl-type').addEven
 });
 
 function runSpline(){
-  const sup=parseSupport(document.getElementById('spl-sup').value);
+  const sup=getSup('spl');
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   const type=document.getElementById('spl-type').value;
   let fp0=0,fpn=0;
@@ -1116,7 +1219,7 @@ function runSpline(){
 }
 
 function runCompareInt(){
-  const sup=parseSupport(document.getElementById('cmp-sup').value);
+  const sup=getSup('cmp');
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   const xx=parseFloat(document.getElementById('cmp-eval').value);
   const cV=vandermonde(xs,ys);
@@ -1200,7 +1303,8 @@ function runSolver(){
     return;
   }
   // resto: requiere soporte
-  const sup=parseSupport(document.getElementById('slv-sup').value);
+  const sup=getSup('slv');
+  if(!sup){resBox.innerHTML='<span style="color:var(--acc)">Soporte vacio</span>'; return;}
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   let P,extra='';
   if(m==='vandermonde') P=vandermonde(xs,ys);
@@ -1235,7 +1339,7 @@ function runSolver(){
     P=r2.P;
   }
   else if(m==='hermite'){
-    if(sup[0].length<3){resBox.innerHTML='<span style="color:var(--acc)">Cada punto debe tener formato x,y,y\'</span>'; return;}
+    if(!sup||sup[0].length<3){resBox.innerHTML='<span style="color:var(--acc)">Cambia el "Tipo" del soporte a "x, f(x), f\'(x)" para Hermite</span>'; return;}
     const yps=sup.map(p=>p[2]);
     const r=hermiteDD(xs,ys,yps); P=r.P;
     let html='<strong>Soporte duplicado:</strong> ['+r.zs.map(v=>fmt(v,4)).join(', ')+']<br>';
@@ -1307,7 +1411,7 @@ function mmaList(arr){return '{'+arr.map(v=>{return Array.isArray(v)?mmaList(v):
 
 function generateNotebook(){
   const m=document.getElementById('slv-method').value;
-  const sup=parseSupport(document.getElementById('slv-sup').value);
+  const sup=getSup('slv')||[];
   const xs=sup.map(p=>p[0]), ys=sup.map(p=>p[1]);
   const xx=document.getElementById('slv-eval')?parseFloat(document.getElementById('slv-eval').value):3.5;
 
@@ -1644,9 +1748,26 @@ function solveP(n){
   }
 }
 
+function initAllGrids(){
+  setupSupBlock('vis',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
+  setupSupBlock('van',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
+  setupSupBlock('lag',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
+  setupSupBlock('new',4,2,[[1,5],[2,2],[3,1],[4,3]]);
+  setupSupBlock('her',3,3,[[0.7854,0.707105,-0.707108],[1.047,0.500171,-0.865927],[1.571,-0.000204,-1]]);
+  setupSupBlock('spl',7,2,[[0.8,1.2],[1.2,1.4],[1.7,1.95],[2.3,2.23],[2.5,2.0],[3.0,2.4],[4.1,2.1]]);
+  setupSupBlock('cmp',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
+  setupSupBlock('slv',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
+}
+
 renderTest();
-document.addEventListener('DOMContentLoaded',()=>{renderMathInElement(document.body,mathOpts);});
-window.addEventListener('load',()=>{renderMathInElement(document.body,mathOpts);});
+document.addEventListener('DOMContentLoaded',()=>{
+  initAllGrids();
+  renderMathInElement(document.body,mathOpts);
+});
+window.addEventListener('load',()=>{
+  if(!document.getElementById('vis-grid')||!document.getElementById('vis-grid').innerHTML) initAllGrids();
+  renderMathInElement(document.body,mathOpts);
+});
 </script>
 </body>
 </html>
