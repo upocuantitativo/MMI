@@ -810,7 +810,9 @@ function setupMatBlock(prefix, defaultRows, defaultCols, defaults, type, opts){
   </div>
   <div id="${prefix}-grid" class="mat-grid"></div>`;
   wrapper.innerHTML=html;
-  buildMatGrid(prefix,defaultRows,defaultCols,defaults,type);
+  // Para 'Ab' el grid tiene defaultCols+1 columnas (la ultima es b)
+  const totalCols = type==='Ab' ? defaultCols+1 : defaultCols;
+  buildMatGrid(prefix,defaultRows,totalCols,defaults,type);
 }
 
 function rebuildMatBlock(prefix,type){
@@ -840,10 +842,46 @@ function getAB(prefix,type){
   const c=parseInt(document.getElementById(prefix+'-cols').value);
   const cols= type==='Ab' ? c+1 : c;
   const M=readMatGrid(prefix,r,cols);
+  if(!M){
+    // grid no completo: reconstruir y reintentar
+    const wrapper=document.getElementById(prefix+'-wrapper');
+    if(wrapper) rebuildMatBlock(prefix,type);
+    const M2=readMatGrid(prefix,r,cols);
+    if(!M2){return {A:null,b:null,M:null};}
+    if(type==='Ab') return {A:M2.map(row=>row.slice(0,c)), b:M2.map(row=>row[c]), M:M2};
+    return {A:M2, M:M2};
+  }
   if(type==='Ab'){
     return {A:M.map(row=>row.slice(0,c)), b:M.map(row=>row[c]), M};
   }
   return {A:M, M};
+}
+
+// Rango de una matriz por eliminacion gaussiana
+function matRank(A){
+  if(!A||A.length===0) return 0;
+  const M=A.map(r=>r.slice());
+  const rows=M.length, cols=M[0].length;
+  let r=0, lead=0;
+  for(let row=0;row<rows;row++){
+    if(lead>=cols) break;
+    let i=row;
+    while(Math.abs(M[i][lead])<1e-12){
+      i++;
+      if(i===rows){i=row; lead++; if(lead===cols) return r;}
+    }
+    [M[i],M[row]]=[M[row],M[i]];
+    const piv=M[row][lead];
+    for(let j=0;j<cols;j++) M[row][j]/=piv;
+    for(let i2=0;i2<rows;i2++){
+      if(i2!==row){
+        const f=M[i2][lead];
+        for(let j=0;j<cols;j++) M[i2][j]-=f*M[row][j];
+      }
+    }
+    r++; lead++;
+  }
+  return r;
 }
 
 // === Render de matrices con parentesis (estilo matematico) ===
@@ -1210,13 +1248,24 @@ function iterMethod(method, A,b, x0, tol, maxIter, errType, omega){
 // ============== INTERFACE ACTIONS ==============
 function checkCompatibility(){
   const ab=getAB('comp','Ab');
-  const M=ab.M;
-  const A=ab.A;
-  const n=A.length;
-  const det=determinant(A);
-  let html=`<strong>Determinante de A:</strong> ${fmt(det)}<br>`;
-  if(Math.abs(det)<1e-12) html+='<span style="color:var(--acc)">El sistema no es compatible determinado (det ≈ 0). Aplica Rouche-Frobenius para clasificarlo.</span>';
-  else html+='<span style="color:var(--ok)">El sistema es <strong>compatible determinado</strong> (rang(A)=rang(A|b)=n). Tiene solucion unica.</span>';
+  const M=ab.M, A=ab.A;
+  if(!A||!M){
+    document.getElementById('comp-result').innerHTML='<span style="color:var(--acc)">Datos invalidos: revisa que todas las celdas tengan numero.</span>';
+    return;
+  }
+  const rA=matRank(A);
+  const rM=matRank(M);
+  const nIncog=A[0].length;
+  const nEcs=A.length;
+  let html=`<strong>Ecuaciones:</strong> ${nEcs} &nbsp; <strong>Incognitas:</strong> ${nIncog}<br>`;
+  html+=`<strong>rang(A) =</strong> ${rA} &nbsp; <strong>rang(A|b) =</strong> ${rM}<br>`;
+  if(nEcs===nIncog){
+    const det=determinant(A);
+    html+=`<strong>det(A) =</strong> ${fmt(det)}<br>`;
+  }
+  if(rA<rM) html+='<span style="color:var(--acc)">El sistema es <strong>incompatible</strong> (rang(A) &lt; rang(A|b)).</span>';
+  else if(rA===nIncog) html+='<span style="color:var(--ok)">El sistema es <strong>compatible determinado</strong> (rang(A) = rang(A|b) = n incognitas). Solucion unica.</span>';
+  else html+=`<span style="color:var(--warn)">El sistema es <strong>compatible indeterminado</strong> (rang &lt; n incognitas). Infinitas soluciones con ${nIncog-rA} parametro(s).</span>`;
   document.getElementById('comp-result').innerHTML=html;
 }
 
