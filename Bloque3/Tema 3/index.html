@@ -83,6 +83,26 @@ table.dt tr:nth-child(even){background:#f8f9fb}
 .nb-link::before{content:'📥';font-size:1rem}
 .nb-row{margin-top:.5rem;padding:.5rem;background:#fff;border:1px dashed var(--brd);border-radius:4px;font-size:.85rem}
 .nb-row strong{color:var(--pri);display:block;margin-bottom:.3rem}
+.mat-controls{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.85rem}
+.mat-controls input[type=number]{width:60px;padding:.3rem;border:1px solid var(--brd);border-radius:4px;text-align:center}
+.mat-controls .lbl{font-weight:600;color:var(--pri)}
+.mat-grid{display:inline-block;position:relative;padding:.6rem 1.2rem;margin:.3rem 0;background:#fff;border-radius:4px}
+.mat-grid::before,.mat-grid::after{content:'';position:absolute;top:6px;bottom:6px;width:14px;border:2px solid var(--pri)}
+.mat-grid::before{left:0;border-right:none;border-radius:8px 0 0 8px}
+.mat-grid::after{right:0;border-left:none;border-radius:0 8px 8px 0}
+.mat-grid.ampliada::after{border-color:var(--pri)}
+.mat-grid table{border-collapse:separate;border-spacing:4px}
+.mat-grid input{width:65px;padding:.35rem;text-align:center;border:1px solid var(--brd);border-radius:3px;font-family:'Courier New',monospace;font-size:.85rem;background:#fafbfc}
+.mat-grid input:focus{outline:2px solid var(--pri-l);background:#fff}
+.mat-grid .vbar{padding:0 4px;border-left:2px dashed #aaa}
+.matrix-display{position:relative;display:inline-block;padding:.5rem 1.1rem;margin:.3rem;font-family:'Courier New',monospace;font-size:.85rem;background:#fff;border:1px solid var(--brd);border-radius:4px;white-space:pre;line-height:1.4}
+.matrix-display::before,.matrix-display::after{content:'';position:absolute;top:4px;bottom:4px;width:11px;border:2px solid var(--pri)}
+.matrix-display::before{left:0;border-right:none;border-radius:7px 0 0 7px}
+.matrix-display::after{right:0;border-left:none;border-radius:0 7px 7px 0}
+.vec-display{position:relative;display:inline-block;padding:.4rem 1rem;font-family:'Courier New',monospace;font-size:.9rem;background:#fff;border:1px solid var(--brd);border-radius:4px}
+.vec-display::before,.vec-display::after{content:'';position:absolute;top:3px;bottom:3px;width:8px;border:2px solid var(--ok)}
+.vec-display::before{left:0;border-right:none;border-radius:5px 0 0 5px}
+.vec-display::after{right:0;border-left:none;border-radius:0 5px 5px 0}
 .katex{font-size:1em!important}
 .katex-display{margin:.5em 0!important}
 p{margin:.5rem 0}
@@ -149,12 +169,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Comprueba la compatibilidad de un sistema</h4>
-  <p>Introduce la matriz ampliada \([A|b]\) (filas separadas por \\n y elementos por espacio):</p>
-  <textarea id="comp-input" class="matrix-input" placeholder="4.1 -2.8 3.9 4.1
--5.2 2.1 -3.4 2.1
-1.1 -3.3 2.1 -1.1">4.1 -2.8 3.9 4.1
--5.2 2.1 -3.4 2.1
-1.1 -3.3 2.1 -1.1</textarea>
+  <p>Introduce el numero de ecuaciones e incognitas y rellena la matriz ampliada \([A|b]\):</p>
+  <div id="comp-wrapper"></div>
   <button class="btn btn-primary" onclick="checkCompatibility()" style="margin-top:.5rem">Comprobar compatibilidad</button>
   <div class="result-box" id="comp-result"></div>
 </div>
@@ -195,10 +211,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora: Metodo de Gauss (sin pivoteo)</h4>
-  <p>Introduce la matriz ampliada \([A|b]\):</p>
-  <textarea id="gauss-input" class="matrix-input">4.1 -2.8 3.9 4.1
--5.2 2.1 -3.4 2.1
-1.1 -3.3 2.1 -1.1</textarea>
+  <p>Define dimensiones e introduce la matriz ampliada \([A|b]\):</p>
+  <div id="gauss-wrapper"></div>
   <button class="btn btn-primary" onclick="runGauss()" style="margin-top:.5rem">Ejecutar Gauss</button>
   <div class="steps-box" id="gauss-steps"></div>
   <div class="result-box" id="gauss-result"></div>
@@ -229,9 +243,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora: Gauss-Jordan</h4>
-  <textarea id="gj-input" class="matrix-input">4.1 -2.8 3.9 4.1
--5.2 2.1 -3.4 2.1
-1.1 -3.3 2.1 -1.1</textarea>
+  <div id="gj-wrapper"></div>
   <button class="btn btn-primary" onclick="runGaussJordan()" style="margin-top:.5rem">Ejecutar Gauss-Jordan</button>
   <div class="steps-box" id="gj-steps"></div>
   <div class="result-box" id="gj-result"></div>
@@ -263,9 +275,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora: Gauss con pivoteo parcial</h4>
-  <textarea id="gp-input" class="matrix-input">4.1 -2.8 3.9 4.1
--5.2 2.1 -3.4 2.1
-1.1 -3.3 2.1 -1.1</textarea>
+  <div id="gp-wrapper"></div>
   <div class="calc-grid">
     <div><label>Estrategia:</label>
       <select id="gp-strategy">
@@ -315,10 +325,14 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora: Factorizacion LU</h4>
-  <textarea id="lu-input" class="matrix-input">1 2 5
-3 4 1
-2 -1 1</textarea>
-  <p style="font-size:.85rem;color:var(--txtl);margin:.3rem 0">Solo matriz \(A\) (sin termino independiente) o matriz ampliada \([A|b]\) si quieres resolver.</p>
+  <div id="lu-wrapper"></div>
+  <div style="margin:.5rem 0">
+    <label style="font-size:.85rem"><input type="checkbox" id="lu-includeb"> Incluir vector \(b\) (resolver sistema)</label>
+  </div>
+  <div id="lu-bwrap" style="display:none;margin:.3rem 0">
+    <span class="lbl" style="font-weight:600;color:var(--pri);font-size:.85rem">Vector b:</span>
+    <span id="lu-bgrid"></span>
+  </div>
   <button class="btn btn-primary" onclick="runLU()" style="margin-top:.5rem">Calcular LU</button>
   <div class="steps-box" id="lu-steps"></div>
   <div class="result-box" id="lu-result"></div>
@@ -346,8 +360,14 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Verificador y calculadora de Cholesky</h4>
-  <textarea id="ch-input" class="matrix-input">1 2
-2 5</textarea>
+  <div id="ch-wrapper"></div>
+  <div style="margin:.5rem 0">
+    <label style="font-size:.85rem"><input type="checkbox" id="ch-includeb"> Incluir vector \(b\) (resolver sistema)</label>
+  </div>
+  <div id="ch-bwrap" style="display:none;margin:.3rem 0">
+    <span class="lbl" style="font-weight:600;color:var(--pri);font-size:.85rem">Vector b:</span>
+    <span id="ch-bgrid"></span>
+  </div>
   <button class="btn btn-primary" onclick="runCholesky()" style="margin-top:.5rem">Comprobar y factorizar</button>
   <div class="steps-box" id="ch-steps"></div>
   <div class="result-box" id="ch-result"></div>
@@ -379,10 +399,8 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora del radio espectral</h4>
-  <p>Introduce una matriz cuadrada para calcular su radio espectral:</p>
-  <textarea id="rho-input" class="matrix-input">0 -1.5/5.4 3.2/5.4
-6.1/-10.8 0 -2.4/-10.8
--1.6/-8.32 4.9/-8.32 0</textarea>
+  <p>Introduce una matriz cuadrada para calcular su radio espectral (en cada celda admite expresiones como <code>1.5/5.4</code>):</p>
+  <div id="rho-wrapper"></div>
   <button class="btn btn-primary" onclick="computeSpectralRadius()" style="margin-top:.5rem">Calcular &rho;(M)</button>
   <div class="result-box" id="rho-result"></div>
 </div>
@@ -413,9 +431,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div class="interactive-box">
   <h4>Calculadora: Metodo de Jacobi</h4>
   <p>Matriz ampliada \([A|b]\):</p>
-  <textarea id="jac-input" class="matrix-input">5.4 1.5 -3.2 1.7
-6.1 -10.8 2.4 -2.8
--1.6 4.9 -8.32 1.1</textarea>
+  <div id="jac-wrapper"></div>
   <div class="calc-grid">
     <div><label>Aproximacion inicial \(\underline{x}_0\) (separada por comas):</label><input type="text" id="jac-x0" value="1, 1.2, 2.1"></div>
     <div><label>Tolerancia:</label><input type="text" id="jac-tol" value="1e-2"></div>
@@ -446,9 +462,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div class="interactive-box">
   <h4>Calculadora: Metodo de Gauss-Seidel</h4>
   <p>Matriz ampliada \([A|b]\):</p>
-  <textarea id="gs-input" class="matrix-input">5.4 1.5 -3.2 1.7
-6.1 -10.8 2.4 -2.8
--1.6 4.9 -8.32 1.1</textarea>
+  <div id="gs-wrapper"></div>
   <div class="calc-grid">
     <div><label>Aproximacion inicial \(\underline{x}_0\):</label><input type="text" id="gs-x0" value="1, 1.2, 2.1"></div>
     <div><label>Tolerancia:</label><input type="text" id="gs-tol" value="1e-2"></div>
@@ -497,9 +511,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora: Metodo de Relajacion</h4>
-  <textarea id="sor-input" class="matrix-input">5.4 1.5 -3.2 1.7
-1.5 10.8 2.4 -2.8
--3.2 2.4 8.32 1.1</textarea>
+  <div id="sor-wrapper"></div>
   <div class="calc-grid">
     <div><label>Aproximacion inicial:</label><input type="text" id="sor-x0" value="1, 1.2, 2.1"></div>
     <div><label>Peso \(\omega\):</label><input type="text" id="sor-w" value="1.25"></div>
@@ -533,9 +545,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Calculadora del numero de condicion (norma infinito)</h4>
-  <textarea id="cond-input" class="matrix-input">21 2 5
-3.1 1 1
-2 -1.1 7</textarea>
+  <div id="cond-wrapper"></div>
   <button class="btn btn-primary" onclick="runCond()" style="margin-top:.5rem">Calcular &kappa;(A)</button>
   <div class="result-box" id="cond-result"></div>
 </div>
@@ -557,9 +567,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="interactive-box">
   <h4>Comparar metodos iterativos en un mismo sistema</h4>
-  <textarea id="cmp-input" class="matrix-input">5.4 1.5 -3.2 1.7
-6.1 -10.8 2.4 -2.8
--1.6 4.9 -8.32 1.1</textarea>
+  <div id="cmp-wrapper"></div>
   <div class="calc-grid">
     <div><label>Aproximacion inicial:</label><input type="text" id="cmp-x0" value="0, 0, 0"></div>
     <div><label>Tolerancia:</label><input type="text" id="cmp-tol" value="1e-4"></div>
@@ -583,9 +591,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
   <div class="calc-grid">
     <div>
       <label>Matriz ampliada \([A|b]\):</label>
-      <textarea id="slv-mat" class="matrix-input">2.222 16.71 9.612 28.544
-3.333 15920 -10.333 15913
-1.5611 5.1791 1.6852 8.4254</textarea>
+      <div id="slv-wrapper"></div>
     </div>
     <div>
       <label>Metodo:</label>
@@ -748,6 +754,119 @@ function parseMatrix(text){
     try { return math.evaluate(v); } catch(e) { return NaN; }
   }));
 }
+
+// === Grid de matriz con N filas y M columnas ===
+// type: 'A' (cuadrada), 'Ab' (ampliada con barra antes de ultima columna), 'AbVec' (matriz cuadrada + vector b separado)
+function buildMatGrid(prefix, rows, cols, defaults, type){
+  type = type||'A';
+  const grid=document.getElementById(prefix+'-grid');
+  if(!grid) return;
+  let html='<table>';
+  for(let i=0;i<rows;i++){
+    html+='<tr>';
+    for(let j=0;j<cols;j++){
+      const v = (defaults && defaults[i] && defaults[i][j]!==undefined) ? defaults[i][j] : 0;
+      const sep = (type==='Ab' && j===cols-1) ? '<td class="vbar"></td>' : '';
+      html+=sep+`<td><input type="text" id="${prefix}-c${i}-${j}" value="${v}"></td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</table>';
+  grid.innerHTML=html;
+  if(type==='Ab') grid.classList.add('ampliada');
+}
+
+function readMatGrid(prefix, rows, cols){
+  let M=[];
+  for(let i=0;i<rows;i++){
+    let row=[];
+    for(let j=0;j<cols;j++){
+      const el=document.getElementById(`${prefix}-c${i}-${j}`);
+      if(!el){ return null; }
+      try{ row.push(math.evaluate(el.value)); }catch(e){ row.push(NaN); }
+    }
+    M.push(row);
+  }
+  return M;
+}
+
+function setupMatBlock(prefix, defaultRows, defaultCols, defaults, type, opts){
+  // crea controles "Filas:" "Columnas:" y construye grid inicial
+  opts=opts||{};
+  const wrapper=document.getElementById(prefix+'-wrapper');
+  if(!wrapper) return;
+  const colsLabel = type==='Ab' ? 'Incognitas' : 'Columnas';
+  let html=`<div class="mat-controls">
+    <span class="lbl">Filas:</span><input type="number" id="${prefix}-rows" value="${defaultRows}" min="1" max="10">
+    <span class="lbl">${colsLabel}:</span><input type="number" id="${prefix}-cols" value="${defaultCols}" min="1" max="10">
+    <button class="btn btn-primary" style="padding:.3rem .8rem;font-size:.8rem" onclick="rebuildMatBlock('${prefix}','${type}')">Aplicar dimension</button>
+    ${opts.extra||''}
+  </div>
+  <div id="${prefix}-grid" class="mat-grid"></div>`;
+  wrapper.innerHTML=html;
+  buildMatGrid(prefix,defaultRows,defaultCols,defaults,type);
+}
+
+function rebuildMatBlock(prefix,type){
+  const r=parseInt(document.getElementById(prefix+'-rows').value);
+  const c=parseInt(document.getElementById(prefix+'-cols').value);
+  const cols= type==='Ab' ? c+1 : c;
+  // intentar conservar valores actuales
+  let prev=null;
+  try{
+    const oldR=document.querySelectorAll(`[id^="${prefix}-c"]`).length;
+    if(oldR>0){
+      // best effort preservation
+      let M=[];
+      for(let i=0;i<10;i++){let row=[]; let any=false;
+        for(let j=0;j<10;j++){const el=document.getElementById(`${prefix}-c${i}-${j}`); if(el){row.push(el.value); any=true;} else row.push(undefined);}
+        if(any) M.push(row);
+      }
+      prev=M;
+    }
+  }catch(e){}
+  buildMatGrid(prefix,r,cols,prev,type);
+}
+
+function getAB(prefix,type){
+  // type='Ab' -> devuelve {A,b,M}, type='A' -> {A,M}
+  const r=parseInt(document.getElementById(prefix+'-rows').value);
+  const c=parseInt(document.getElementById(prefix+'-cols').value);
+  const cols= type==='Ab' ? c+1 : c;
+  const M=readMatGrid(prefix,r,cols);
+  if(type==='Ab'){
+    return {A:M.map(row=>row.slice(0,c)), b:M.map(row=>row[c]), M};
+  }
+  return {A:M, M};
+}
+
+// === Render de matrices con parentesis (estilo matematico) ===
+function renderMat(M, opts){
+  // M: array of arrays of numbers; devuelve un span con clase matrix-display y formato monospace
+  opts=opts||{};
+  const d=opts.digits||4;
+  if(!Array.isArray(M)) return String(M);
+  const rows=M.map(row=>row.map(v=>typeof v==='number'?fmt(v,d).padStart(10):String(v).padStart(10)).join('  ')).join('\n');
+  const cls = opts.cls || 'matrix-display';
+  return `<span class="${cls}">${rows}</span>`;
+}
+function renderVec(v,opts){
+  opts=opts||{};
+  const d=opts.digits||5;
+  const rows=v.map(x=>typeof x==='number'?fmt(x,d):String(x)).join('\n');
+  return `<span class="vec-display">${rows}</span>`;
+}
+function renderAmpliada(M, ncols, opts){
+  // M con n+1 columnas -> renderiza dos bloques separados por barra
+  opts=opts||{};
+  const d=opts.digits||4;
+  const rows=M.map(row=>{
+    const left=row.slice(0,ncols).map(v=>fmt(v,d).padStart(10)).join('  ');
+    const right=fmt(row[ncols],d).padStart(10);
+    return left+' │ '+right;
+  }).join('\n');
+  return `<span class="matrix-display">${rows}</span>`;
+}
 function fmt(x,d=6){
   if(typeof x !== 'number' || !isFinite(x)) return String(x);
   if(Math.abs(x)<1e-12) return '0';
@@ -897,7 +1016,7 @@ function gaussElim(M_, prec=0, opts={pivot:'none', stopAtU:false}){
   let perm=Array.from({length:n},(_,i)=>i);
   let scales = opts.pivot==='escalado' ? M.map(r=>Math.max(...r.slice(0,n).map(Math.abs))) : null;
 
-  steps.push({title:'Matriz ampliada inicial', mat:matToStr(M)});
+  steps.push({title:'Matriz ampliada inicial', matrix:M.map(r=>r.slice())});
   for(let i=0;i<n-1;i++){
     // pivoteo
     if(opts.pivot==='parcial'){
@@ -906,7 +1025,7 @@ function gaussElim(M_, prec=0, opts={pivot:'none', stopAtU:false}){
       if(Math.abs(M[p][i])<1e-14) return {error:'Sistema sin solucion unica (pivote nulo)',steps};
       if(p!==i){
         [M[i],M[p]]=[M[p],M[i]]; [perm[i],perm[p]]=[perm[p],perm[i]];
-        steps.push({title:`Intercambio f_${i+1} ↔ f_${p+1} (pivoteo parcial)`, mat:matToStr(M)});
+        steps.push({title:`Intercambio f_${i+1} ↔ f_${p+1} (pivoteo parcial)`, matrix:M.map(r=>r.slice())});
       }
     } else if(opts.pivot==='escalado'){
       let p=i, best=Math.abs(M[i][i])/scales[i];
@@ -917,7 +1036,7 @@ function gaussElim(M_, prec=0, opts={pivot:'none', stopAtU:false}){
       if(p!==i){
         [M[i],M[p]]=[M[p],M[i]]; [scales[i],scales[p]]=[scales[p],scales[i]];
         [perm[i],perm[p]]=[perm[p],perm[i]];
-        steps.push({title:`Intercambio f_${i+1} ↔ f_${p+1} (pivoteo escalado)`, mat:matToStr(M)});
+        steps.push({title:`Intercambio f_${i+1} ↔ f_${p+1} (pivoteo escalado)`, matrix:M.map(r=>r.slice())});
       }
     }
     // eliminacion
@@ -929,7 +1048,7 @@ function gaussElim(M_, prec=0, opts={pivot:'none', stopAtU:false}){
         if(prec>0) val=roundDigits(val,prec);
         M[j][k]=val;
       }
-      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, mat:matToStr(M)});
+      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, matrix:M.map(r=>r.slice())});
     }
   }
   if(opts.stopAtU) return {U:M, steps, perm};
@@ -950,18 +1069,18 @@ function gaussJordan(M_,prec=0,opts={pivot:'none'}){
   const M=copyMat(M_);
   const n=M.length;
   let steps=[];
-  steps.push({title:'Matriz ampliada inicial', mat:matToStr(M)});
+  steps.push({title:'Matriz ampliada inicial', matrix:M.map(r=>r.slice())});
   let scales = opts.pivot==='escalado' ? M.map(r=>Math.max(...r.slice(0,n).map(Math.abs))) : null;
   for(let i=0;i<n;i++){
     if(opts.pivot==='parcial'){
       let p=i;
       for(let k=i+1;k<n;k++) if(Math.abs(M[k][i])>Math.abs(M[p][i])) p=k;
       if(Math.abs(M[p][i])<1e-14) return {error:'Sistema sin solucion unica',steps};
-      if(p!==i){[M[i],M[p]]=[M[p],M[i]]; steps.push({title:`Intercambio f_${i+1}↔f_${p+1}`, mat:matToStr(M)});}
+      if(p!==i){[M[i],M[p]]=[M[p],M[i]]; steps.push({title:`Intercambio f_${i+1}↔f_${p+1}`, matrix:M.map(r=>r.slice())});}
     } else if(opts.pivot==='escalado'){
       let p=i, best=Math.abs(M[i][i])/scales[i];
       for(let k=i+1;k<n;k++){const ratio=Math.abs(M[k][i])/scales[k]; if(ratio>best){best=ratio; p=k;}}
-      if(p!==i){[M[i],M[p]]=[M[p],M[i]]; [scales[i],scales[p]]=[scales[p],scales[i]]; steps.push({title:`Intercambio f_${i+1}↔f_${p+1} (escalado)`, mat:matToStr(M)});}
+      if(p!==i){[M[i],M[p]]=[M[p],M[i]]; [scales[i],scales[p]]=[scales[p],scales[i]]; steps.push({title:`Intercambio f_${i+1}↔f_${p+1} (escalado)`, matrix:M.map(r=>r.slice())});}
     }
     if(Math.abs(M[i][i])<1e-14) return {error:'Sistema sin solucion unica',steps};
     for(let j=0;j<n;j++){
@@ -972,7 +1091,7 @@ function gaussJordan(M_,prec=0,opts={pivot:'none'}){
         let v=M[j][k]-mji*M[i][k]; if(prec>0)v=roundDigits(v,prec);
         M[j][k]=v;
       }
-      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, mat:matToStr(M)});
+      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, matrix:M.map(r=>r.slice())});
     }
   }
   let x=Array(n).fill(0);
@@ -987,7 +1106,7 @@ function luFactorize(A_){
   let L=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
   let U=copyMat(A);
   let steps=[];
-  steps.push({title:'Matriz A', mat:matToStr(A)});
+  steps.push({title:'Matriz A', matrix:A.map(r=>r.slice())});
   for(let i=0;i<n-1;i++){
     if(Math.abs(U[i][i])<1e-14){
       return {error:'Pivote nulo: requiere reordenar filas. Reordena el sistema y vuelve a intentar.',steps};
@@ -997,7 +1116,7 @@ function luFactorize(A_){
       L[j][i]=m;
       for(let k=i;k<n;k++) U[j][k]-=m*U[i][k];
     }
-    steps.push({title:`Tras eliminar columna ${i+1}`, mat:'U:\n'+matToStr(U)+'\n\nL:\n'+matToStr(L)});
+    steps.push({title:`Tras eliminar columna ${i+1}`, matrices:[{label:'U',M:U.map(r=>r.slice())},{label:'L',M:L.map(r=>r.slice())}]});
   }
   return {L,U,steps};
 }
@@ -1084,13 +1203,10 @@ function iterMethod(method, A,b, x0, tol, maxIter, errType, omega){
 
 // ============== INTERFACE ACTIONS ==============
 function checkCompatibility(){
-  const M=parseMatrix(document.getElementById('comp-input').value);
-  const n=M.length;
-  if(M.some(r=>r.length!==n+1)){
-    document.getElementById('comp-result').innerHTML='<span style="color:var(--acc)">Formato invalido: cada fila debe tener n+1 elementos.</span>';
-    return;
-  }
-  const A=M.map(r=>r.slice(0,n));
+  const ab=getAB('comp','Ab');
+  const M=ab.M;
+  const A=ab.A;
+  const n=A.length;
   const det=determinant(A);
   let html=`<strong>Determinante de A:</strong> ${fmt(det)}<br>`;
   if(Math.abs(det)<1e-12) html+='<span style="color:var(--acc)">El sistema no es compatible determinado (det ≈ 0). Aplica Rouche-Frobenius para clasificarlo.</span>';
@@ -1102,15 +1218,24 @@ function renderSteps(box,steps){
   let html='';
   steps.forEach(s=>{
     html+=`<div class="step"><h5>${s.title}</h5>`;
-    if(s.mat) html+=`<div class="matrix-display">${s.mat}</div>`;
-    if(s.body) html+=`<div>${s.body}</div>`;
+    if(s.matrix) html+=renderMat(s.matrix,{digits:s.digits||4});
+    else if(s.matrices){
+      s.matrices.forEach(mObj=>{
+        if(mObj.label) html+=`<span style="margin-right:.4rem;font-weight:600">${mObj.label}=</span>`;
+        html+=renderMat(mObj.M,{digits:mObj.digits||4});
+        html+=' &nbsp; ';
+      });
+    }
+    else if(s.ampliada) html+=renderAmpliada(s.ampliada.M,s.ampliada.n,{digits:4});
+    else if(s.mat) html+=`<span class="matrix-display">${s.mat}</span>`;
+    if(s.body) html+=`<div style="margin-top:.3rem">${s.body}</div>`;
     html+='</div>';
   });
   box.innerHTML=html;
 }
 
 function runGauss(){
-  const M=parseMatrix(document.getElementById('gauss-input').value);
+  const M=getAB('gauss','Ab').M;
   const r=gaussElim(M,0,{pivot:'none'});
   renderSteps(document.getElementById('gauss-steps'),r.steps);
   if(r.error) document.getElementById('gauss-result').innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
@@ -1118,7 +1243,7 @@ function runGauss(){
 }
 
 function runGaussJordan(){
-  const M=parseMatrix(document.getElementById('gj-input').value);
+  const M=getAB('gj','Ab').M;
   const r=gaussJordan(M,0,{pivot:'none'});
   renderSteps(document.getElementById('gj-steps'),r.steps);
   if(r.error) document.getElementById('gj-result').innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
@@ -1126,7 +1251,7 @@ function runGaussJordan(){
 }
 
 function runGaussPivot(){
-  const M=parseMatrix(document.getElementById('gp-input').value);
+  const M=getAB('gp','Ab').M;
   const strat=document.getElementById('gp-strategy').value;
   const prec=parseInt(document.getElementById('gp-prec').value);
   const r=gaussElim(M,prec,{pivot:strat});
@@ -1136,12 +1261,13 @@ function runGaussPivot(){
 }
 
 function runLU(){
-  const M=parseMatrix(document.getElementById('lu-input').value);
-  const n=M.length;
-  let A,b=null;
-  if(M[0].length===n+1){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);}
-  else if(M[0].length===n){A=M;}
-  else {document.getElementById('lu-result').innerHTML='<span style="color:var(--acc)">Formato invalido</span>'; return;}
+  const A=getAB('lu','A').A;
+  const n=A.length;
+  let b=null;
+  if(document.getElementById('lu-includeb').checked){
+    b=[];
+    for(let i=0;i<n;i++){const el=document.getElementById(`lu-b${i}`); if(el) try{b.push(math.evaluate(el.value));}catch(e){b.push(0);}}
+  }
   const r=luFactorize(A);
   if(r.error){
     renderSteps(document.getElementById('lu-steps'),r.steps);
@@ -1149,8 +1275,8 @@ function runLU(){
   }
   let stepsBox=document.getElementById('lu-steps');
   let extra=[...r.steps,
-    {title:'Matriz L (triangular inferior)', mat:matToStr(r.L)},
-    {title:'Matriz U (triangular superior)', mat:matToStr(r.U)}];
+    {title:'Matriz L (triangular inferior)', matrix:r.L},
+    {title:'Matriz U (triangular superior)', matrix:r.U}];
   renderSteps(stepsBox, extra);
   let html=`<strong>L·U = A correcto.</strong><br>`;
   if(b){
@@ -1162,14 +1288,15 @@ function runLU(){
 }
 
 function runCholesky(){
-  const M=parseMatrix(document.getElementById('ch-input').value);
-  const n=M.length;
-  let A,b=null;
-  if(M[0].length===n+1){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);}
-  else if(M[0].length===n){A=M;}
-  else {document.getElementById('ch-result').innerHTML='<span style="color:var(--acc)">Formato invalido</span>'; return;}
+  const A=getAB('ch','A').A;
+  const n=A.length;
+  let b=null;
+  if(document.getElementById('ch-includeb').checked){
+    b=[];
+    for(let i=0;i<n;i++){const el=document.getElementById(`ch-b${i}`); if(el) try{b.push(math.evaluate(el.value));}catch(e){b.push(0);}}
+  }
   let steps=[];
-  steps.push({title:'Matriz A', mat:matToStr(A)});
+  steps.push({title:'Matriz A', matrix:A});
   // simetria
   if(!isSymmetric(A)){
     steps.push({title:'¿Simetrica?', body:'NO. La matriz no es simetrica → Cholesky no aplicable.'});
@@ -1191,7 +1318,7 @@ function runCholesky(){
       return;
     }
     steps.push({title:'A es definida negativa', body:'-A es definida positiva. Aplicamos Cholesky a -A:'});
-    steps.push({title:'Matriz L (de -A=L·L^t)', mat:matToStr(r2.L)});
+    steps.push({title:'Matriz L (de -A=L·L^t)', matrix:r2.L});
     if(b){
       const bn=b.map(v=>-v);
       const Ut=r2.L[0].map((_,j)=>r2.L.map(r=>r[j])); // L^t
@@ -1203,7 +1330,7 @@ function runCholesky(){
     return;
   }
   steps.push({title:'¿Definida positiva?', body:'SI. Cholesky aplicable.'});
-  steps.push({title:'Matriz L (de A=L·L^t)', mat:matToStr(r.L)});
+  steps.push({title:'Matriz L (de A=L·L^t)', matrix:r.L});
   if(b){
     const Ut=r.L[0].map((_,j)=>r.L.map(r2=>r2[j])); // L^t
     const sol=solveLU(r.L,Ut,b);
@@ -1215,8 +1342,8 @@ function runCholesky(){
 }
 
 function computeSpectralRadius(){
-  const M=parseMatrix(document.getElementById('rho-input').value);
-  if(M.length!==M[0].length){
+  const M=getAB('rho','A').A;
+  if(!M||M.length!==M[0].length){
     document.getElementById('rho-result').innerHTML='<span style="color:var(--acc)">Matriz no cuadrada</span>'; return;
   }
   const r=spectralRadius(M);
@@ -1231,10 +1358,9 @@ function runGaussSeidel(){runIterative('gs','gs');}
 function runSOR(){runIterative('sor','sor');}
 
 function runIterative(method,prefix){
-  const M=parseMatrix(document.getElementById(prefix+'-input').value);
-  const n=M.length;
-  if(M[0].length!==n+1){document.getElementById(prefix+'-result').innerHTML='<span style="color:var(--acc)">Formato invalido</span>'; return;}
-  const A=M.map(r=>r.slice(0,n)), b=M.map(r=>r[n]);
+  const ab=getAB(prefix,'Ab');
+  const A=ab.A, b=ab.b;
+  const n=A.length;
   const x0=document.getElementById(prefix+'-x0').value.split(',').map(s=>parseFloat(s));
   const tol=parseFloat(document.getElementById(prefix+'-tol').value);
   const maxIt=parseInt(document.getElementById(prefix+'-max').value);
@@ -1258,8 +1384,8 @@ function runIterative(method,prefix){
 }
 
 function runCond(){
-  const A=parseMatrix(document.getElementById('cond-input').value);
-  if(A.length!==A[0].length){document.getElementById('cond-result').innerHTML='<span style="color:var(--acc)">No cuadrada</span>'; return;}
+  const A=getAB('cond','A').A;
+  if(!A||A.length!==A[0].length){document.getElementById('cond-result').innerHTML='<span style="color:var(--acc)">No cuadrada</span>'; return;}
   const inv=matInv(A);
   if(!inv){document.getElementById('cond-result').innerHTML='<span style="color:var(--acc)">Matriz singular</span>'; return;}
   const k=normInf(A)*normInf(inv);
@@ -1272,9 +1398,9 @@ function runCond(){
 }
 
 function runCompareIter(){
-  const M=parseMatrix(document.getElementById('cmp-input').value);
-  const n=M.length;
-  const A=M.map(r=>r.slice(0,n)), b=M.map(r=>r[n]);
+  const ab=getAB('cmp','Ab');
+  const A=ab.A, b=ab.b;
+  const n=A.length;
   const x0=document.getElementById('cmp-x0').value.split(',').map(s=>parseFloat(s));
   const tol=parseFloat(document.getElementById('cmp-tol').value);
   const maxIt=parseInt(document.getElementById('cmp-max').value);
@@ -1313,16 +1439,15 @@ updateSlvUI();
 
 function runSolver(){
   const m=document.getElementById('slv-method').value;
-  const M=parseMatrix(document.getElementById('slv-mat').value);
-  const n=M.length;
+  const ab=getAB('slv','Ab');
+  const M=ab.M, A=ab.A, b=ab.b;
+  const n=A.length;
   const stepsBox=document.getElementById('slv-steps');
   const tableBox=document.getElementById('slv-itertable-wrap');
   const resBox=document.getElementById('slv-result');
   stepsBox.style.display='none'; tableBox.style.display='none';
   resBox.innerHTML='';
-  let A,b=null;
-  const isAmpl = M[0].length===n+1;
-  if(isAmpl){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);} else A=M;
+  const isAmpl = true;
 
   if(m==='dd'){
     const dd=isDiagDominantStrict(A);
@@ -1337,7 +1462,7 @@ function runSolver(){
     if(!isSymmetric(A)){resBox.innerHTML=h+'<span style="color:var(--acc)">Sin simetria, no es S.D.P.</span>'; return;}
     const ch=choleskyFactorize(A);
     if(ch.error){h+='<span style="color:var(--acc)">'+ch.error+'</span>';}
-    else{h+='<span style="color:var(--ok)">SI es definida positiva. Cholesky aplicable.</span><br><strong>L:</strong><div class="matrix-display">'+matToStr(ch.L)+'</div>';}
+    else{h+='<span style="color:var(--ok)">SI es definida positiva. Cholesky aplicable.</span><br><strong>L:</strong><br>'+renderMat(ch.L);}
     resBox.innerHTML=h; return;
   }
   if(m==='cond'){
@@ -1374,8 +1499,8 @@ function runSolver(){
     stepsBox.style.display='block';
     if(r.error){renderSteps(stepsBox,r.steps); resBox.innerHTML='<span style="color:var(--acc)">'+r.error+'</span>'; return;}
     renderSteps(stepsBox,[...r.steps,
-      {title:'L', mat:matToStr(r.L)},
-      {title:'U', mat:matToStr(r.U)}]);
+      {title:'L', matrix:r.L},
+      {title:'U', matrix:r.U}]);
     if(b){
       const sol=solveLU(r.L,r.U,b);
       resBox.innerHTML=`<strong>L·y=b ⇒ y =</strong> [${sol.y.map(v=>fmt(v,5)).join(', ')}]<br><strong>U·x=y ⇒ x =</strong> [${sol.x.map(v=>fmt(v,5)).join(', ')}]`;
@@ -1394,7 +1519,7 @@ function runSolver(){
       stepsBox.style.display='block';
       renderSteps(stepsBox,[
         {title:'A es definida negativa. Trabajamos con -A definida positiva.', body:''},
-        {title:'L (de -A=L·L^t)', mat:matToStr(ch2.L)}]);
+        {title:'L (de -A=L·L^t)', matrix:ch2.L}]);
       if(b){
         const Ut=ch2.L[0].map((_,j)=>ch2.L.map(r2=>r2[j]));
         const sol=solveLU(ch2.L,Ut,b.map(v=>-v));
@@ -1404,8 +1529,8 @@ function runSolver(){
     }
     stepsBox.style.display='block';
     renderSteps(stepsBox,[
-      {title:'L (de A=L·L^t)', mat:matToStr(ch.L)},
-      {title:'L^t', mat:matToStr(ch.L[0].map((_,j)=>ch.L.map(r=>r[j])))}
+      {title:'L (de A=L·L^t)', matrix:ch.L},
+      {title:'L^t', matrix:ch.L[0].map((_,j)=>ch.L.map(r=>r[j]))}
     ]);
     if(b){
       const Ut=ch.L[0].map((_,j)=>ch.L.map(r2=>r2[j]));
@@ -1447,11 +1572,10 @@ function mmaVector(v){
 
 function generateNotebook(){
   const m=document.getElementById('slv-method').value;
-  const M=parseMatrix(document.getElementById('slv-mat').value);
-  const n=M.length;
-  let A,b=null;
-  const isAmpl = M[0].length===n+1;
-  if(isAmpl){A=M.map(r=>r.slice(0,n)); b=M.map(r=>r[n]);} else A=M;
+  const ab=getAB('slv','Ab');
+  const M=ab.M, A=ab.A, b=ab.b;
+  const n=A.length;
+  const isAmpl=true;
 
   const methodName={
     'gauss':'Metodo de Gauss (sin pivoteo)',
@@ -1649,10 +1773,9 @@ function generateNotebook(){
 }
 
 function runVerify(){
-  const M=parseMatrix(document.getElementById('slv-mat').value);
-  const n=M.length;
-  if(M[0].length!==n+1){document.getElementById('slv-result').innerHTML='<span style="color:var(--acc)">Falta b</span>';return;}
-  const A=M.map(r=>r.slice(0,n)), b=M.map(r=>r[n]);
+  const ab=getAB('slv','Ab');
+  const A=ab.A, b=ab.b;
+  const n=A.length;
   const inv=matInv(A);
   if(!inv){document.getElementById('slv-result').innerHTML='<span style="color:var(--acc)">Matriz singular</span>';return;}
   const x=Array(n).fill(0);
@@ -1770,8 +1893,8 @@ function solveP(n){
       A=[[2,-1,1],[3,3,5],[3,3,9]];
     }
     const r=luFactorize(A);
-    h+='<p><strong>L:</strong></p><div class="matrix-display">'+matToStr(r.L)+'</div>';
-    h+='<p><strong>U:</strong></p><div class="matrix-display">'+matToStr(r.U)+'</div>';
+    h+='<p><strong>L:</strong></p>'+renderMat(r.L);
+    h+='<p><strong>U:</strong></p>'+renderMat(r.U);
     // si reordenamos, b debe reordenarse
     let b=tryLU.error?[5,1,-4]:[5,-4,1];
     const sol=solveLU(r.L,r.U,b);
@@ -1788,7 +1911,7 @@ function solveP(n){
     h+='</p>';
     const ch=choleskyFactorize(A);
     if(ch.error){h+='<p style="color:var(--acc)">'+ch.error+'</p>'; showSol(5,h); return;}
-    h+='<p><strong>L:</strong></p><div class="matrix-display">'+matToStr(ch.L)+'</div>';
+    h+='<p><strong>L:</strong></p>'+renderMat(ch.L);
     const Ut=ch.L[0].map((_,j)=>ch.L.map(r=>r[j]));
     const sol=solveLU(ch.L,Ut,b);
     h+=`<p><strong>L·y=b ⇒ y =</strong> [${sol.y.map(v=>fmt(v,5)).join(', ')}]</p>`;
@@ -1868,7 +1991,7 @@ function solveP(n){
     const ch=choleskyFactorize(A);
     if(ch.error){h+='<p>'+ch.error+'</p>'; showSol(11,h); return;}
     h+='<p>Definida positiva: SI (Cholesky aplicable).</p>';
-    h+='<p><strong>L:</strong></p><div class="matrix-display">'+matToStr(ch.L)+'</div>';
+    h+='<p><strong>L:</strong></p>'+renderMat(ch.L);
     const Ut=ch.L[0].map((_,j)=>ch.L.map(r=>r[j]));
     const sol=solveLU(ch.L,Ut,b);
     h+='<p><strong>x =</strong> ['+sol.x.map(v=>fmt(v,5)).join(', ')+']</p>';
@@ -1891,12 +2014,64 @@ function solveP(n){
   }
 }
 
-// ============== INIT ==============
+// ============== INIT GRIDS ==============
+function initAllGrids(){
+  // Compatibility check (matriz ampliada 3x4)
+  setupMatBlock('comp',3,3,[[4.1,-2.8,3.9,4.1],[-5.2,2.1,-3.4,2.1],[1.1,-3.3,2.1,-1.1]],'Ab');
+  // Gauss
+  setupMatBlock('gauss',3,3,[[4.1,-2.8,3.9,4.1],[-5.2,2.1,-3.4,2.1],[1.1,-3.3,2.1,-1.1]],'Ab');
+  // GJ
+  setupMatBlock('gj',3,3,[[4.1,-2.8,3.9,4.1],[-5.2,2.1,-3.4,2.1],[1.1,-3.3,2.1,-1.1]],'Ab');
+  // Gauss con pivoteo
+  setupMatBlock('gp',3,3,[[4.1,-2.8,3.9,4.1],[-5.2,2.1,-3.4,2.1],[1.1,-3.3,2.1,-1.1]],'Ab');
+  // LU (solo A)
+  setupMatBlock('lu',3,3,[[1,2,5],[3,4,1],[2,-1,1]],'A');
+  setupBVector('lu',3,[2,-1,3]);
+  document.getElementById('lu-includeb').addEventListener('change',e=>{
+    document.getElementById('lu-bwrap').style.display=e.target.checked?'block':'none';
+  });
+  // Cholesky (solo A)
+  setupMatBlock('ch',2,2,[[1,2],[2,5]],'A');
+  setupBVector('ch',2,[-1,5]);
+  document.getElementById('ch-includeb').addEventListener('change',e=>{
+    document.getElementById('ch-bwrap').style.display=e.target.checked?'block':'none';
+  });
+  // rho (cuadrada)
+  setupMatBlock('rho',3,3,[['0','-1.5/5.4','3.2/5.4'],['6.1/-10.8','0','-2.4/-10.8'],['-1.6/-8.32','4.9/-8.32','0']],'A');
+  // Jacobi
+  setupMatBlock('jac',3,3,[[5.4,1.5,-3.2,1.7],[6.1,-10.8,2.4,-2.8],[-1.6,4.9,-8.32,1.1]],'Ab');
+  // GS
+  setupMatBlock('gs',3,3,[[5.4,1.5,-3.2,1.7],[6.1,-10.8,2.4,-2.8],[-1.6,4.9,-8.32,1.1]],'Ab');
+  // SOR
+  setupMatBlock('sor',3,3,[[5.4,1.5,-3.2,1.7],[1.5,10.8,2.4,-2.8],[-3.2,2.4,8.32,1.1]],'Ab');
+  // cond
+  setupMatBlock('cond',3,3,[[21,2,5],[3.1,1,1],[2,-1.1,7]],'A');
+  // cmp
+  setupMatBlock('cmp',3,3,[[5.4,1.5,-3.2,1.7],[6.1,-10.8,2.4,-2.8],[-1.6,4.9,-8.32,1.1]],'Ab');
+  // SLV
+  setupMatBlock('slv',3,3,[[2.222,16.71,9.612,28.544],[3.333,15920,-10.333,15913],[1.5611,5.1791,1.6852,8.4254]],'Ab');
+}
+
+function setupBVector(prefix,n,defaults){
+  const cont=document.getElementById(prefix+'-bgrid');
+  if(!cont) return;
+  let html='<span class="vec-display" style="vertical-align:middle">';
+  for(let i=0;i<n;i++){
+    html+=`<input type="text" id="${prefix}-b${i}" value="${defaults[i]||0}" style="width:60px;padding:.3rem;text-align:center;border:1px solid var(--brd);border-radius:3px;font-family:Courier New,monospace;margin:2px"><br>`;
+  }
+  html+='</span>';
+  cont.innerHTML=html;
+}
+
 renderTest();
 document.addEventListener('DOMContentLoaded',()=>{
+  initAllGrids();
   renderMathInElement(document.body,mathOpts);
 });
-window.addEventListener('load',()=>{renderMathInElement(document.body,mathOpts);});
+window.addEventListener('load',()=>{
+  if(!document.getElementById('comp-grid')||!document.getElementById('comp-grid').innerHTML) initAllGrids();
+  renderMathInElement(document.body,mathOpts);
+});
 </script>
 </body>
 </html>
