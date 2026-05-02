@@ -536,7 +536,10 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
         <option value="spline">Spline cubico</option>
         <option value="taylor">Polinomio de Taylor</option>
         <option value="error">Cota del error</option>
-        <option value="compare">Comparar todos los metodos</option>
+        <option value="compare">Comparar todos los metodos polinomicos</option>
+        <option value="compare-cota">Comparar cota del error: n=4 vs n=5 vs n=6 puntos</option>
+        <option value="compare-poly-hermite">Comparar polinomio simple vs Hermite vs Spline</option>
+        <option value="compare-segm">Comparar polinomio unico vs interpolacion segmentada</option>
       </select>
       <div id="slv-extra" style="margin-top:.5rem"></div>
     </div>
@@ -1257,6 +1260,15 @@ function updateSlvUI(){
     html+='<label style="margin-top:.4rem">Intervalo [a,b]:</label><input type="text" id="slv-ab" value="1,2" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
     html+='<label style="margin-top:.4rem">Numero de puntos:</label><input type="number" id="slv-n" value="4" min="2" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
     html+='<label style="margin-top:.4rem">Punto a evaluar t:</label><input type="text" id="slv-eval" value="1.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+  } else if(m==='compare-cota'){
+    html='<label>Funcion f(x) (para cota del error):</label><input type="text" id="slv-fn" value="1/(1+9*x^2)" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<label style="margin-top:.4rem">Punto t para evaluar cota:</label><input type="text" id="slv-eval" value="1.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<div style="font-size:.8rem;color:var(--txtl);margin-top:.3rem">Se compararan cotas con n+1=4, 5 y 6 puntos equiespaciados en el intervalo [min(xs), max(xs)] del soporte.</div>';
+  } else if(m==='compare-poly-hermite'){
+    html='<label>Punto t para evaluar (opcional):</label><input type="text" id="slv-eval" value="3.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<div style="font-size:.8rem;color:var(--txtl);margin-top:.3rem">Cambia el "Tipo" del soporte a "x, f(x), f\'(x)" para incluir Hermite en la comparacion.</div>';
+  } else if(m==='compare-segm'){
+    html='<label>Punto t para evaluar:</label><input type="text" id="slv-eval" value="3.5" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
   } else if(m==='spline'){
     html+='<label style="margin-top:.4rem">Tipo extremos:</label><select id="slv-spltype" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px"><option value="libre">Libre</option><option value="sujeto">Sujeto</option></select>';
     html+='<label style="margin-top:.4rem">f\'(x_0), f\'(x_n) (si sujeto):</label><input type="text" id="slv-fp" value="0,0" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
@@ -1370,8 +1382,125 @@ function runSolver(){
     html+=`<tr><td>Lagrange</td><td>${fmt(evalPoly(cL,xx),6)}</td><td>${polyToString(cL)}</td></tr>`;
     html+=`<tr><td>Newton DD</td><td>${fmt(evalPoly(cN,xx),6)}</td><td>${polyToString(cN)}</td></tr>`;
     html+='</table>';
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Eleccion del metodo optimo:</strong><br>';
+    html+='<ul style="margin:.3rem 0 0 1.2rem"><li>Los tres metodos producen el MISMO polinomio interpolador (unicidad). Las diferencias pueden ser solo de redondeo.</li>';
+    html+='<li><strong>Vandermonde</strong>: matriz mal condicionada para n grande, requiere resolver un sistema lineal O(n³). Evitar si n>5.</li>';
+    html+='<li><strong>Lagrange</strong>: simple de presentar pero recomputar todo si se anyade un punto al soporte.</li>';
+    html+='<li><strong>Newton DD</strong>: mismo coste que Lagrange para construirlo, pero <strong>permite ampliar el soporte sin recomputar lo anterior</strong>. Es el mas eficiente en la practica.</li></ul></div>';
     resBox.innerHTML=html;
     plotPoly(cN,[Math.min(...xs),Math.max(...xs)],xx,evalPoly(cN,xx),xs,ys);
+    return;
+  }
+  else if(m==='compare-cota'){
+    // Comparar cota del error con distintos n. Necesita funcion f
+    const fnExpr=document.getElementById('slv-fn')?document.getElementById('slv-fn').value:'1/(1+9*x^2)';
+    const a=Math.min(...xs), b=Math.max(...xs);
+    let html=`<strong>Comparativa de cota del error con distintos n para f(x)=${fnExpr} en [${a},${b}]</strong>`;
+    html+='<table class="dt"><tr><th>n+1 puntos</th><th>n</th><th>Derivada acotar</th><th>M = max|f^(n+1)|</th><th>Cota global E_A</th><th>Cota en t='+xx+'</th></tr>';
+    [4,5,6].forEach(npts=>{
+      const n=npts-1;
+      let M=0;
+      for(let k=0;k<=200;k++){const x=a+(b-a)*k/200; const dv=Math.abs(numDeriv(fnExpr,x,n+1)); if(dv>M)M=dv;}
+      let xsEq=[]; for(let i=0;i<=n;i++) xsEq.push(a+(b-a)*i/n);
+      let prod=1; for(const xi of xsEq) prod*=Math.abs(xx-xi);
+      const cotaT=M/factorial(n+1)*prod;
+      const cotaG=M/factorial(n+1)*Math.pow(b-a,n+1);
+      html+=`<tr><td>${npts}</td><td>${n}</td><td>f^(${n+1})</td><td>${fmt(M,5)}</td><td>${fmt(cotaG,5)}</td><td>${fmt(cotaT,5)}</td></tr>`;
+    });
+    html+='</table>';
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Analisis:</strong> aumentar n divide por (n+1)! pero multiplica M (la derivada de orden n+1 puede crecer). Para funciones tipo 1/(1+kx²) (Runge) la cota puede empeorar al aumentar n. ';
+    html+='El metodo <strong>optimo</strong> depende del balance entre M y (n+1)!: muestra el menor valor en la columna "Cota en t".</div>';
+    stepsBox.innerHTML=html;
+    stepsBox.style.display='block';
+    resBox.innerHTML='';
+    return;
+  }
+  else if(m==='compare-poly-hermite'){
+    // Comparar polinomio interpolador (Lagrange/Newton) vs Hermite vs spline
+    const fnExpr=document.getElementById('slv-fn')?document.getElementById('slv-fn').value:null;
+    const {P:cL}=lagrange(xs,ys);
+    const vL=evalPoly(cL,xx);
+    let html='<strong>Comparativa Polinomio simple vs Hermite vs Spline cubico</strong>';
+    html+='<table class="dt"><tr><th>Metodo</th><th>Aproximacion en t='+xx+'</th><th>Notas</th></tr>';
+    html+=`<tr><td>Polinomio interpolador (Lagrange)</td><td>${fmt(vL,6)}</td><td>Grado n. Puede oscilar (Runge).</td></tr>`;
+    if(sup[0].length>=3){
+      const yps=sup.map(p=>p[2]);
+      const {P:cH}=hermiteDD(xs,ys,yps);
+      const vH=evalPoly(cH,xx);
+      html+=`<tr><td>Hermite</td><td>${fmt(vH,6)}</td><td>Grado 2n+1. Mejor cota: depende de f^(2n+2).</td></tr>`;
+    } else {
+      html+='<tr><td>Hermite</td><td>-</td><td><em>Cambia el "Tipo" de soporte a "x, f(x), f\'(x)" para usar Hermite.</em></td></tr>';
+    }
+    if(xs.length>=3){
+      const spl=cubicSpline(xs,ys,'libre');
+      const vS=evalSpline(spl,xx);
+      html+=`<tr><td>Spline cubico libre</td><td>${fmt(vS,6)}</td><td>A trozos, clase C². Inmune a Runge.</td></tr>`;
+    }
+    html+='</table>';
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Eleccion del metodo optimo:</strong><br>';
+    html+='<ul style="margin:.3rem 0 0 1.2rem"><li><strong>Polinomio simple</strong>: el mas barato si solo conoces f en el soporte y los puntos no son muchos. Riesgo de Runge en extremos.</li>';
+    html+='<li><strong>Hermite</strong>: mejor aproximacion (factor (x-x_i)² en la cota) pero requiere conocer las derivadas. Si no las tienes, no se puede usar.</li>';
+    html+='<li><strong>Spline cubico</strong>: la opcion mas robusta cuando hay muchos puntos o el polinomio simple oscila demasiado. Coste O(n) (sistema tridiagonal). Es el indicado en ingenieria practica.</li></ul></div>';
+    stepsBox.innerHTML=html;
+    stepsBox.style.display='block';
+    resBox.innerHTML='';
+    return;
+  }
+  else if(m==='compare-segm'){
+    // Polinomio unico vs interpolacion segmentada (lineal y spline)
+    const {P:cL}=lagrange(xs,ys);
+    const vL=evalPoly(cL,xx);
+    const spl=cubicSpline(xs,ys,'libre');
+    const vS=evalSpline(spl,xx);
+    // Lineal a trozos
+    let vLin=NaN;
+    for(let i=0;i<xs.length-1;i++){
+      if(xx>=xs[i]&&xx<=xs[i+1]){
+        const t=(xx-xs[i])/(xs[i+1]-xs[i]);
+        vLin=ys[i]+t*(ys[i+1]-ys[i]); break;
+      }
+    }
+    let html='<strong>Polinomio unico vs interpolacion segmentada</strong>';
+    html+='<table class="dt"><tr><th>Metodo</th><th>Aproximacion en t='+xx+'</th></tr>';
+    html+=`<tr><td>Polinomio interpolador unico (grado ${xs.length-1})</td><td>${fmt(vL,6)}</td></tr>`;
+    html+=`<tr><td>Interpolacion lineal a trozos</td><td>${fmt(vLin,6)}</td></tr>`;
+    html+=`<tr><td>Spline cubico libre</td><td>${fmt(vS,6)}</td></tr>`;
+    html+='</table>';
+    // Plot
+    html+='<div id="slv-segm-plot" style="min-height:340px;margin-top:.6rem"></div>';
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Analisis:</strong><ul style="margin:.3rem 0 0 1.2rem">';
+    html+='<li>El polinomio unico de grado alto puede presentar oscilaciones extranias (fenomeno de Runge).</li>';
+    html+='<li>La interpolacion lineal a trozos es continua pero NO derivable en los nodos.</li>';
+    html+='<li>El <strong>spline cubico</strong> es continuo, derivable y de clase C². <strong>Es el optimo</strong> para muestras con muchos puntos o cuando el polinomio unico oscila.</li>';
+    html+='</ul></div>';
+    stepsBox.innerHTML=html;
+    stepsBox.style.display='block';
+    resBox.innerHTML='';
+    // dibujar comparativa
+    const N=300, xmin=Math.min(...xs), xmax=Math.max(...xs);
+    let xp=[], yPL=[], yPS=[], yLin=[];
+    for(let i=0;i<=N;i++){
+      const x=xmin+(xmax-xmin)*i/N;
+      xp.push(x);
+      yPL.push(evalPoly(cL,x));
+      yPS.push(evalSpline(spl,x));
+      // lineal
+      let v=NaN;
+      for(let j=0;j<xs.length-1;j++){
+        if(x>=xs[j]&&x<=xs[j+1]){const t=(x-xs[j])/(xs[j+1]-xs[j]); v=ys[j]+t*(ys[j+1]-ys[j]); break;}
+      }
+      yLin.push(v);
+    }
+    Plotly.newPlot('slv-segm-plot',[
+      {x:xs,y:ys,mode:'markers',marker:{size:10,color:'#e74c3c'},name:'Soporte'},
+      {x:xp,y:yPL,mode:'lines',name:`Polinomio P_${xs.length-1}`,line:{color:'#1a5276'}},
+      {x:xp,y:yPS,mode:'lines',name:'Spline cubico',line:{color:'#27ae60'}},
+      {x:xp,y:yLin,mode:'lines',name:'Lineal a trozos',line:{color:'#d35400',dash:'dash'}}
+    ],{title:'Comparativa de interpolaciones',xaxis:{title:'x'},yaxis:{title:'y'},legend:{orientation:'h',y:-0.18},margin:{t:40,b:60,l:50,r:20},height:340},{responsive:true,displayModeBar:false});
     return;
   }
   if(P){
