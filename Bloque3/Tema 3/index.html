@@ -613,6 +613,10 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
         <option value="jacobi">Jacobi (iterativo)</option>
         <option value="gs">Gauss-Seidel (iterativo)</option>
         <option value="sor">Relajacion / SOR</option>
+        <option value="compare-iter">Comparar Jacobi/GS/SOR (con justificacion)</option>
+        <option value="compare-pivot">Comparar pivoteo parcial vs escalado (Gauss)</option>
+        <option value="compare-direct">Comparar Gauss vs Gauss-Jordan</option>
+        <option value="compare-sor">Comparar sobrrelajacion vs subrrelajacion (SOR)</option>
         <option value="cond">Condicionamiento (norma infinito)</option>
         <option value="dd">Comprobar diagonal dominante</option>
         <option value="spd">Comprobar simetrica def. positiva</option>
@@ -1202,6 +1206,91 @@ function choleskyFactorize(A){
 }
 
 // ============== METODOS ITERATIVOS ==============
+// Genera HTML con la primera iteracion paso a paso (sustitucion explicita)
+function firstIterDetail(method, A, b, x0, omega){
+  const n=A.length;
+  const m=method==='jacobi'?'Jacobi':method==='gs'?'Gauss-Seidel':`Relajacion (ω=${omega})`;
+  let html=`<div style="background:#fef9e7;border-left:4px solid var(--warn);padding:.7rem 1rem;border-radius:0 6px 6px 0;margin:.6rem 0">`;
+  html+=`<strong style="color:#7d6608">Desarrollo de la PRIMERA iteracion (${m})</strong><br>`;
+  html+=`<div style="font-size:.85rem;margin-top:.4rem">Aproximacion inicial \\(\\underline{x}^{(0)}=(${x0.map(v=>fmt(v,4)).join(', ')})\\).</div>`;
+  let xk=x0.slice();
+  let xnew=method==='jacobi'?Array(n).fill(0):xk.slice();
+  for(let i=0;i<n;i++){
+    let usedVals=[]; let parts=[`b_{${i+1}}=${fmt(b[i],4)}`];
+    let sumExpr=fmt(b[i],4);
+    if(method==='jacobi'){
+      // usar x0 para todas las componentes
+      for(let j=0;j<n;j++){if(j===i) continue; const term=A[i][j]*x0[j]; sumExpr+=` ${term>=0?'-':'+'} ${fmt(Math.abs(A[i][j]),4)}·${fmt(x0[j],4)}`;}
+      const num=b[i]-A[i].reduce((s,a,j)=>j===i?s:s+a*x0[j],0);
+      xnew[i]=num/A[i][i];
+      html+=`<div class="step" style="margin:.3rem 0;font-size:.85rem"><strong>x<sub>${i+1}</sub><sup>(1)</sup></strong> = (${sumExpr}) / ${fmt(A[i][i],4)} = ${fmt(num,5)} / ${fmt(A[i][i],4)} = <span style="color:var(--pri);font-weight:700">${fmt(xnew[i],6)}</span></div>`;
+    } else if(method==='gs'){
+      // x_j^(1) para j<i, x_j^(0) para j>i
+      for(let j=0;j<n;j++){
+        if(j===i) continue;
+        const xv = j<i ? xnew[j] : x0[j];
+        const term=A[i][j]*xv;
+        const tag = j<i ? '^{(1)}' : '^{(0)}';
+        sumExpr+=` ${term>=0?'-':'+'} ${fmt(Math.abs(A[i][j]),4)}·${fmt(xv,4)} <small style="color:#888">(x<sub>${j+1}</sub>${tag})</small>`;
+      }
+      const num=b[i]-A[i].reduce((s,a,j)=>{if(j===i) return s; const xv=j<i?xnew[j]:x0[j]; return s+a*xv;},0);
+      xnew[i]=num/A[i][i];
+      html+=`<div class="step" style="margin:.3rem 0;font-size:.85rem"><strong>x<sub>${i+1}</sub><sup>(1)</sup></strong> = (${sumExpr}) / ${fmt(A[i][i],4)} = <span style="color:var(--pri);font-weight:700">${fmt(xnew[i],6)}</span></div>`;
+    } else if(method==='sor'){
+      let sumGS=fmt(b[i],4);
+      for(let j=0;j<n;j++){
+        if(j===i) continue;
+        const xv = j<i ? xnew[j] : x0[j];
+        const term=A[i][j]*xv;
+        sumGS+=` ${term>=0?'-':'+'} ${fmt(Math.abs(A[i][j]),4)}·${fmt(xv,4)}`;
+      }
+      const numGS=b[i]-A[i].reduce((s,a,j)=>{if(j===i) return s; const xv=j<i?xnew[j]:x0[j]; return s+a*xv;},0);
+      const xgs=numGS/A[i][i];
+      xnew[i]=(1-omega)*x0[i]+omega*xgs;
+      html+=`<div class="step" style="margin:.3rem 0;font-size:.85rem"><strong>x̂<sub>${i+1}</sub><sup>(1)</sup></strong>(GS) = (${sumGS}) / ${fmt(A[i][i],4)} = ${fmt(xgs,6)}<br>`;
+      html+=`<strong>x<sub>${i+1}</sub><sup>(1)</sup></strong> = (1-${omega})·${fmt(x0[i],4)} + ${omega}·${fmt(xgs,6)} = <span style="color:var(--pri);font-weight:700">${fmt(xnew[i],6)}</span></div>`;
+    }
+  }
+  const eA=Math.max(...xnew.map((v,i)=>Math.abs(v-x0[i])));
+  html+=`<div style="margin-top:.4rem;font-size:.85rem"><strong>x<sup>(1)</sup> = (${xnew.map(v=>fmt(v,5)).join(', ')})</strong> &nbsp; E<sub>A</sub> = ‖x<sup>(1)</sup>-x<sup>(0)</sup>‖<sub>∞</sub> = ${fmt(eA,4)}</div>`;
+  html+=`</div>`;
+  return html;
+}
+
+// Justificacion automatica del metodo iterativo optimo
+function justifyOptimal(rJ, rG, rS, omega, A, tol){
+  const itJ=rJ.rows[rJ.rows.length-1].k;
+  const itG=rG.rows[rG.rows.length-1].k;
+  const itS=rS.rows[rS.rows.length-1].k;
+  const convJ=rJ.rows[rJ.rows.length-1].e<tol;
+  const convG=rG.rows[rG.rows.length-1].e<tol;
+  const convS=rS.rows[rS.rows.length-1].e<tol;
+  const dd=isDiagDominantStrict(A);
+  const sym=isSymmetric(A);
+  let spd=false;
+  if(sym){const ch=choleskyFactorize(A); spd=!ch.error;}
+  let html='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.8rem 1rem;border-radius:0 6px 6px 0;margin:.7rem 0">';
+  html+='<strong style="color:#1e8449">Analisis y eleccion del metodo optimo</strong><br>';
+  html+='<ul style="margin:.4rem 0 .4rem 1.3rem;font-size:.88rem">';
+  html+=`<li><strong>Diagonal dominante estrictamente:</strong> ${dd?'SI':'NO'} ${dd?'→ Jacobi y Gauss-Seidel convergen para cualquier x<sub>0</sub>.':'→ no se garantiza convergencia de Jacobi/GS por DD.'}</li>`;
+  html+=`<li><strong>Simetrica:</strong> ${sym?'SI':'NO'} ${spd?' y <strong>definida positiva</strong> → Gauss-Seidel y SOR (∀ω∈(0,2)) convergen (Ostrowski-Reich).':sym?'':''}</li>`;
+  html+=`<li><strong>Iteraciones para alcanzar tol=${tol}:</strong> Jacobi=${convJ?itJ:'no converge'}, Gauss-Seidel=${convG?itG:'no converge'}, SOR(ω=${omega})=${convS?itS:'no converge'}.</li>`;
+  // ranking
+  const cands=[
+    {name:'Jacobi',it:convJ?itJ:Infinity,conv:convJ},
+    {name:'Gauss-Seidel',it:convG?itG:Infinity,conv:convG},
+    {name:`SOR(ω=${omega})`,it:convS?itS:Infinity,conv:convS}
+  ].sort((a,b)=>a.it-b.it);
+  if(cands[0].it===Infinity){
+    html+='<li style="color:var(--acc)"><strong>Ningun metodo converge</strong> con esta tolerancia y maximo de iteraciones. Revisa el sistema o aumenta el numero maximo.</li>';
+  } else {
+    html+=`<li><strong style="color:var(--ok)">Metodo optimo: ${cands[0].name}</strong> con ${cands[0].it} iteraciones.</li>`;
+    if(cands[0].name.startsWith('SOR')&&omega!==1) html+='<li>El SOR puede mejorar aun mas eligiendo un ω optimo (cercano a 2/(1+√(1-ρ²)) para matrices SDP).</li>';
+  }
+  html+='</ul></div>';
+  return html;
+}
+
 function iterMethod(method, A,b, x0, tol, maxIter, errType, omega){
   const n=A.length;
   let x=x0.slice();
@@ -1544,13 +1633,13 @@ function updateSlvUI(){
   const m=document.getElementById('slv-method').value;
   const ext=document.getElementById('slv-extra');
   let html='';
-  if(['jacobi','gs','sor'].includes(m)){
+  if(['jacobi','gs','sor','compare-iter'].includes(m)){
     html+='<label>Aprox. inicial x0 (separada por comas):</label><input type="text" id="slv-x0" value="0,0,0" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
     html+='<label style="margin-top:.4rem">Tolerancia:</label><input type="text" id="slv-tol" value="1e-3" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
     html+='<label style="margin-top:.4rem">Max iteraciones:</label><input type="number" id="slv-max" value="100" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
-    if(m==='sor') html+='<label style="margin-top:.4rem">Peso ω:</label><input type="text" id="slv-omega" value="1.1" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    if(m==='sor'||m==='compare-iter') html+='<label style="margin-top:.4rem">Peso ω (para SOR):</label><input type="text" id="slv-omega" value="1.1" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
   }
-  if(['gauss','gauss-pp','gauss-pe','gj','gj-pp','gj-pe'].includes(m)){
+  if(['gauss','gauss-pp','gauss-pe','gj','gj-pp','gj-pe','compare-pivot','compare-direct'].includes(m)){
     html+='<label>Cifras de redondeo (0=exacta):</label><input type="number" id="slv-prec" value="0" min="0" max="15" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
   }
   ext.innerHTML=html;
@@ -1666,6 +1755,9 @@ function runSolver(){
     const mx=parseInt(document.getElementById('slv-max').value);
     const om=m==='sor'?parseFloat(document.getElementById('slv-omega').value):1;
     const r=iterMethod(m,A,b,x0,tol,mx,'abs',om);
+    // Mostrar desarrollo de la primera iteracion
+    stepsBox.innerHTML=firstIterDetail(m,A,b,x0,om);
+    stepsBox.style.display='block';
     let th='<tr><th>k</th>'+x0.map((_,i)=>`<th>x${i+1}</th>`).join('')+'<th>Error</th></tr>';
     let tb=''; r.rows.forEach(row=>{tb+=`<tr><td>${row.k}</td>`+row.x.map(v=>`<td>${fmt(v,5)}</td>`).join('')+`<td>${row.e===''?'-':fmt(row.e,4)}</td></tr>`;});
     document.getElementById('slv-itertable').querySelector('thead').innerHTML=th;
@@ -1673,7 +1765,149 @@ function runSolver(){
     tableBox.style.display='block';
     const last=r.rows[r.rows.length-1];
     const conv=last.e!==''&&last.e<tol?`<span style="color:var(--ok)">Convergencia en ${last.k} iter.</span>`:`<span style="color:var(--acc)">No converge en ${mx} iter.</span>`;
-    resBox.innerHTML=`${conv}<br><strong>Solucion:</strong> ${last.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    let html=`${conv}<br><strong>Solucion:</strong> ${last.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    // Plot de convergencia
+    html+='<div id="slv-conv-plot" style="min-height:280px;margin-top:.6rem"></div>';
+    resBox.innerHTML=html;
+    Plotly.newPlot('slv-conv-plot',[
+      {x:r.rows.slice(1).map(rr=>rr.k), y:r.rows.slice(1).map(rr=>rr.e), name:'Error', mode:'lines+markers', line:{color:'#e74c3c'}}
+    ],{title:'Error vs iteracion',xaxis:{title:'k'},yaxis:{title:'E_A',type:'log'},margin:{t:30,b:40,l:50,r:20},height:280},{responsive:true,displayModeBar:false});
+    return;
+  }
+  if(m==='compare-pivot'){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta b</span>'; return;}
+    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const rPP=gaussElim(M,prec,{pivot:'parcial'});
+    const rPE=gaussElim(M,prec,{pivot:'escalado'});
+    // Solucion exacta
+    const inv=matInv(A); const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
+    let html='<strong>Comparativa Pivoteo Parcial vs Escalado'+(prec>0?' (aritmetica con '+prec+' cifras)':' (exacta)')+'</strong>';
+    html+='<table class="dt"><tr><th>Estrategia</th>'+A[0].map((_,i)=>`<th>x${i+1}</th>`).join('')+'<th>Error abs vs exacta</th></tr>';
+    [['Pivoteo parcial',rPP],['Pivoteo escalado',rPE]].forEach(([nm,r])=>{
+      if(r.error){html+=`<tr><td>${nm}</td><td colspan="${A[0].length+1}" style="color:var(--acc)">${r.error}</td></tr>`; return;}
+      let err=xExact?Math.max(...r.x.map((v,i)=>Math.abs(v-xExact[i]))):'-';
+      html+=`<tr><td>${nm}</td>`+r.x.map(v=>`<td>${fmt(v,6)}</td>`).join('')+`<td>${err==='-'?'-':fmt(err,4)}</td></tr>`;
+    });
+    if(xExact){html+=`<tr style="background:#eafaf1"><td><strong>Solucion exacta</strong></td>`+xExact.map(v=>`<td>${fmt(v,8)}</td>`).join('')+`<td>0</td></tr>`;}
+    html+='</table>';
+    // justificacion
+    const errPP=xExact?Math.max(...rPP.x.map((v,i)=>Math.abs(v-xExact[i]))):0;
+    const errPE=xExact?Math.max(...rPE.x.map((v,i)=>Math.abs(v-xExact[i]))):0;
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Eleccion del metodo optimo:</strong><br>';
+    if(errPP<errPE) html+='<span style="color:var(--ok)">El pivoteo PARCIAL produce menor error.</span> Tiene sentido cuando los coeficientes son de magnitudes similares.';
+    else if(errPE<errPP) html+='<span style="color:var(--ok)">El pivoteo ESCALADO produce menor error.</span> Conviene cuando las filas tienen magnitudes muy distintas (escala) — usa el cociente |a_ij|/s_i para elegir pivote.';
+    else html+='Ambos producen el mismo error. Con aritmetica exacta es esperable.';
+    html+='</div>';
+    stepsBox.innerHTML=html;
+    stepsBox.style.display='block';
+    resBox.innerHTML='';
+    return;
+  }
+  if(m==='compare-direct'){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta b</span>'; return;}
+    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const rG=gaussElim(M,prec,{pivot:'parcial'});
+    const rGJ=gaussJordan(M,prec,{pivot:'parcial'});
+    const inv=matInv(A); const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
+    let html='<strong>Comparativa Gauss vs Gauss-Jordan</strong>';
+    html+='<table class="dt"><tr><th>Metodo</th>'+A[0].map((_,i)=>`<th>x${i+1}</th>`).join('')+'<th>Pasos</th><th>Error abs</th></tr>';
+    [['Gauss (con pivoteo parcial)',rG],['Gauss-Jordan (con pivoteo parcial)',rGJ]].forEach(([nm,r])=>{
+      if(r.error){html+=`<tr><td>${nm}</td><td colspan="${A[0].length+2}" style="color:var(--acc)">${r.error}</td></tr>`; return;}
+      let err=xExact?Math.max(...r.x.map((v,i)=>Math.abs(v-xExact[i]))):0;
+      html+=`<tr><td>${nm}</td>`+r.x.map(v=>`<td>${fmt(v,6)}</td>`).join('')+`<td>${r.steps.length}</td><td>${fmt(err,4)}</td></tr>`;
+    });
+    html+='</table>';
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Eleccion del metodo optimo:</strong><br>';
+    html+='<ul style="margin:.3rem 0 0 1.2rem">';
+    html+='<li><strong>Gauss</strong> hace ~n³/3 operaciones + sustitucion regresiva. Es preferible cuando solo necesitas la solucion.</li>';
+    html+='<li><strong>Gauss-Jordan</strong> hace ~n³/2 operaciones (mas costoso) pero da directamente la solucion sin despeje regresivo, y permite calcular la inversa A⁻¹ aplicandolo a [A|I].</li>';
+    html+='<li>Para resolver UN sistema con un solo b → <strong>Gauss</strong> es mas eficiente.</li>';
+    html+='<li>Si se necesita la inversa o resolver muchos sistemas con la misma A → preferir <strong>LU</strong> (factorizar una vez, resolver muchas).</li>';
+    html+='</ul></div>';
+    stepsBox.innerHTML=html;
+    stepsBox.style.display='block';
+    resBox.innerHTML='';
+    return;
+  }
+  if(m==='compare-sor'){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta b</span>'; return;}
+    const x0=document.getElementById('slv-x0').value.split(',').map(s=>parseFloat(s));
+    const tol=parseFloat(document.getElementById('slv-tol').value);
+    const mx=parseInt(document.getElementById('slv-max').value);
+    const omegas=[0.7,0.85,1.0,1.15,1.3,1.5];
+    let results=omegas.map(om=>({om,r:iterMethod('sor',A,b,x0,tol,mx,'abs',om)}));
+    let html='<strong>Comparativa de relajacion para distintos pesos ω</strong>';
+    html+='<p style="font-size:.85rem">Subrrelajacion (ω<1), Gauss-Seidel (ω=1), sobrrelajacion (ω>1).</p>';
+    html+='<table class="dt"><tr><th>ω</th><th>Tipo</th><th>Iteraciones</th><th>¿Converge?</th><th>Solucion</th></tr>';
+    results.forEach(r=>{
+      const last=r.r.rows[r.r.rows.length-1];
+      const ok=last.e<tol;
+      const tipo = r.om<1?'subrrelajacion':r.om===1?'Gauss-Seidel':'sobrrelajacion';
+      html+=`<tr><td>${r.om}</td><td>${tipo}</td><td>${last.k}</td><td>${ok?'<span style="color:var(--ok)">SI</span>':'<span style="color:var(--acc)">NO</span>'}</td><td>[${last.x.map(v=>fmt(v,4)).join(', ')}]</td></tr>`;
+    });
+    html+='</table>';
+    // Plot
+    html+='<div id="slv-sor-plot" style="min-height:340px;margin-top:.6rem"></div>';
+    // optimal
+    const okRes=results.filter(r=>r.r.rows[r.r.rows.length-1].e<tol);
+    okRes.sort((a,b)=>a.r.rows[a.r.rows.length-1].k-b.r.rows[b.r.rows.length-1].k);
+    html+='<div style="background:#eafaf1;border-left:4px solid var(--ok);padding:.7rem 1rem;margin:.5rem 0;border-radius:0 6px 6px 0">';
+    html+='<strong>Analisis y eleccion del ω optimo:</strong><br><ul style="margin:.3rem 0 0 1.2rem;font-size:.88rem">';
+    html+='<li>Por el <strong>Teorema de Kahan</strong>, el metodo de relajacion solo converge si ω∈(0,2).</li>';
+    if(okRes.length>0){
+      html+=`<li><strong style="color:var(--ok)">ω optimo ≈ ${okRes[0].om}</strong> (alcanza la tolerancia en ${okRes[0].r.rows[okRes[0].r.rows.length-1].k} iteraciones).</li>`;
+      if(okRes[0].om>1) html+='<li>Como ω óptimo > 1, se trata de SOBRRELAJACION (acelera Gauss-Seidel).</li>';
+      else if(okRes[0].om<1) html+='<li>Como ω óptimo < 1, se trata de SUBRRELAJACION (estabiliza casos donde GS diverge o converge lentamente).</li>';
+    }
+    html+='<li>Si A es simetrica definida positiva (Ostrowski-Reich), SOR converge ∀ω∈(0,2).</li>';
+    html+='</ul></div>';
+    stepsBox.innerHTML=html;
+    stepsBox.style.display='block';
+    resBox.innerHTML='';
+    // plot
+    Plotly.newPlot('slv-sor-plot',results.map((r,i)=>({
+      x:r.r.rows.slice(1).map(rr=>rr.k),
+      y:r.r.rows.slice(1).map(rr=>rr.e),
+      name:`ω=${r.om}`,
+      mode:'lines+markers',
+      line:{color:`hsl(${i*60},65%,50%)`}
+    })),{title:'Convergencia para distintos ω',xaxis:{title:'Iteracion'},yaxis:{title:'Error',type:'log'},shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:tol,y1:tol,line:{color:'gray',dash:'dash'}}],legend:{orientation:'h',y:-0.18},margin:{t:40,b:60,l:50,r:20},height:340},{responsive:true,displayModeBar:false});
+    return;
+  }
+  if(m==='compare-iter'){
+    if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta el termino independiente</span>'; return;}
+    const x0=document.getElementById('slv-x0').value.split(',').map(s=>parseFloat(s));
+    const tol=parseFloat(document.getElementById('slv-tol').value);
+    const mx=parseInt(document.getElementById('slv-max').value);
+    const om=parseFloat(document.getElementById('slv-omega').value)||1.1;
+    const rJ=iterMethod('jacobi',A,b,x0,tol,mx,'abs',1);
+    const rG=iterMethod('gs',A,b,x0,tol,mx,'abs',1);
+    const rS=iterMethod('sor',A,b,x0,tol,mx,'abs',om);
+    // Mostrar primera iteracion de cada metodo
+    stepsBox.innerHTML=firstIterDetail('jacobi',A,b,x0,1)+firstIterDetail('gs',A,b,x0,1)+firstIterDetail('sor',A,b,x0,om);
+    stepsBox.style.display='block';
+    // Tabla resumen
+    let th='<tr><th>Metodo</th><th>Iteraciones</th><th>Solucion</th><th>Error final</th><th>¿Converge?</th></tr>';
+    let tb='';
+    [['Jacobi',rJ],['Gauss-Seidel',rG],[`SOR (ω=${om})`,rS]].forEach(([nm,r])=>{
+      const last=r.rows[r.rows.length-1];
+      const ok=last.e<tol;
+      tb+=`<tr><td>${nm}</td><td>${last.k}</td><td>[${last.x.map(v=>fmt(v,5)).join(', ')}]</td><td>${fmt(last.e,4)}</td><td>${ok?'<span style="color:var(--ok)">SI</span>':'<span style="color:var(--acc)">NO</span>'}</td></tr>`;
+    });
+    document.getElementById('slv-itertable').querySelector('thead').innerHTML=th;
+    document.getElementById('slv-itertable').querySelector('tbody').innerHTML=tb;
+    tableBox.style.display='block';
+    // Plot comparativo
+    let html='<div id="slv-cmp-plot" style="min-height:340px;margin-top:.6rem"></div>';
+    html+=justifyOptimal(rJ,rG,rS,om,A,tol);
+    resBox.innerHTML=html;
+    Plotly.newPlot('slv-cmp-plot',[
+      {x:rJ.rows.slice(1).map(rr=>rr.k), y:rJ.rows.slice(1).map(rr=>rr.e), name:'Jacobi', mode:'lines+markers', line:{color:'#1a5276'}},
+      {x:rG.rows.slice(1).map(rr=>rr.k), y:rG.rows.slice(1).map(rr=>rr.e), name:'Gauss-Seidel', mode:'lines+markers', line:{color:'#27ae60'}},
+      {x:rS.rows.slice(1).map(rr=>rr.k), y:rS.rows.slice(1).map(rr=>rr.e), name:`SOR (ω=${om})`, mode:'lines+markers', line:{color:'#e74c3c'}}
+    ],{title:'Comparativa de convergencia (escala log)',xaxis:{title:'Iteracion k'},yaxis:{title:'Error',type:'log'},shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:tol,y1:tol,line:{color:'gray',dash:'dash'}}],legend:{orientation:'h',y:-0.18},margin:{t:40,b:60,l:50,r:20},height:340},{responsive:true,displayModeBar:false});
     return;
   }
 }
