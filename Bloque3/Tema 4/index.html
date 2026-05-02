@@ -651,14 +651,17 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}],throwOnError:false};
 
 function switchTab(t){
+  // Aceptar tanto 'problems' como 'tab-problems'
+  const key = t.startsWith('tab-') ? t.slice(4) : t;
+  const fullId = 'tab-'+key;
   document.querySelectorAll('.tab-content').forEach(e=>{e.classList.remove('active'); e.style.display='none';});
   document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
-  const tab=document.getElementById('tab-'+t);
-  if(!tab){console.error('[switchTab] No tab-'+t); return;}
+  const tab=document.getElementById(fullId);
+  if(!tab){console.error('[switchTab] No se encuentra '+fullId); return;}
   tab.classList.add('active');
   tab.style.display='block';
   const btns=document.querySelectorAll('.tab-btn');
-  const idx=['theory','problems','test'].indexOf(t);
+  const idx=['theory','problems','test'].indexOf(key);
   if(btns[idx]) btns[idx].classList.add('active');
   if(window.renderMathInElement){
     try{ renderMathInElement(tab,mathOpts); }catch(e){ console.warn('KaTeX render error:',e); }
@@ -1895,7 +1898,24 @@ function solveP(n){
   }
 }
 
+function fixNestedTopicSections(){
+  // Si por algun motivo (auto-cierre del parser) las secciones t4-t11 quedaron
+  // anidadas dentro de t3 (o cualquier otra), las re-padre directamente bajo
+  // tab-theory para que showTopic pueda mostrarlas.
+  const tabTheory=document.getElementById('tab-theory');
+  if(!tabTheory) return;
+  const sections=tabTheory.querySelectorAll('.topic-section');
+  sections.forEach(sec=>{
+    const parent=sec.parentElement;
+    if(parent && parent.classList && parent.classList.contains('topic-section')){
+      console.warn('[fix] Re-parenting',sec.id,'fuera de',parent.id);
+      tabTheory.appendChild(sec);
+    }
+  });
+}
+
 function initAllGrids(){
+  fixNestedTopicSections();
   setupSupBlock('vis',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
   setupSupBlock('van',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
   setupSupBlock('lag',4,2,[[0,0],[1,0.5],[4,2.5],[7,4.1]]);
