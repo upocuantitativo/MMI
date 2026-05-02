@@ -24,13 +24,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
 .tab-btn:hover{background:#eef2f7}
 .tab-btn.active{color:var(--pri);border-bottom-color:var(--pri);background:#eef2f7}
-.tab-content{display:none;padding:1rem;max-width:1100px;margin:0 auto}
-.tab-content.active{display:block}
+.tab-content{display:none!important;padding:1rem;max-width:1100px;margin:0 auto}
+.tab-content.active{display:block!important}
 .topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 .topic-selector label{font-weight:600;font-size:1rem;color:var(--pri)}
 .topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri-l);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
-.topic-section{display:none}
-.topic-section.active{display:block}
+.topic-section{display:none!important}
+.topic-section.active{display:block!important}
 .def-box,.prop-box,.example-box,.algo-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
 .def-box{border-color:var(--pri);background:#eaf2f8}
 .prop-box{border-color:var(--ok);background:#eafaf1}
@@ -164,7 +164,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="prop-box">
   <strong>Estrategia de pivoteo</strong>
-  En todo metodo basado en eliminacion, el pivote no nulo del paso \(k\) determina los multiplicadores \(m_{pk}=a_{pk}^{(k)}/a_{kk}^{(k)}\). Si \(|m_{pk}|>1\), los errores de redondeo pueden amplificarse. Para controlarlos se usan estrategias de pivoteo (parcial, parcial escalado, completo).
+  En todo metodo basado en eliminacion, el pivote no nulo del paso \(k\) determina los multiplicadores \(m_{pk}=a_{pk}^{(k)}/a_{kk}^{(k)}\). Si \(|m_{pk}|\gt 1\), los errores de redondeo pueden amplificarse. Para controlarlos se usan estrategias de pivoteo (parcial, parcial escalado, completo).
 </div>
 
 <div class="interactive-box">
@@ -386,14 +386,14 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 </div>
 <div class="prop-box">
   <strong>Teorema 29 (Convergencia)</strong>
-  La sucesion \(\underline{x}^{(k)}=T\underline{x}^{(k-1)}+\underline{c}\) converge a la solucion del sistema \(\underline{x}=T\underline{x}+\underline{c}\) si y solo si \(\rho(T)<1\).
+  La sucesion \(\underline{x}^{(k)}=T\underline{x}^{(k-1)}+\underline{c}\) converge a la solucion del sistema \(\underline{x}=T\underline{x}+\underline{c}\) si y solo si \(\rho(T)\lt 1\).
 </div>
 <div class="def-box">
   <strong>Criterios de parada</strong>
   Usando la norma del infinito \(\|\underline{x}\|_\infty=\max_i|x_i|\):
   <ul>
-    <li>\(E_A(\underline{x}^k)\approx \|\underline{x}^k-\underline{x}^{k-1}\|_\infty<\) tol</li>
-    <li>\(E_R(\underline{x}^k)\approx \|\underline{x}^k-\underline{x}^{k-1}\|_\infty/\|\underline{x}^k\|_\infty<\) tol</li>
+    <li>\(E_A(\underline{x}^k)\approx \|\underline{x}^k-\underline{x}^{k-1}\|_\infty\lt \) tol</li>
+    <li>\(E_R(\underline{x}^k)\approx \|\underline{x}^k-\underline{x}^{k-1}\|_\infty/\|\underline{x}^k\|_\infty\lt \) tol</li>
   </ul>
 </div>
 
@@ -414,7 +414,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="prop-box">
   <strong>Teorema 32 (Criterio de convergencia)</strong>
-  Si \(A\) es estrictamente diagonal dominante (\(|a_{ii}|>\sum_{j\neq i}|a_{ij}|\)), Jacobi converge para cualquier \(\underline{x}^{(0)}\).
+  Si \(A\) es estrictamente diagonal dominante (\(|a_{ii}|\gt \sum_{j\neq i}|a_{ij}|\)), Jacobi converge para cualquier \(\underline{x}^{(0)}\).
 </div>
 
 <div class="example-box">
@@ -449,7 +449,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div class="topic-section" id="t9">
 <h2>9. Metodo de Gauss-Seidel</h2>
 <p>Variante de Jacobi en la que, al calcular \(x_i^{(k)}\), se utilizan ya las componentes \(x_1^{(k)},\ldots,x_{i-1}^{(k)}\) recien calculadas:</p>
-\[x_i^{(k)}=\frac{b_i-\sum_{j<i}a_{ij}x_j^{(k)}-\sum_{j>i}a_{ij}x_j^{(k-1)}}{a_{ii}}\]
+\[x_i^{(k)}=\frac{b_i-\sum_{j\lt i}a_{ij}x_j^{(k)}-\sum_{j\gt i}a_{ij}x_j^{(k-1)}}{a_{ii}}\]
 <p>Equivalente a tomar \(M\) triangular inferior de \(A\). Suele converger mas rapido que Jacobi.</p>
 
 <div class="prop-box">
@@ -480,16 +480,16 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <!-- T10 Relajacion -->
 <div class="topic-section" id="t10">
 <h2>10. Metodos de relajacion (SOR)</h2>
-<p>Toman como iterado \(\underline{x}^{(k)}=(1-\omega)\underline{x}^{(k-1)}+\omega\hat{\underline{x}}^{(k)}\), donde \(\hat{\underline{x}}^{(k)}\) es la aproximacion de Gauss-Seidel y \(\omega>0\) es el peso de relajacion.</p>
+<p>Toman como iterado \(\underline{x}^{(k)}=(1-\omega)\underline{x}^{(k-1)}+\omega\hat{\underline{x}}^{(k)}\), donde \(\hat{\underline{x}}^{(k)}\) es la aproximacion de Gauss-Seidel y \(\omega\gt 0\) es el peso de relajacion.</p>
 
-\[x_i^{(k)}=(1-\omega)x_i^{(k-1)}+\omega\,\frac{b_i-\sum_{j<i}a_{ij}x_j^{(k)}-\sum_{j>i}a_{ij}x_j^{(k-1)}}{a_{ii}}\]
+\[x_i^{(k)}=(1-\omega)x_i^{(k-1)}+\omega\,\frac{b_i-\sum_{j\lt i}a_{ij}x_j^{(k)}-\sum_{j\gt i}a_{ij}x_j^{(k-1)}}{a_{ii}}\]
 
 <div class="def-box">
   <strong>Tipos</strong>
   <ul>
     <li>\(\omega=1\) &rarr; metodo de Gauss-Seidel.</li>
-    <li>\(0<\omega<1\) &rarr; <strong>subrrelajacion</strong>: puede dar convergencia donde Gauss-Seidel diverge.</li>
-    <li>\(\omega>1\) &rarr; <strong>sobrrelajacion (SOR)</strong>: acelera convergencia ya existente.</li>
+    <li>\(0\lt \omega\lt 1\) &rarr; <strong>subrrelajacion</strong>: puede dar convergencia donde Gauss-Seidel diverge.</li>
+    <li>\(\omega\gt 1\) &rarr; <strong>sobrrelajacion (SOR)</strong>: acelera convergencia ya existente.</li>
   </ul>
 </div>
 
@@ -622,6 +622,27 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
         <option value="spd">Comprobar simetrica def. positiva</option>
       </select>
       <div id="slv-extra" style="margin-top:.5rem"></div>
+    </div>
+  </div>
+  <div style="background:#eaf2f8;padding:.6rem .8rem;border-radius:6px;margin-top:.7rem">
+    <div class="calc-grid" style="margin:0">
+      <div><label style="font-size:.85rem;font-weight:600;color:var(--pri)">Aritmetica:</label>
+        <select id="slv-prob-prec" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px;font-size:.85rem">
+          <option value="0">Exacta (sin redondeo)</option>
+          <option value="3">3 cifras significativas</option>
+          <option value="4">4 cifras significativas</option>
+          <option value="5">5 cifras significativas</option>
+          <option value="6">6 cifras significativas</option>
+          <option value="8">8 cifras significativas</option>
+          <option value="10">10 cifras significativas</option>
+        </select></div>
+      <div><label style="font-size:.85rem;font-weight:600;color:var(--pri)">Mostrar errores:</label>
+        <select id="slv-err-mode" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px;font-size:.85rem">
+          <option value="both" selected>Absoluto y relativo</option>
+          <option value="abs">Solo absoluto</option>
+          <option value="rel">Solo relativo</option>
+          <option value="none">Ninguno</option>
+        </select></div>
     </div>
   </div>
   <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
@@ -764,16 +785,26 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 const mathOpts={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}],throwOnError:false};
 
 function switchTab(t){
-  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  const key = t.startsWith('tab-') ? t.slice(4) : t;
+  const fullId = 'tab-'+key;
+  document.querySelectorAll('.tab-content').forEach(e=>{e.classList.remove('active'); e.style.display='none';});
   document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  document.querySelectorAll('.tab-btn')[['theory','problems','test'].indexOf(t)].classList.add('active');
-  renderMathInElement(document.getElementById('tab-'+t),mathOpts);
+  const tab=document.getElementById(fullId);
+  if(!tab){console.error('[switchTab] No '+fullId); return;}
+  tab.classList.add('active');
+  tab.style.display='block';
+  const btns=document.querySelectorAll('.tab-btn');
+  const idx=['theory','problems','test'].indexOf(key);
+  if(btns[idx]) btns[idx].classList.add('active');
+  if(window.renderMathInElement){try{renderMathInElement(tab,mathOpts);}catch(e){}}
 }
 function showTopic(id){
   document.querySelectorAll('.topic-section').forEach(e=>e.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  renderMathInElement(document.getElementById(id),mathOpts);
+  const el=document.getElementById(id);
+  if(!el){console.error('[showTopic] No '+id); return;}
+  el.classList.add('active');
+  el.style.display='block';
+  if(window.renderMathInElement){try{renderMathInElement(el,mathOpts);}catch(e){}}
 }
 function switchEvalMode(m){
   document.getElementById('eval-test').style.display=m==='test'?'block':'none';
@@ -1680,7 +1711,7 @@ function updateSlvUI(){
     if(m==='sor'||m==='compare-iter') html+='<label style="margin-top:.4rem">Peso ω (para SOR):</label><input type="text" id="slv-omega" value="1.1" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
   }
   if(['gauss','gauss-pp','gauss-pe','gj','gj-pp','gj-pe','compare-pivot','compare-direct'].includes(m)){
-    html+='<label>Cifras de redondeo (0=exacta):</label><input type="number" id="slv-prec" value="0" min="0" max="15" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px">';
+    html+='<div style="font-size:.8rem;color:var(--txtl);margin-top:.3rem">La aritmetica/cifras se controla en el panel global de abajo.</div>';
   }
   ext.innerHTML=html;
 }
@@ -1725,22 +1756,36 @@ function runSolver(){
   if(['gauss','gauss-pp','gauss-pe'].includes(m)){
     if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta el termino independiente</span>'; return;}
     const piv=m==='gauss-pp'?'parcial':m==='gauss-pe'?'escalado':'none';
-    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const prec=getSlvProbPrec();
+    const errMode=getSlvErrMode();
     const r=gaussElim(M,prec,{pivot:piv});
     stepsBox.style.display='block';
     renderSteps(stepsBox,r.steps);
     if(r.error) resBox.innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
-    else resBox.innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    else {
+      const inv=matInv(A); const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
+      let html=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+      html+=errorsVec(r.x,xExact,errMode);
+      if(xExact && (prec>0 || errMode!=='none')) html+=`<br><span style="color:var(--ok)">Solucion exacta: [${xExact.map(v=>fmt(v,8)).join(', ')}]</span>`;
+      resBox.innerHTML=html;
+    }
     return;
   }
   if(['gj','gj-pp','gj-pe'].includes(m)){
     if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta el termino independiente</span>'; return;}
     const piv=m==='gj-pp'?'parcial':m==='gj-pe'?'escalado':'none';
-    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const prec=getSlvProbPrec();
+    const errMode=getSlvErrMode();
     const r=gaussJordan(M,prec,{pivot:piv});
     stepsBox.style.display='block'; renderSteps(stepsBox,r.steps);
     if(r.error) resBox.innerHTML=`<span style="color:var(--acc)">${r.error}</span>`;
-    else resBox.innerHTML=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+    else {
+      const inv=matInv(A); const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
+      let html=`<strong>Solucion:</strong> ${r.x.map((v,i)=>`x${i+1}=<span class="val">${fmt(v,6)}</span>`).join(', ')}`;
+      html+=errorsVec(r.x,xExact,errMode);
+      if(xExact && (prec>0 || errMode!=='none')) html+=`<br><span style="color:var(--ok)">Solucion exacta: [${xExact.map(v=>fmt(v,8)).join(', ')}]</span>`;
+      resBox.innerHTML=html;
+    }
     return;
   }
   if(m==='lu'){
@@ -1816,7 +1861,7 @@ function runSolver(){
   }
   if(m==='compare-pivot'){
     if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta b</span>'; return;}
-    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const prec=getSlvProbPrec();
     const rPP=gaussElim(M,prec,{pivot:'parcial'});
     const rPE=gaussElim(M,prec,{pivot:'escalado'});
     // Solucion exacta
@@ -1846,7 +1891,7 @@ function runSolver(){
   }
   if(m==='compare-direct'){
     if(!isAmpl){resBox.innerHTML='<span style="color:var(--acc)">Falta b</span>'; return;}
-    const prec=parseInt(document.getElementById('slv-prec').value)||0;
+    const prec=getSlvProbPrec();
     const rG=gaussElim(M,prec,{pivot:'parcial'});
     const rGJ=gaussJordan(M,prec,{pivot:'parcial'});
     const inv=matInv(A); const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
@@ -2248,6 +2293,14 @@ function getProbErrMode(){
   const el=document.getElementById('prob-err');
   return el?el.value:'both';
 }
+function getSlvProbPrec(){
+  const el=document.getElementById('slv-prob-prec');
+  return el?parseInt(el.value)||0:0;
+}
+function getSlvErrMode(){
+  const el=document.getElementById('slv-err-mode');
+  return el?el.value:'both';
+}
 function applyPrec(x,prec){
   return prec>0?roundDigits(x,prec):x;
 }
@@ -2457,7 +2510,30 @@ function solveP(n){
 }
 
 // ============== INIT GRIDS ==============
+function fixNestedTabsAndSections(){
+  const tabTheory=document.getElementById('tab-theory');
+  if(!tabTheory) return;
+  // Re-parent topic-sections que hayan quedado anidadas dentro de otra
+  const sections=tabTheory.querySelectorAll('.topic-section');
+  sections.forEach(sec=>{
+    const parent=sec.parentElement;
+    if(parent && parent.classList && parent.classList.contains('topic-section')){
+      console.warn('[fix] Re-parenting',sec.id);
+      tabTheory.appendChild(sec);
+    }
+  });
+  // Mover tab-problems y tab-test fuera de tab-theory si el parser los anido alli
+  const body=tabTheory.parentElement || document.body;
+  ['tab-problems','tab-test'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.parentElement===tabTheory){
+      console.warn('[fix] Re-parenting',id,'fuera de tab-theory');
+      body.appendChild(el);
+    }
+  });
+}
 function initAllGrids(){
+  fixNestedTabsAndSections();
   // Compatibility check (matriz ampliada 3x4)
   setupMatBlock('comp',3,3,[[4.1,-2.8,3.9,4.1],[-5.2,2.1,-3.4,2.1],[1.1,-3.3,2.1,-1.1]],'Ab');
   // Gauss

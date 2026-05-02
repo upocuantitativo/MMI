@@ -192,7 +192,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="prop-box">
   <strong>Teorema de Weierstrass</strong>
-  Si \(f\) es continua y suficientemente derivable en \([a,b]\), para todo \(\varepsilon>0\) existe un polinomio interpolador \(P_\varepsilon(x)\) tal que \(|f(x)-P_\varepsilon(x)|<\varepsilon\), \(\forall x\in[a,b]\).
+  Si \(f\) es continua y suficientemente derivable en \([a,b]\), para todo \(\varepsilon\gt 0\) existe un polinomio interpolador \(P_\varepsilon(x)\) tal que \(|f(x)-P_\varepsilon(x)|\lt \varepsilon\), \(\forall x\in[a,b]\).
 </div>
 </div>
 
@@ -204,7 +204,7 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 
 <div class="prop-box">
   <strong>Mal condicionamiento</strong>
-  El determinante es \(\prod_{i<j}(x_j-x_i)\neq 0\), pero el numero de condicion crece rapidamente con \(n\). Por tanto, los coeficientes obtenidos pueden no ser fiables y es preferible Lagrange o Newton.
+  El determinante es \(\prod_{i\lt j}(x_j-x_i)\neq 0\), pero el numero de condicion crece rapidamente con \(n\). Por tanto, los coeficientes obtenidos pueden no ser fiables y es preferible Lagrange o Newton.
 </div>
 
 <div class="example-box">
@@ -547,6 +547,28 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
     </div>
   </div>
 
+  <div style="background:#eaf2f8;padding:.6rem .8rem;border-radius:6px;margin-top:.7rem">
+    <div class="calc-grid" style="margin:0">
+      <div><label style="font-size:.85rem;font-weight:600;color:var(--pri)">Aritmetica:</label>
+        <select id="slv-prob-prec" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px;font-size:.85rem">
+          <option value="0">Exacta (sin redondeo)</option>
+          <option value="3">3 cifras significativas</option>
+          <option value="4">4 cifras significativas</option>
+          <option value="5">5 cifras significativas</option>
+          <option value="6">6 cifras significativas</option>
+          <option value="8">8 cifras significativas</option>
+          <option value="10">10 cifras significativas</option>
+        </select></div>
+      <div><label style="font-size:.85rem;font-weight:600;color:var(--pri)">Mostrar errores:</label>
+        <select id="slv-err-mode" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px;font-size:.85rem">
+          <option value="both" selected>Absoluto y relativo</option>
+          <option value="abs">Solo absoluto</option>
+          <option value="rel">Solo relativo</option>
+          <option value="none">Ninguno</option>
+        </select></div>
+    </div>
+    <div style="font-size:.78rem;color:var(--txtl);margin-top:.4rem">Si se conoce la funcion exacta, se usara para calcular E_A y E_R en el punto evaluado.</div>
+  </div>
   <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
     <button class="btn btn-primary" onclick="runSolver()" style="font-size:1rem;padding:.6rem 1.5rem">Calcular interpolador</button>
     <button class="btn btn-success" onclick="runEvaluate()" style="font-size:.9rem">Evaluar en t</button>
@@ -782,6 +804,33 @@ function fmt(x,d=6){
   if(Math.abs(x)<1e-12) return '0';
   if(Math.abs(x)>=1e6 || Math.abs(x)<1e-4) return x.toExponential(d-1);
   return parseFloat(x.toPrecision(d)).toString();
+}
+function roundDigitsT4(x,d){
+  if(d<=0||!isFinite(x)) return x;
+  if(x===0) return 0;
+  const s=Math.sign(x), a=Math.abs(x);
+  const e=Math.floor(Math.log10(a));
+  const f=Math.pow(10,d-1-e);
+  return s*Math.round(a*f)/f;
+}
+function getSlvProbPrec(){
+  const el=document.getElementById('slv-prob-prec');
+  return el?parseInt(el.value)||0:0;
+}
+function getSlvErrMode(){
+  const el=document.getElementById('slv-err-mode');
+  return el?el.value:'both';
+}
+function applyPrecVal(x,prec){
+  return prec>0?roundDigitsT4(x,prec):x;
+}
+function errorPair(approx,exact,mode){
+  if(mode==='none'||!isFinite(exact)||!isFinite(approx)) return '';
+  const eA=Math.abs(approx-exact);
+  const eR=eA/(Math.abs(exact)||1);
+  if(mode==='abs') return ` &middot; <strong>E_A</strong> = ${fmt(eA,4)}`;
+  if(mode==='rel') return ` &middot; <strong>E_R</strong> = ${fmt(eR,4)}`;
+  return ` &middot; <strong>E_A</strong> = ${fmt(eA,4)} &nbsp; <strong>E_R</strong> = ${fmt(eR,4)}`;
 }
 function evalFn(expr,x){
   try { return math.evaluate(expr,{x}); } catch(e){ return NaN; }
@@ -1525,8 +1574,26 @@ function runSolver(){
     return;
   }
   if(P){
-    const v=evalPoly(P,xx);
-    resBox.innerHTML=`<strong>Polinomio:</strong> ${polyToString(P)}<br><strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+    const prec=getSlvProbPrec();
+    const errMode=getSlvErrMode();
+    let v=evalPoly(P,xx);
+    if(prec>0) v=applyPrecVal(v,prec);
+    // Si el usuario suministra una funcion conocida via slv-fn, usarla para errores
+    let exactVal=NaN;
+    const fnEl=document.getElementById('slv-fn');
+    if(fnEl && fnEl.value && fnEl.value.trim()){
+      try{exactVal=evalFn(fnEl.value,xx);}catch(e){}
+    }
+    let html=`<strong>Polinomio:</strong> ${polyToString(P)}<br><strong>P(${xx}) = <span class="val">${fmt(v,6)}</span></strong>`;
+    if(isFinite(exactVal)){
+      html+=`<br><strong>f(${xx}) =</strong> ${fmt(exactVal,8)} ${errorPair(v,exactVal,errMode)}`;
+    } else if(prec>0){
+      // Comparar con calculo exacto
+      const vExact=evalPoly(P,xx);
+      html+=` ${errorPair(v,vExact,errMode)}`;
+      if(errMode!=='none') html+=`<br><span style="color:var(--ok)">Valor exacto del polinomio: ${fmt(vExact,8)}</span>`;
+    }
+    resBox.innerHTML=html;
     plotPoly(P,[Math.min(...xs),Math.max(...xs)],xx,v,xs,ys);
   }
 }
@@ -1910,6 +1977,15 @@ function fixNestedTopicSections(){
     if(parent && parent.classList && parent.classList.contains('topic-section')){
       console.warn('[fix] Re-parenting',sec.id,'fuera de',parent.id);
       tabTheory.appendChild(sec);
+    }
+  });
+  // Mover tab-problems y tab-test fuera de tab-theory si el parser los anido alli
+  const body=tabTheory.parentElement || document.body;
+  ['tab-problems','tab-test'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.parentElement===tabTheory){
+      console.warn('[fix] Re-parenting',id,'fuera de tab-theory');
+      body.appendChild(el);
     }
   });
 }
