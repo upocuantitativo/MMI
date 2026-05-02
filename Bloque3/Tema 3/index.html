@@ -660,6 +660,29 @@ ul,ol{margin:.5rem 0 .5rem 1.5rem}
 <div id="eval-problems" style="display:none">
 <p style="margin-bottom:1rem;color:var(--txtl)">Problemas similares a los de las practicas y al listado adicional. Pulsa "Resolver" para ver el desarrollo automatico.</p>
 
+<div style="background:#eaf2f8;border-left:4px solid var(--pri);padding:.7rem 1rem;border-radius:0 6px 6px 0;margin-bottom:1rem">
+  <strong style="color:var(--pri)">Configuracion global de resolucion</strong>
+  <div class="calc-grid" style="margin-top:.5rem">
+    <div><label style="font-size:.85rem;font-weight:600">Aritmetica:</label>
+      <select id="prob-prec" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px;font-size:.85rem">
+        <option value="0">Exacta (sin redondeo)</option>
+        <option value="3">3 cifras significativas</option>
+        <option value="4">4 cifras significativas</option>
+        <option value="5">5 cifras significativas</option>
+        <option value="6">6 cifras significativas</option>
+        <option value="8">8 cifras significativas</option>
+        <option value="10">10 cifras significativas</option>
+      </select></div>
+    <div><label style="font-size:.85rem;font-weight:600">Mostrar errores:</label>
+      <select id="prob-err" style="width:100%;padding:.4rem;border:1px solid var(--brd);border-radius:4px;font-size:.85rem">
+        <option value="both" selected>Absoluto y relativo</option>
+        <option value="abs">Solo absoluto</option>
+        <option value="rel">Solo relativo</option>
+      </select></div>
+  </div>
+  <div style="font-size:.78rem;color:var(--txtl);margin-top:.4rem">Estos ajustes se aplican al re-pulsar "Resolver" en cada problema.</div>
+</div>
+
 <div class="problem-card">
   <h3>Problema 1 <span class="badge badge-tarea">PRACTICA 4</span> <span class="badge badge-easy">Facil</span></h3>
   <p>Resuelve por el metodo de Gauss el sistema con matriz ampliada \([3.2,-2.1,4.4\mid 5.5;\ -4.1,1.9,-2.6\mid 3.7;\ 0.8,-2.4,1.6\mid -0.9]\). Aplica primero pivoteo parcial y compara con pivoteo escalado.</p>
@@ -1089,14 +1112,19 @@ function gaussElim(M_, prec=0, opts={pivot:'none', stopAtU:false}){
     }
     // eliminacion
     for(let j=i+1;j<n;j++){
-      let mji=M[j][i]/M[i][i];
+      const aji=M[j][i], aii=M[i][i];
+      let mji=aji/aii;
       if(prec>0) mji=roundDigits(mji,prec);
       for(let k=i;k<=n;k++){
         let val=M[j][k]-mji*M[i][k];
         if(prec>0) val=roundDigits(val,prec);
         M[j][k]=val;
       }
-      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, matrix:M.map(r=>r.slice())});
+      steps.push({
+        title:`f_${j+1} → f_${j+1} - m_{${j+1},${i+1}}·f_${i+1}`,
+        body:`<small>Multiplicador: <strong>m_{${j+1},${i+1}} = a_{${j+1},${i+1}} / a_{${i+1},${i+1}} = ${fmt(aji,5)} / ${fmt(aii,5)} = ${fmt(mji,5)}</strong></small>`,
+        matrix:M.map(r=>r.slice())
+      });
     }
   }
   if(opts.stopAtU) return {U:M, steps, perm};
@@ -1133,13 +1161,18 @@ function gaussJordan(M_,prec=0,opts={pivot:'none'}){
     if(Math.abs(M[i][i])<1e-14) return {error:'Sistema sin solucion unica',steps};
     for(let j=0;j<n;j++){
       if(j===i) continue;
-      let mji=M[j][i]/M[i][i];
+      const aji=M[j][i], aii=M[i][i];
+      let mji=aji/aii;
       if(prec>0) mji=roundDigits(mji,prec);
       for(let k=i;k<=n;k++){
         let v=M[j][k]-mji*M[i][k]; if(prec>0)v=roundDigits(v,prec);
         M[j][k]=v;
       }
-      steps.push({title:`f_${j+1} → f_${j+1} - (${fmt(mji,4)})·f_${i+1}`, matrix:M.map(r=>r.slice())});
+      steps.push({
+        title:`f_${j+1} → f_${j+1} - m_{${j+1},${i+1}}·f_${i+1}`,
+        body:`<small>Multiplicador: <strong>m_{${j+1},${i+1}} = a_{${j+1},${i+1}} / a_{${i+1},${i+1}} = ${fmt(aji,5)} / ${fmt(aii,5)} = ${fmt(mji,5)}</strong></small>`,
+        matrix:M.map(r=>r.slice())
+      });
     }
   }
   let x=Array(n).fill(0);
@@ -1159,12 +1192,19 @@ function luFactorize(A_){
     if(Math.abs(U[i][i])<1e-14){
       return {error:'Pivote nulo: requiere reordenar filas. Reordena el sistema y vuelve a intentar.',steps};
     }
+    let mults=[];
     for(let j=i+1;j<n;j++){
-      const m=U[j][i]/U[i][i];
+      const aji=U[j][i], aii=U[i][i];
+      const m=aji/aii;
       L[j][i]=m;
+      mults.push(`m_{${j+1},${i+1}} = ${fmt(aji,5)} / ${fmt(aii,5)} = ${fmt(m,5)}`);
       for(let k=i;k<n;k++) U[j][k]-=m*U[i][k];
     }
-    steps.push({title:`Tras eliminar columna ${i+1}`, matrices:[{label:'U',M:U.map(r=>r.slice())},{label:'L',M:L.map(r=>r.slice())}]});
+    steps.push({
+      title:`Tras eliminar columna ${i+1} (multiplicadores se almacenan en L)`,
+      body:`<small>Multiplicadores: ${mults.join(' &nbsp; ')}</small>`,
+      matrices:[{label:'U',M:U.map(r=>r.slice())},{label:'L',M:L.map(r=>r.slice())}]
+    });
   }
   return {L,U,steps};
 }
@@ -1362,6 +1402,7 @@ function renderSteps(box,steps){
   let html='';
   steps.forEach(s=>{
     html+=`<div class="step"><h5>${s.title}</h5>`;
+    if(s.body) html+=`<div style="margin-bottom:.3rem">${s.body}</div>`;
     if(s.matrix) html+=renderMat(s.matrix,{digits:s.digits||4});
     else if(s.matrices){
       s.matrices.forEach(mObj=>{
@@ -1372,7 +1413,6 @@ function renderSteps(box,steps){
     }
     else if(s.ampliada) html+=renderAmpliada(s.ampliada.M,s.ampliada.n,{digits:4});
     else if(s.mat) html+=`<span class="matrix-display">${s.mat}</span>`;
-    if(s.body) html+=`<div style="margin-top:.3rem">${s.body}</div>`;
     html+='</div>';
   });
   box.innerHTML=html;
@@ -2200,41 +2240,89 @@ function showSol(id,html){
   renderMathInElement(el,mathOpts);
 }
 
+function getProbPrec(){
+  const el=document.getElementById('prob-prec');
+  return el?parseInt(el.value)||0:0;
+}
+function getProbErrMode(){
+  const el=document.getElementById('prob-err');
+  return el?el.value:'both';
+}
+function applyPrec(x,prec){
+  return prec>0?roundDigits(x,prec):x;
+}
+function applyPrecVec(v,prec){
+  return prec>0?v.map(x=>roundDigits(x,prec)):v.slice();
+}
+// Calcula error absoluto y relativo entre vectores aproximado y exacto
+function errorsVec(xApprox, xExact, mode){
+  if(!xExact||xApprox.some(v=>!isFinite(v))) return '';
+  const eA=Math.max(...xApprox.map((v,i)=>Math.abs(v-xExact[i])));
+  const eR=eA/(Math.max(...xExact.map(Math.abs))||1);
+  if(mode==='abs') return ` &middot; <strong>E_A</strong> = ${fmt(eA,4)}`;
+  if(mode==='rel') return ` &middot; <strong>E_R</strong> = ${fmt(eR,4)}`;
+  return ` &middot; <strong>E_A</strong> = ${fmt(eA,4)} &nbsp; <strong>E_R</strong> = ${fmt(eR,4)}`;
+}
+// Header HTML con configuracion actual
+function probConfigHeader(){
+  const p=getProbPrec();
+  const e=getProbErrMode();
+  return `<div style="background:#fef9e7;padding:.4rem .7rem;border-radius:4px;font-size:.82rem;margin-bottom:.5rem"><strong>Configuracion:</strong> ${p===0?'aritmetica exacta':p+' cifras significativas'}, errores: ${e==='abs'?'absoluto':e==='rel'?'relativo':'absoluto y relativo'}</div>`;
+}
+
 function solveP(n){
   if(n===1){
+    const prec=getProbPrec(), errMode=getProbErrMode();
     const M=[[3.2,-2.1,4.4,5.5],[-4.1,1.9,-2.6,3.7],[0.8,-2.4,1.6,-0.9]];
-    const r1=gaussElim(M,0,{pivot:'parcial'});
-    const r2=gaussElim(M,0,{pivot:'escalado'});
-    let h='<h4>Pivoteo parcial</h4>';
+    const A=M.map(r=>r.slice(0,3)), b=M.map(r=>r[3]);
+    const inv=matInv(A); const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
+    const r1=gaussElim(M,prec,{pivot:'parcial'});
+    const r2=gaussElim(M,prec,{pivot:'escalado'});
+    let h=probConfigHeader();
+    h+='<h4>Pivoteo parcial</h4>';
     h+='<div class="steps-box">';
-    r1.steps.slice(0,4).forEach(s=>{h+=`<div class="step"><h5>${s.title}</h5>${s.mat?`<div class="matrix-display">${s.mat}</div>`:''}${s.body||''}</div>`;});
+    r1.steps.slice(0,5).forEach(s=>{
+      h+=`<div class="step"><h5>${s.title}</h5>`;
+      if(s.body) h+=`<div style="margin-bottom:.3rem">${s.body}</div>`;
+      if(s.matrix) h+=renderMat(s.matrix,{digits:5});
+      h+='</div>';
+    });
     h+='</div>';
-    h+=`<p><strong>Solucion (parcial):</strong> [${r1.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
-    h+=`<p><strong>Solucion (escalado):</strong> [${r2.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
-    h+='<p>Ambas estrategias dan la misma solucion en aritmetica exacta. La diferencia se aprecia con redondeo.</p>';
+    h+=`<p><strong>Solucion (parcial):</strong> [${r1.x.map(v=>fmt(v,6)).join(', ')}] ${errorsVec(r1.x,xExact,errMode)}</p>`;
+    h+=`<p><strong>Solucion (escalado):</strong> [${r2.x.map(v=>fmt(v,6)).join(', ')}] ${errorsVec(r2.x,xExact,errMode)}</p>`;
+    if(xExact) h+=`<p style="color:var(--ok)"><strong>Solucion exacta:</strong> [${xExact.map(v=>fmt(v,8)).join(', ')}]</p>`;
+    h+=prec>0?'<p>Con redondeo, las dos estrategias pueden dar errores ligeramente distintos. El pivoteo escalado suele ser mas robusto cuando las filas tienen magnitudes muy distintas.</p>':'<p>En aritmetica exacta ambas estrategias dan la misma solucion. Cambia "Aritmetica" arriba para ver el efecto del redondeo.</p>';
     showSol(1,h); return;
   }
   if(n===2){
+    const prec=getProbPrec()||5, errMode=getProbErrMode();
     const M=[[1.8,12.4,8.1,22.3],[4.1,11800,-7.5,11800],[1.2,3.9,1.4,6.4]];
-    const r1=gaussElim(M,5,{pivot:'parcial'});
-    const r2=gaussElim(M,5,{pivot:'escalado'});
+    const r1=gaussElim(M,prec,{pivot:'parcial'});
+    const r2=gaussElim(M,prec,{pivot:'escalado'});
     const inv=matInv(M.map(r=>r.slice(0,3)));
     const b=M.map(r=>r[3]);
-    const xexact=inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0));
-    let h='<h4>Pivoteo parcial (5 cifras)</h4>';
-    h+=`<p><strong>Solucion:</strong> [${r1.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
-    h+='<h4>Pivoteo parcial escalado (5 cifras)</h4>';
-    h+=`<p><strong>Solucion:</strong> [${r2.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
-    h+=`<p><strong>Solucion exacta:</strong> [${xexact.map(v=>fmt(v,8)).join(', ')}]</p>`;
-    h+='<p>El pivoteo escalado es mas preciso porque, al considerar la magnitud relativa, escoge pivotes mas "grandes" en su contexto.</p>';
+    const xExact=inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0));
+    let h=probConfigHeader();
+    h+=`<h4>Pivoteo parcial (${prec} cifras)</h4>`;
+    h+=`<p><strong>Solucion:</strong> [${r1.x.map(v=>fmt(v,prec)).join(', ')}] ${errorsVec(r1.x,xExact,errMode)}</p>`;
+    h+=`<h4>Pivoteo parcial escalado (${prec} cifras)</h4>`;
+    h+=`<p><strong>Solucion:</strong> [${r2.x.map(v=>fmt(v,prec)).join(', ')}] ${errorsVec(r2.x,xExact,errMode)}</p>`;
+    h+=`<p style="color:var(--ok)"><strong>Solucion exacta:</strong> [${xExact.map(v=>fmt(v,8)).join(', ')}]</p>`;
+    h+='<p>El pivoteo escalado es mas preciso porque, al considerar la magnitud relativa (|a_{p1}|/s_p), escoge pivotes mas "grandes" en su contexto.</p>';
     showSol(2,h); return;
   }
   if(n===3){
+    const prec=getProbPrec()||5, errMode=getProbErrMode();
     const M=[[1.8,12.4,8.1,22.3],[4.1,11800,-7.5,11800],[1.2,3.9,1.4,6.4]];
-    const r=gaussJordan(M,5,{pivot:'parcial'});
-    let h='<h4>Gauss-Jordan con pivoteo parcial (5 cifras)</h4>';
-    h+=`<p><strong>Solucion:</strong> [${r.x.map(v=>fmt(v,5)).join(', ')}]</p>`;
-    h+='<p>Mismo resultado que Gauss con la misma estrategia, pero con el sistema reducido directamente a forma diagonal sin necesidad de despeje regresivo.</p>';
+    const r=gaussJordan(M,prec,{pivot:'parcial'});
+    const inv=matInv(M.map(r=>r.slice(0,3)));
+    const b=M.map(r=>r[3]);
+    const xExact=inv?inv.map((row,i)=>row.reduce((s,v,j)=>s+v*b[j],0)):null;
+    let h=probConfigHeader();
+    h+=`<h4>Gauss-Jordan con pivoteo parcial (${prec} cifras)</h4>`;
+    h+=`<p><strong>Solucion:</strong> [${r.x.map(v=>fmt(v,prec)).join(', ')}] ${errorsVec(r.x,xExact,errMode)}</p>`;
+    if(xExact) h+=`<p style="color:var(--ok)"><strong>Solucion exacta:</strong> [${xExact.map(v=>fmt(v,8)).join(', ')}]</p>`;
+    h+='<p>Mismo resultado que Gauss con la misma estrategia, pero con el sistema reducido directamente a forma diagonal sin necesidad de despeje regresivo. Cambia la aritmetica arriba para comparar.</p>';
     showSol(3,h); return;
   }
   if(n===4){
