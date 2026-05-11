@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ecuaciones Diferenciales Ordinarias - Metodos Matematicos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%23c0392b'/><text x='50' y='72' font-size='40' text-anchor='middle' fill='white' font-family='serif'>y'</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<style>
+:root{--pri:#c0392b;--pri-d:#922b21;--pri-l:#e74c3c;--acc:#2980b9;--ok:#27ae60;--warn:#f39c12;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--txtl:#7f8c8d;--brd:#dce1e6;--sh:0 2px 8px rgba(0,0,0,.08);--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+.header{background:linear-gradient(135deg,var(--pri-d),var(--pri));color:#fff;padding:1.5rem 2rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.header p{font-size:.95rem;opacity:.9}
+.header a{color:#ffe4b5;text-decoration:none;font-size:.85rem}
+.header a:hover{text-decoration:underline}
+.tab-bar{display:flex;background:var(--card);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.tab-btn{flex:1;padding:1rem;border:none;background:transparent;font-size:1rem;font-weight:600;color:var(--txtl);cursor:pointer;transition:.3s;border-bottom:3px solid transparent}
+.tab-btn:hover{background:#eef2f7}
+.tab-btn.active{color:var(--pri-d);border-bottom-color:var(--pri-d);background:#fdedec}
+.tab-content{display:none;padding:1rem;max-width:1100px;margin:0 auto}
+.tab-content.active{display:block}
+.topic-selector{background:var(--card);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.topic-selector label{font-weight:600;font-size:1rem;color:var(--pri-d)}
+.topic-selector select{flex:1;min-width:200px;padding:.6rem .8rem;border:2px solid var(--pri);border-radius:var(--r);font-size:.95rem;background:var(--card);color:var(--txt);cursor:pointer}
+.topic-section{display:none}
+.topic-section.active{display:block}
+.def-box,.prop-box,.example-box,.algo-box,.warn-box,.key-box{border-left:4px solid;padding:.8rem 1rem;margin:1rem 0;border-radius:0 var(--r) var(--r) 0;font-size:.95rem}
+.def-box{border-color:var(--pri-d);background:#fdedec}
+.prop-box{border-color:var(--ok);background:#eafaf1}
+.example-box{border-color:var(--warn);background:#fef9e7}
+.algo-box{border-color:#8e44ad;background:#f5eef8}
+.warn-box{border-color:var(--pri-l);background:#fadbd8}
+.key-box{border-color:var(--acc);background:#eaf2f8}
+.def-box strong,.prop-box strong,.example-box strong,.algo-box strong,.warn-box strong,.key-box strong{display:block;margin-bottom:.3rem}
+.interactive-box{background:#f8f9fb;border:1px solid var(--brd);border-radius:var(--r);padding:1rem;margin:1rem 0}
+.interactive-box h4{color:var(--pri-d);margin-bottom:.7rem;font-size:.95rem}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+.calc-grid.three{grid-template-columns:1fr 1fr 1fr}
+.calc-grid.four{grid-template-columns:1fr 1fr 1fr 1fr}
+.calc-grid label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem}
+.calc-grid input,.calc-grid select,.calc-grid textarea{width:100%;padding:.5rem;border:1px solid var(--brd);border-radius:4px;font-size:.95rem;font-family:inherit}
+.calc-grid input[type=text]{font-family:'Courier New',monospace}
+.func-row{margin-bottom:.7rem}
+.func-row label{font-size:.85rem;font-weight:600;display:block;margin-bottom:.2rem;color:var(--pri-d)}
+.func-row input{width:100%;padding:.5rem;border:2px solid var(--pri-l);border-radius:4px;font-size:1rem;font-family:'Courier New',monospace;background:#fdfdfd}
+.func-row .hint{font-size:.75rem;color:var(--txtl);margin-top:.2rem}
+.func-row .quick-funcs{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem}
+.func-row .quick-funcs button{font-size:.75rem;padding:.2rem .5rem;background:#fdedec;color:var(--pri-d);border:1px solid var(--pri-l);border-radius:3px;cursor:pointer;font-family:'Courier New',monospace}
+.func-row .quick-funcs button:hover{background:var(--pri);color:#fff}
+.btn{padding:.5rem 1.2rem;border:none;border-radius:4px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--pri-d);color:#fff}
+.btn-primary:hover{background:var(--pri)}
+.btn-success{background:var(--ok);color:#fff}
+.btn-accent{background:var(--acc);color:#fff}
+.btn-secondary{background:#95a5a6;color:#fff}
+.result-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;min-height:2rem}
+.result-box .val{color:var(--pri-d);font-weight:700}
+.steps-box{background:#fff;border:1px solid var(--brd);border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.9rem;line-height:1.7}
+.steps-box .step{padding:.5rem;margin:.3rem 0;border-left:3px solid var(--pri-l);background:#f8f9fb}
+.steps-box h5{color:var(--pri-d);margin:.5rem 0 .3rem 0}
+.plot-container{margin:1rem 0;min-height:300px}
+table.dt{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.85rem}
+table.dt th,table.dt td{padding:.4rem .6rem;border:1px solid var(--brd);text-align:center}
+table.dt th{background:var(--pri-d);color:#fff;font-weight:600}
+table.dt tr:nth-child(even){background:#f8f9fb}
+table.dt td.ok{color:var(--ok);font-weight:600}
+table.dt td.err{color:var(--pri-l);font-weight:600}
+.question-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.question-card h3{font-size:1rem;margin-bottom:.8rem;color:var(--pri-d)}
+.question-card .options label{display:block;padding:.6rem .8rem;margin:.3rem 0;border:1px solid var(--brd);border-radius:4px;cursor:pointer;transition:.2s;font-size:.9rem}
+.question-card .options label:hover{background:#eef2f7}
+.question-card .options input{margin-right:.5rem}
+.question-card .feedback{margin-top:.6rem;padding:.6rem;border-radius:4px;font-size:.9rem;display:none}
+.question-card .feedback.correct{display:block;background:#d5f5e3;color:#1e8449}
+.question-card .feedback.incorrect{display:block;background:#fadbd8;color:#c0392b}
+.problem-card{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);border-left:4px solid var(--warn)}
+.problem-card h3{font-size:1rem;margin-bottom:.5rem;color:var(--pri-d)}
+.problem-card .sol{display:none;margin-top:.8rem;padding:.8rem;background:#eafaf1;border-radius:4px;font-size:.9rem}
+.problem-card .sol.show{display:block}
+.score-bar{background:var(--card);border-radius:var(--r);padding:1.2rem;margin-bottom:1rem;box-shadow:var(--sh);text-align:center}
+.score-bar .score{font-size:2rem;font-weight:700;color:var(--pri-d)}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.75rem;font-weight:600;margin-left:.5rem}
+.badge-easy{background:#d5f5e3;color:#1e8449}
+.badge-med{background:#fef9e7;color:#b7950b}
+.badge-hard{background:#fadbd8;color:#c0392b}
+.method-card{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:.8rem 1rem;margin:.5rem 0;border-left:5px solid var(--pri-l)}
+.method-card.expl{border-left-color:var(--ok)}
+.method-card.impl{border-left-color:var(--pri-l)}
+.method-card h4{color:var(--pri-d);margin:0 0 .3rem 0}
+.method-card .pill{display:inline-block;padding:.1rem .5rem;border-radius:10px;font-size:.7rem;font-weight:700}
+.method-card .pill.e{background:#eafaf1;color:#1e8449}
+.method-card .pill.i{background:#fadbd8;color:#c0392b}
+.katex{font-size:1em!important}
+.katex-display{margin:.5em 0!important}
+p{margin:.5rem 0}
+ul,ol{margin:.5rem 0 .5rem 1.5rem}
+.flex-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.scheme{display:grid;grid-template-columns:auto 1fr auto;gap:.5rem;align-items:center;background:#fff;padding:.5rem;border:1px solid var(--brd);border-radius:4px;margin:.5rem 0;font-family:'Courier New',monospace;font-size:.85rem}
+.scheme .arrow{color:var(--pri);font-size:1.2rem;text-align:center}
+@media(max-width:700px){.calc-grid,.calc-grid.three,.calc-grid.four,.flex-2{grid-template-columns:1fr}.header h1{font-size:1.2rem}.tab-btn{font-size:.85rem;padding:.8rem .5rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Tema 6: Ecuaciones Diferenciales Ordinarias</h1>
+  <p>Problemas de valor inicial, metodos de 1 paso y multipaso (Adams), predictor-corrector e interpolacion Hermite</p>
+  <a href="../index.html">&larr; Volver al Bloque 4</a>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('theory')">Teoria Interactiva</button>
+  <button class="tab-btn" onclick="switchTab('problems')">Solver de Problemas</button>
+  <button class="tab-btn" onclick="switchTab('test')">Test y Problemas</button>
+</div>
+
+<!-- ============ TEORIA ============ -->
+<div id="tab-theory" class="tab-content active">
+
+<div class="topic-selector">
+  <label for="topic-select">Selecciona un tema:</label>
+  <select id="topic-select" onchange="showTopic(this.value)">
+    <option value="" disabled selected>-- Elige un tema --</option>
+    <option value="t1">1. Que es una EDO. Problema de valor inicial</option>
+    <option value="t2">2. Discretizacion: idea general</option>
+    <option value="t3">3. Metodos de 1 paso vs multipaso (explicitos/implicitos)</option>
+    <option value="t4">4. Metodo de 1 paso: Heun (Euler mejorado)</option>
+    <option value="t5">5. Metodo AB de 2 pasos (explicito)</option>
+    <option value="t6">6. Metodo AM de 2 pasos (implicito)</option>
+    <option value="t7">7. Metodo AB de 3 pasos (explicito)</option>
+    <option value="t8">8. Metodo AM de 3 pasos (implicito)</option>
+    <option value="t9">9. Esquemas predictor-corrector</option>
+    <option value="t10">10. Reconstruccion: interpolacion de Hermite</option>
+    <option value="t11">11. Resumen comparativo</option>
+  </select>
+</div>
+
+<!-- T1 -->
+<div class="topic-section" id="t1">
+<h2>1. Que es una EDO. Problema de valor inicial</h2>
+
+<div class="def-box">
+  <strong>Ecuacion diferencial ordinaria (EDO)</strong>
+  Una EDO de primer orden en forma explicita es
+  \[ y'(x)=f(x,y(x)) \]
+  donde \(y:[a,b]\to\mathbb{R}\) es desconocida y \(f\) es una funcion de dos variables. Un <strong>problema de valor inicial (PVI)</strong> es la EDO acompanada de un dato \(y(x_0)=y_0\):
+  \[ \begin{cases}y'=f(x,y),\\ y(x_0)=y_0.\end{cases} \]
+</div>
+
+<div class="key-box">
+  <strong>Caso limite: integral indefinida</strong>
+  Si \(f(x,y)=f(x)\) (no depende de \(y\)) entonces \(y(x)=y_0+\int_{x_0}^{x}f(t)\,dt\). Asi, la integracion numerica del Tema 5 es un caso particular de la resolucion numerica de EDO. Toda formula de cuadratura induce un esquema para EDO al integrar entre nodos consecutivos.
+</div>
+
+<div class="example-box">
+  <strong>Ejemplos basicos</strong>
+  <ul>
+    <li>\(y'=-2y,\;y(0)=1\)  &mdash;  solucion exacta \(y(x)=e^{-2x}\).</li>
+    <li>\(y'=x+y,\;y(0)=1\)  &mdash;  solucion exacta \(y(x)=-x-1+2e^x\).</li>
+    <li>\(y'=y\sin(x),\;y(0)=1\)  &mdash;  solucion exacta \(y(x)=e^{1-\cos x}\).</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Visualiza el campo de pendientes</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="cp-f" value="x+y"><div class="hint">Sintaxis: x, y, exp(x), sin(y), x*y, etc.</div></div>
+  <div class="calc-grid four">
+    <div><label>x min</label><input type="text" id="cp-xmin" value="-1"></div>
+    <div><label>x max</label><input type="text" id="cp-xmax" value="2"></div>
+    <div><label>y min</label><input type="text" id="cp-ymin" value="-2"></div>
+    <div><label>y max</label><input type="text" id="cp-ymax" value="4"></div>
+  </div>
+  <button class="btn btn-primary" onclick="campoPendientes()">Dibujar campo</button>
+  <div id="cp-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T2 -->
+<div class="topic-section" id="t2">
+<h2>2. Discretizacion: idea general</h2>
+
+<p>Resolver numericamente un PVI consiste en construir una <strong>tabla discreta</strong>
+\[ \{(x_0,y_0),(x_1,y_1),(x_2,y_2),\ldots,(x_N,y_N)\} \]
+con \(x_i=x_0+i\cdot h\) (paso fijo) y \(y_i\approx y(x_i)\). Llamamos \(f_i:=f(x_i,y_i)\) que tambien aproxima \(y'(x_i)\).</p>
+
+<div class="def-box">
+  <strong>Integracion en un paso</strong>
+  Integrando la EDO entre \(x_n\) y \(x_{n+1}\):
+  \[ y(x_{n+1})-y(x_n)=\int_{x_n}^{x_{n+1}}f(t,y(t))\,dt. \]
+  Aproximando esa integral por distintas formulas de cuadratura se obtienen los distintos metodos numericos.
+</div>
+
+<div class="key-box">
+  <strong>Idea clave</strong>
+  <ul>
+    <li>Si aproximamos la integral con <strong>rectangulo a izquierda</strong>: \(\int\approx h\,f(x_n,y_n)\) &rarr; <em>Euler simple</em>.</li>
+    <li>Con <strong>rectangulo a derecha</strong>: \(\int\approx h\,f(x_{n+1},y_{n+1})\) &rarr; <em>Euler implicito</em>.</li>
+    <li>Con <strong>trapecio</strong>: \(\int\approx \tfrac{h}{2}(f_n+f_{n+1})\) &rarr; <em>regla trapezoidal (AM-1)</em>.</li>
+    <li>Con un polinomio interpolador en mas nodos &rarr; metodos <em>multipaso</em> (Adams).</li>
+  </ul>
+</div>
+</div>
+
+<!-- T3 -->
+<div class="topic-section" id="t3">
+<h2>3. Metodos de 1 paso vs multipaso (explicitos/implicitos)</h2>
+
+<div class="def-box">
+  <strong>Metodos de 1 paso</strong>
+  Usan solo el valor previo \(y_n\) para calcular \(y_{n+1}\):
+  \[ y_{n+1}=y_n+h\,\Phi(x_n,y_n,h). \]
+  Ejemplos: Euler simple, Euler mejorado/Heun, RK2, RK4.
+</div>
+
+<div class="def-box">
+  <strong>Metodos multipaso</strong>
+  Usan varios valores anteriores \(y_n,y_{n-1},\ldots,y_{n-k+1}\) (y/o sus derivadas \(f_i\)):
+  \[ y_{n+1}=y_n+h\sum_{j} b_j f_{n+1-j}. \]
+  Necesitan <strong>arranque</strong>: como solo se conoce \(y_0\), los primeros pasos se calculan con un metodo de 1 paso.
+</div>
+
+<table class="dt">
+<thead><tr><th>Tipo</th><th>\(y_{n+1}\) aparece en RHS</th><th>Calculo</th><th>Estabilidad</th></tr></thead>
+<tbody>
+<tr><td><strong>Explicito</strong></td><td>NO</td><td>Formula directa: una suma de evaluaciones</td><td>Region pequena, necesita h pequenos</td></tr>
+<tr><td><strong>Implicito</strong></td><td>SI</td><td>Ecuacion no lineal en y_{n+1}; resolver con Newton o iterativamente</td><td>Region grande, admite h mayores</td></tr>
+</tbody>
+</table>
+
+<div class="key-box">
+  <strong>Adams-Bashforth (AB) y Adams-Moulton (AM)</strong>
+  Familias de metodos multipaso obtenidas integrando un polinomio interpolador de \(f\) sobre el ultimo intervalo:
+  <ul>
+    <li><strong>Adams-Bashforth</strong> &rarr; <em>explicito</em>: interpola \(f\) en \(x_n,x_{n-1},\ldots\) (no usa \(x_{n+1}\)).</li>
+    <li><strong>Adams-Moulton</strong> &rarr; <em>implicito</em>: interpola \(f\) en \(x_{n+1},x_n,\ldots\) (incluye el punto nuevo).</li>
+  </ul>
+</div>
+</div>
+
+<!-- T4 -->
+<div class="topic-section" id="t4">
+<h2>4. Metodo de 1 paso: Heun (Euler mejorado)</h2>
+
+<div class="def-box">
+  <strong>Metodo de Heun</strong>
+  Es un metodo de 1 paso obtenido aplicando la regla del trapecio a \(\int_{x_n}^{x_{n+1}}f\) y eliminando la implicitud por una <em>prediccion explicita</em>:
+  \[ \boxed{\;\begin{aligned}\tilde y_{n+1}&=y_n+h\,f(x_n,y_n) & (\text{predictor Euler})\\ y_{n+1}&=y_n+\tfrac{h}{2}\bigl(f(x_n,y_n)+f(x_{n+1},\tilde y_{n+1})\bigr) & (\text{corrector trapecio})\end{aligned}\;} \]
+</div>
+
+<div class="prop-box">
+  <strong>Propiedades</strong>
+  <ul>
+    <li>Es <strong>explicito</strong> (no resuelve ecuacion implicita).</li>
+    <li>Orden de convergencia <strong>2</strong> &mdash; error local \(O(h^3)\), global \(O(h^2)\).</li>
+    <li>Coste: 2 evaluaciones de \(f\) por paso.</li>
+    <li>Es un caso particular de Runge-Kutta de 2 etapas (RK2).</li>
+  </ul>
+</div>
+
+<p>El metodo de Heun cumple los requisitos del enunciado: es un <strong>metodo de 1 paso distinto de Euler simple</strong> y servira como <em>predictor</em> (o como metodo de arranque) en los esquemas predictor-corrector.</p>
+
+<div class="example-box">
+  <strong>Ejemplo</strong>
+  \(y'=y\), \(y(0)=1\), \(h=0.1\), un paso:
+  \[ \tilde y_1=1+0.1\cdot 1=1.1,\quad y_1=1+\tfrac{0.1}{2}(1+1.1)=1.105. \]
+  Exacto \(e^{0.1}\approx 1.10517\). Error \(\approx 1.7\cdot 10^{-4}\) (Euler simple daria error \(5.2\cdot 10^{-3}\)).
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora Heun</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="he-f" value="y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="he-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="he-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="he-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="he-n" value="10"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runHeun()">Ejecutar</button>
+  <div id="he-result" class="result-box"></div>
+  <div id="he-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T5 -->
+<div class="topic-section" id="t5">
+<h2>5. Adams-Bashforth de 2 pasos (explicito)</h2>
+
+<div class="def-box">
+  <strong>AB-2 (explicito)</strong>
+  Usa los dos valores anteriores de la derivada \(f_n,f_{n-1}\):
+  \[ \boxed{\;y_{n+1}=y_n+\frac{h}{2}\bigl(3f_n-f_{n-1}\bigr)\;} \]
+</div>
+
+<div class="prop-box">
+  <strong>Deduccion</strong>
+  Integramos \(\int_{x_n}^{x_{n+1}} f(t,y(t))\,dt\) y aproximamos \(f\) por el polinomio interpolador de grado 1 en \(\{x_{n-1},x_n\}\). Al integrar resulta la formula anterior. <strong>Orden de convergencia 2</strong>; error local \(O(h^3)\).
+</div>
+
+<div class="example-box">
+  <strong>Arranque</strong>
+  Como AB-2 necesita \(y_0\) <em>y</em> \(y_1\), el primer paso \(y_1\) se calcula con un metodo de 1 paso de orden \(\ge 2\) (Heun o RK4).
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora AB-2</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="ab2-f" value="x+y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="ab2-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="ab2-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="ab2-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="ab2-n" value="10"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runAB2()">Ejecutar</button>
+  <div id="ab2-result" class="result-box"></div>
+  <div id="ab2-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T6 -->
+<div class="topic-section" id="t6">
+<h2>6. Adams-Moulton de 2 pasos (implicito)</h2>
+
+<div class="def-box">
+  <strong>AM-2 (implicito)</strong>
+  Usa el valor nuevo \(f_{n+1}\) y dos anteriores \(f_n, f_{n-1}\):
+  \[ \boxed{\;y_{n+1}=y_n+\frac{h}{12}\bigl(5f_{n+1}+8f_n-f_{n-1}\bigr)\;} \]
+  donde \(f_{n+1}=f(x_{n+1},y_{n+1})\). Como \(y_{n+1}\) aparece dentro de \(f\) en el RHS, hay que resolver una ecuacion no lineal.
+</div>
+
+<div class="prop-box">
+  <strong>Propiedades</strong>
+  <ul>
+    <li>Es <strong>implicito</strong>: requiere resolver \(y_{n+1}=G(y_{n+1})\) por iteracion (punto fijo) o Newton.</li>
+    <li><strong>Orden 3</strong>: un orden mas que AB-2 con el mismo numero de evaluaciones (despues de converger).</li>
+    <li><strong>Region de estabilidad</strong> mayor que la del AB-2.</li>
+  </ul>
+</div>
+
+<div class="key-box">
+  <strong>Como resolver la implicitud</strong>
+  Iteracion de punto fijo:
+  \[ y_{n+1}^{(k+1)}=y_n+\tfrac{h}{12}\bigl(5f(x_{n+1},y_{n+1}^{(k)})+8f_n-f_{n-1}\bigr) \]
+  partiendo de una estimacion \(y_{n+1}^{(0)}\) (idealmente del predictor AB-2). Converge si \(\tfrac{5h}{12}\,L<1\) (siendo \(L\) Lipschitz en \(y\)).
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora AM-2 (resuelta por iteracion de punto fijo)</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="am2-f" value="x+y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="am2-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="am2-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="am2-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="am2-n" value="10"></div>
+  </div>
+  <div class="calc-grid">
+    <div><label>Tol iteracion interna</label><input type="text" id="am2-tol" value="1e-10"></div>
+    <div><label>Iteraciones max</label><input type="number" id="am2-it" value="50"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runAM2()">Ejecutar</button>
+  <div id="am2-result" class="result-box"></div>
+  <div id="am2-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T7 -->
+<div class="topic-section" id="t7">
+<h2>7. Adams-Bashforth de 3 pasos (explicito)</h2>
+
+<div class="def-box">
+  <strong>AB-3 (explicito)</strong>
+  \[ \boxed{\;y_{n+1}=y_n+\frac{h}{12}\bigl(23f_n-16f_{n-1}+5f_{n-2}\bigr)\;} \]
+</div>
+
+<div class="prop-box">
+  <strong>Deduccion / propiedades</strong>
+  Polinomio interpolador de \(f\) de grado 2 en \(\{x_{n-2},x_{n-1},x_n\}\) integrado en \([x_n,x_{n+1}]\). <strong>Orden 3</strong> (error local \(O(h^4)\)).
+  Arranque: se necesitan \(y_0,y_1,y_2\); los dos ultimos se calculan con un metodo de 1 paso (Heun o RK4).
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora AB-3</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="ab3-f" value="x+y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="ab3-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="ab3-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="ab3-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="ab3-n" value="10"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runAB3()">Ejecutar</button>
+  <div id="ab3-result" class="result-box"></div>
+  <div id="ab3-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T8 -->
+<div class="topic-section" id="t8">
+<h2>8. Adams-Moulton de 3 pasos (implicito)</h2>
+
+<div class="def-box">
+  <strong>AM-3 (implicito)</strong>
+  \[ \boxed{\;y_{n+1}=y_n+\frac{h}{24}\bigl(9f_{n+1}+19f_n-5f_{n-1}+f_{n-2}\bigr)\;} \]
+</div>
+
+<div class="prop-box">
+  <strong>Propiedades</strong>
+  <ul>
+    <li>Implicito; mismo enfoque iterativo que AM-2.</li>
+    <li><strong>Orden 4</strong>: un grado mas que AB-3 usando el mismo numero de nodos.</li>
+    <li>Excelente region de estabilidad.</li>
+  </ul>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora AM-3</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="am3-f" value="x+y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="am3-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="am3-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="am3-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="am3-n" value="10"></div>
+  </div>
+  <button class="btn btn-primary" onclick="runAM3()">Ejecutar</button>
+  <div id="am3-result" class="result-box"></div>
+  <div id="am3-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T9 -->
+<div class="topic-section" id="t9">
+<h2>9. Esquemas predictor-corrector</h2>
+
+<div class="def-box">
+  <strong>Idea PECE: Predict-Evaluate-Correct-Evaluate</strong>
+  La iteracion implicita del corrector AM puede sustituirse por <strong>una sola aplicacion</strong>: usar un AB <em>explicito</em> como predictor y un AM <em>implicito</em> como corrector evaluado en la prediccion.
+  <ol>
+    <li><strong>P (predict)</strong>: \(\tilde y_{n+1}=\) (formula AB explicita).</li>
+    <li><strong>E (evaluate)</strong>: \(\tilde f_{n+1}=f(x_{n+1},\tilde y_{n+1})\).</li>
+    <li><strong>C (correct)</strong>: \(y_{n+1}=\) (formula AM con \(\tilde f_{n+1}\)).</li>
+    <li><strong>E (evaluate)</strong>: \(f_{n+1}=f(x_{n+1},y_{n+1})\) para reutilizar en pasos posteriores.</li>
+  </ol>
+</div>
+
+<div class="key-box">
+  <strong>Combinaciones tipicas (segun instrucciones del enunciado)</strong>
+  <table class="dt" style="margin-top:.4rem">
+    <thead><tr><th>Combinacion</th><th>Predictor (explicito)</th><th>Corrector (implicito)</th><th>Comentarios</th></tr></thead>
+    <tbody>
+      <tr><td>1 paso + 2 implicito</td><td>Heun</td><td>AM-2</td><td>Arranque con Heun, primer par de pasos</td></tr>
+      <tr><td>2 explicito + 2 implicito</td><td>AB-2</td><td>AM-2</td><td>Esquema PECE clasico orden 3</td></tr>
+      <tr><td>3 explicito + 3 implicito</td><td>AB-3</td><td>AM-3</td><td>PECE orden 4</td></tr>
+      <tr><td>3 explicito + 3 implicito + 3 implicito</td><td>AB-3</td><td>AM-3 + AM-3</td><td>Segunda correccion para iteracion mas precisa</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="example-box">
+  <strong>Esquema visual de un paso AB-3 + AM-3</strong>
+  <div class="scheme">
+    <span>(y_{n-2}, y_{n-1}, y_n)</span>
+    <span class="arrow">&rarr; AB-3 &rarr;</span>
+    <span>~y_{n+1}</span>
+  </div>
+  <div class="scheme">
+    <span>~y_{n+1}</span>
+    <span class="arrow">&rarr; f(x_{n+1}, ~y_{n+1}) &rarr;</span>
+    <span>~f_{n+1}</span>
+  </div>
+  <div class="scheme">
+    <span>(f_{n-1}, f_n, ~f_{n+1})</span>
+    <span class="arrow">&rarr; AM-3 &rarr;</span>
+    <span>y_{n+1}</span>
+  </div>
+</div>
+
+<div class="interactive-box">
+  <h4>Calculadora predictor-corrector (AB-3 + AM-3 = PECE)</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="pc-f" value="x+y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="pc-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="pc-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="pc-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="pc-n" value="10"></div>
+  </div>
+  <div class="calc-grid">
+    <div><label>Combinacion</label>
+      <select id="pc-comb">
+        <option value="ab2am2">AB-2 + AM-2 (PECE orden 3)</option>
+        <option value="ab3am3" selected>AB-3 + AM-3 (PECE orden 4)</option>
+        <option value="ab3am3am3">AB-3 + AM-3 + AM-3 (PECECE)</option>
+        <option value="heunam2">Heun + AM-2 (1 paso + 2 implicito)</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="runPC()">Ejecutar</button></div>
+  </div>
+  <div id="pc-result" class="result-box"></div>
+  <div id="pc-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T10 -->
+<div class="topic-section" id="t10">
+<h2>10. Reconstruccion de la solucion: interpolacion de Hermite</h2>
+
+<div class="def-box">
+  <strong>Por que Hermite y no Lagrange/spline ordinario</strong>
+  Tras el predictor-corrector tenemos en cada nodo dos informaciones:
+  \[ (x_i,\,y_i)\quad\text{y}\quad y'_i = f(x_i,y_i)\;\;(\text{calculado durante el corrector}) \]
+  La tecnica de interpolacion que aprovecha ambos datos es la <strong>interpolacion de Hermite</strong>: construye un polinomio \(H(x)\) que satisface
+  \[ H(x_i)=y_i,\quad H'(x_i)=y'_i,\quad i=0,1,\ldots,N. \]
+  Con \(N+1\) nodos da un polinomio de grado \(2N+1\) (cada nodo aporta 2 condiciones).
+</div>
+
+<div class="key-box">
+  <strong>Construccion via diferencias divididas (Newton-Hermite)</strong>
+  <ol>
+    <li>Duplica cada nodo: \(\{z_0,z_1,\ldots,z_{2N+1}\}=\{x_0,x_0,x_1,x_1,\ldots,x_N,x_N\}\).</li>
+    <li>Asigna \(f[z_{2i}]=f[z_{2i+1}]=y_i\).</li>
+    <li>La diferencia dividida con nodo repetido se define como \(f[x_i,x_i]:=y'_i\) (regla de L'Hopital).</li>
+    <li>Completa la tabla de diferencias divididas con la regla habitual.</li>
+    <li>El polinomio Hermite es \(H(x)=\sum_{k=0}^{2N+1} f[z_0,\ldots,z_k]\prod_{j=0}^{k-1}(x-z_j)\).</li>
+  </ol>
+</div>
+
+<div class="prop-box">
+  <strong>Por que es mejor que un spline cubico C2 en este contexto</strong>
+  <ul>
+    <li>El spline cubico solo usa los \(y_i\) y ajusta las derivadas internamente. Aqui las derivadas <em>ya las conocemos</em> (son \(f(x_i,y_i)\)).</li>
+    <li>Hermite local (de grado 3 en cada subintervalo, usando 2 nodos y 2 derivadas) es la opcion natural: usa <em>exactamente</em> la informacion disponible.</li>
+    <li>En cada subintervalo \([x_i,x_{i+1}]\) el polinomio cubico de Hermite es:
+    \[ H_i(x)=h_{00}(t)y_i+h_{10}(t)h\,y'_i+h_{01}(t)y_{i+1}+h_{11}(t)h\,y'_{i+1} \]
+    con \(t=(x-x_i)/h\) y las funciones base \(h_{kj}\) cubicas (matriz \(C^1\) global).</li>
+  </ul>
+</div>
+
+<div class="example-box">
+  <strong>Ejemplo</strong>
+  Solver Heun en \(y'=y, y(0)=1, h=0.5\), tres pasos: nodos \((0,1,e^{0.5}\approx 1.648, e^1\approx 2.718)\) con derivadas \(f=y\) iguales. Hermite local da en cada tramo el cubico que iguala valor y pendiente en los extremos.
+</div>
+
+<div class="interactive-box">
+  <h4>Construye Hermite a partir de la salida de un metodo</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="he-fx" value="y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="he-fx0" value="0"></div>
+    <div><label>y0</label><input type="text" id="he-fy0" value="1"></div>
+    <div><label>h</label><input type="text" id="he-fh" value="0.5"></div>
+    <div><label>N pasos</label><input type="number" id="he-fn" value="4"></div>
+  </div>
+  <div class="calc-grid">
+    <div><label>Metodo subyacente</label>
+      <select id="he-fmet">
+        <option value="heun">Heun</option>
+        <option value="ab2am2">AB-2 + AM-2</option>
+        <option value="ab3am3" selected>AB-3 + AM-3 (PECE)</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="runHermite()">Ejecutar + Hermite</button></div>
+  </div>
+  <div id="he-fresult" class="result-box"></div>
+  <div id="he-fplot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- T11 -->
+<div class="topic-section" id="t11">
+<h2>11. Resumen comparativo</h2>
+
+<div class="method-card expl"><h4><span class="pill e">1 paso</span> Heun (Euler mejorado)</h4>
+<p>\(\tilde y=y_n+h f_n\); \(y_{n+1}=y_n+\tfrac{h}{2}(f_n+f(x_{n+1},\tilde y))\). Orden 2. Explicito. 2 evaluaciones de \(f\)/paso. <strong>Ideal para arranque.</strong></p></div>
+
+<div class="method-card expl"><h4><span class="pill e">multipaso</span> AB-2 (explicito)</h4>
+<p>\(y_{n+1}=y_n+\tfrac{h}{2}(3f_n-f_{n-1})\). Orden 2. 1 evaluacion nueva por paso.</p></div>
+
+<div class="method-card impl"><h4><span class="pill i">multipaso</span> AM-2 (implicito)</h4>
+<p>\(y_{n+1}=y_n+\tfrac{h}{12}(5f_{n+1}+8f_n-f_{n-1})\). Orden 3. Implicito.</p></div>
+
+<div class="method-card expl"><h4><span class="pill e">multipaso</span> AB-3 (explicito)</h4>
+<p>\(y_{n+1}=y_n+\tfrac{h}{12}(23f_n-16f_{n-1}+5f_{n-2})\). Orden 3. 1 evaluacion nueva por paso.</p></div>
+
+<div class="method-card impl"><h4><span class="pill i">multipaso</span> AM-3 (implicito)</h4>
+<p>\(y_{n+1}=y_n+\tfrac{h}{24}(9f_{n+1}+19f_n-5f_{n-1}+f_{n-2})\). Orden 4. Implicito.</p></div>
+
+<div class="method-card"><h4><span class="pill e">P-C</span> PECE (AB-3 + AM-3)</h4>
+<p>Predictor AB-3 explicito + corrector AM-3 con una unica evaluacion: <strong>orden 4</strong>, explicito en la practica, 2 evaluaciones/paso.</p></div>
+
+<div class="method-card"><h4><span class="pill i">reconstruccion</span> Hermite</h4>
+<p>Polinomio interpolador que usa \((x_i,y_i,y'_i)\). Grado \(2N+1\) global o cubicos a trozos con continuidad \(C^1\). <strong>Tecnica adecuada</strong> porque conocemos derivadas en los nodos.</p></div>
+
+<div class="interactive-box">
+  <h4>Comparador interactivo</h4>
+  <div class="func-row"><label>f(x,y)</label><input type="text" id="cm-f" value="x+y"></div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="cm-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="cm-y0" value="1"></div>
+    <div><label>x final</label><input type="text" id="cm-xf" value="2"></div>
+    <div><label>N pasos</label><input type="number" id="cm-n" value="20"></div>
+  </div>
+  <div class="func-row"><label>Solucion exacta (opcional, para comparar)</label><input type="text" id="cm-ex" value="-x-1+2*exp(x)"></div>
+  <button class="btn btn-primary" onclick="comparar()">Comparar todos los metodos</button>
+  <div id="cm-result" class="result-box"></div>
+  <div id="cm-plot" class="plot-container"></div>
+</div>
+</div>
+
+</div><!-- /theory -->
+
+<!-- ============ SOLVER ============ -->
+<div id="tab-problems" class="tab-content">
+
+<div class="topic-selector">
+  <label>Solver:</label>
+  <select id="solver-sel" onchange="showSolver(this.value)">
+    <option value="s1">Resolver PVI paso a paso (metodos individuales)</option>
+    <option value="s2">Resolver PVI por predictor-corrector (PECE)</option>
+    <option value="s3">Construir polinomio interpolador (Hermite) a partir del soporte</option>
+  </select>
+</div>
+
+<!-- S1 -->
+<div class="topic-section active" id="s1">
+<h2>Solver: PVI paso a paso (un metodo)</h2>
+<p>Introduce <strong>tu propia funcion</strong> \(f(x,y)\), elige el metodo y obten la tabla completa.</p>
+
+<div class="interactive-box">
+  <div class="func-row">
+    <label>Funcion f(x,y)</label>
+    <input type="text" id="s1-f" value="x+y" placeholder="Escribe aqui f(x,y), p.ej. -2*y, x*y, sin(x)-y">
+    <div class="hint">Sintaxis: x, y, x^2, x*y, exp(x), sin(y), cos(x), log(x). Atencion: usa exp(x) en lugar de e^x.</div>
+    <div class="quick-funcs">
+      <button onclick="document.getElementById('s1-f').value='-2*y'">-2y</button>
+      <button onclick="document.getElementById('s1-f').value='x+y'">x+y</button>
+      <button onclick="document.getElementById('s1-f').value='y-x^2+1'">y-x²+1</button>
+      <button onclick="document.getElementById('s1-f').value='y*sin(x)'">y·sin(x)</button>
+      <button onclick="document.getElementById('s1-f').value='x*y'">x·y</button>
+      <button onclick="document.getElementById('s1-f').value='exp(x)-y'">exp(x)-y</button>
+    </div>
+  </div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="s1-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="s1-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="s1-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="s1-n" value="10"></div>
+  </div>
+  <div class="calc-grid">
+    <div><label>Metodo</label>
+      <select id="s1-met">
+        <option value="heun">Heun (1 paso, explicito, orden 2)</option>
+        <option value="rk4">Runge-Kutta 4 (1 paso, explicito, orden 4)</option>
+        <option value="ab2">AB-2 (2 pasos, explicito, orden 2)</option>
+        <option value="am2">AM-2 (2 pasos, implicito, orden 3)</option>
+        <option value="ab3">AB-3 (3 pasos, explicito, orden 3)</option>
+        <option value="am3">AM-3 (3 pasos, implicito, orden 4)</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="solverPVI()">Resolver paso a paso</button></div>
+  </div>
+  <div class="func-row"><label>Solucion exacta (opcional, para comparar)</label><input type="text" id="s1-ex" value="-x-1+2*exp(x)" placeholder="Funcion en x"></div>
+  <div id="s1-steps" class="steps-box"></div>
+  <div id="s1-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- S2 -->
+<div class="topic-section" id="s2">
+<h2>Solver: predictor-corrector paso a paso</h2>
+<p>Combinaciones predictor-corrector solicitadas por el enunciado.</p>
+
+<div class="interactive-box">
+  <div class="func-row">
+    <label>Funcion f(x,y)</label>
+    <input type="text" id="s2-f" value="x+y" placeholder="Escribe tu f(x,y)">
+    <div class="hint">Sintaxis: x, y, x^2, x*y, exp(x), sin(y)...</div>
+    <div class="quick-funcs">
+      <button onclick="document.getElementById('s2-f').value='-2*y'">-2y</button>
+      <button onclick="document.getElementById('s2-f').value='x+y'">x+y</button>
+      <button onclick="document.getElementById('s2-f').value='y-x^2+1'">y-x²+1</button>
+      <button onclick="document.getElementById('s2-f').value='y*sin(x)'">y·sin(x)</button>
+      <button onclick="document.getElementById('s2-f').value='-y+sin(x)'">-y+sin(x)</button>
+    </div>
+  </div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="s2-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="s2-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="s2-h" value="0.1"></div>
+    <div><label>N pasos</label><input type="number" id="s2-n" value="10"></div>
+  </div>
+  <div class="calc-grid">
+    <div><label>Combinacion</label>
+      <select id="s2-comb">
+        <option value="heunam2">Heun (1 paso) + AM-2 (2 implicito)</option>
+        <option value="ab2am2">AB-2 (2 explicito) + AM-2 (2 implicito)</option>
+        <option value="ab3am3" selected>AB-3 (3 explicito) + AM-3 (3 implicito) - PECE clasico</option>
+        <option value="ab3am3am3">AB-3 + AM-3 + AM-3 (PECECE)</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="solverPC()">Resolver paso a paso</button></div>
+  </div>
+  <div class="func-row"><label>Solucion exacta (opcional)</label><input type="text" id="s2-ex" value="-x-1+2*exp(x)"></div>
+  <div id="s2-steps" class="steps-box"></div>
+  <div id="s2-plot" class="plot-container"></div>
+</div>
+</div>
+
+<!-- S3 -->
+<div class="topic-section" id="s3">
+<h2>Solver: Hermite a partir del soporte de un PVI</h2>
+<p>Tras aplicar un metodo (Heun, PECE, etc.) construye el polinomio interpolador de Hermite usando los valores y derivadas \((x_i, y_i, y'_i=f(x_i,y_i))\).</p>
+
+<div class="interactive-box">
+  <div class="func-row">
+    <label>Funcion f(x,y)</label>
+    <input type="text" id="s3-f" value="y" placeholder="Tu f(x,y)">
+    <div class="quick-funcs">
+      <button onclick="document.getElementById('s3-f').value='y'">y</button>
+      <button onclick="document.getElementById('s3-f').value='-2*y'">-2y</button>
+      <button onclick="document.getElementById('s3-f').value='x+y'">x+y</button>
+      <button onclick="document.getElementById('s3-f').value='y*cos(x)'">y·cos(x)</button>
+    </div>
+  </div>
+  <div class="calc-grid four">
+    <div><label>x0</label><input type="text" id="s3-x0" value="0"></div>
+    <div><label>y0</label><input type="text" id="s3-y0" value="1"></div>
+    <div><label>h</label><input type="text" id="s3-h" value="0.25"></div>
+    <div><label>N pasos</label><input type="number" id="s3-n" value="4"></div>
+  </div>
+  <div class="calc-grid">
+    <div><label>Metodo subyacente</label>
+      <select id="s3-met">
+        <option value="heun">Heun</option>
+        <option value="rk4" selected>RK4</option>
+        <option value="ab3am3">AB-3 + AM-3 (PECE)</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="solverHermite()">Calcular y Hermite</button></div>
+  </div>
+  <div class="func-row"><label>Solucion exacta (opcional)</label><input type="text" id="s3-ex" value="exp(x)"></div>
+  <div id="s3-steps" class="steps-box"></div>
+  <div id="s3-plot" class="plot-container"></div>
+</div>
+</div>
+
+</div><!-- /problems -->
+
+<!-- ============ TEST ============ -->
+<div id="tab-test" class="tab-content">
+<div class="score-bar">
+  <div>Tu puntuacion</div>
+  <div class="score" id="t-score">0 / 0</div>
+  <button class="btn btn-secondary" onclick="resetTest()">Reiniciar</button>
+</div>
+
+<h2>Cuestionario de teoria</h2>
+
+<div class="question-card" data-q="1" data-c="b">
+  <h3>1. Un problema de valor inicial (PVI) es... <span class="badge badge-easy">facil</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q1" value="a" onchange="checkQ(1,'a')"> Una EDO de orden 2 sin condiciones</label>
+    <label><input type="radio" name="q1" value="b" onchange="checkQ(1,'b')"> Una EDO con un dato y(x0)=y0 que fija la solucion particular</label>
+    <label><input type="radio" name="q1" value="c" onchange="checkQ(1,'c')"> Una EDO con condiciones de contorno y(a), y(b)</label>
+    <label><input type="radio" name="q1" value="d" onchange="checkQ(1,'d')"> Solo aplica a EDOs lineales</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="2" data-c="c">
+  <h3>2. Diferencia clave entre AB y AM... <span class="badge badge-easy">facil</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q2" value="a" onchange="checkQ(2,'a')"> AB usa h y AM no</label>
+    <label><input type="radio" name="q2" value="b" onchange="checkQ(2,'b')"> AB es de 1 paso y AM multipaso</label>
+    <label><input type="radio" name="q2" value="c" onchange="checkQ(2,'c')"> AB es explicito (no usa f_{n+1}); AM es implicito (lo usa)</label>
+    <label><input type="radio" name="q2" value="d" onchange="checkQ(2,'d')"> AB necesita la solucion exacta</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="3" data-c="b">
+  <h3>3. La formula del Heun (Euler mejorado) tiene orden... <span class="badge badge-med">medio</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q3" value="a" onchange="checkQ(3,'a')"> 1</label>
+    <label><input type="radio" name="q3" value="b" onchange="checkQ(3,'b')"> 2</label>
+    <label><input type="radio" name="q3" value="c" onchange="checkQ(3,'c')"> 3</label>
+    <label><input type="radio" name="q3" value="d" onchange="checkQ(3,'d')"> 4</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="4" data-c="d">
+  <h3>4. La formula AB-3 explicita es... <span class="badge badge-med">medio</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q4" value="a" onchange="checkQ(4,'a')"> y_{n+1}=y_n+h/2 (3f_n - f_{n-1})</label>
+    <label><input type="radio" name="q4" value="b" onchange="checkQ(4,'b')"> y_{n+1}=y_n+h/24 (9f_{n+1}+19f_n-5f_{n-1}+f_{n-2})</label>
+    <label><input type="radio" name="q4" value="c" onchange="checkQ(4,'c')"> y_{n+1}=y_n+h/12 (5f_{n+1}+8f_n-f_{n-1})</label>
+    <label><input type="radio" name="q4" value="d" onchange="checkQ(4,'d')"> y_{n+1}=y_n+h/12 (23f_n -16f_{n-1}+5f_{n-2})</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="5" data-c="a">
+  <h3>5. La formula AM-3 implicita es... <span class="badge badge-med">medio</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q5" value="a" onchange="checkQ(5,'a')"> y_{n+1}=y_n+h/24 (9f_{n+1}+19f_n-5f_{n-1}+f_{n-2})</label>
+    <label><input type="radio" name="q5" value="b" onchange="checkQ(5,'b')"> y_{n+1}=y_n+h/12 (5f_{n+1}+8f_n-f_{n-1})</label>
+    <label><input type="radio" name="q5" value="c" onchange="checkQ(5,'c')"> y_{n+1}=y_n+h/2 (f_n+f_{n+1})</label>
+    <label><input type="radio" name="q5" value="d" onchange="checkQ(5,'d')"> y_{n+1}=y_n+h/12 (23f_n-16f_{n-1}+5f_{n-2})</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="6" data-c="c">
+  <h3>6. En un esquema PECE clasico (AB-3 + AM-3)... <span class="badge badge-hard">avanzado</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q6" value="a" onchange="checkQ(6,'a')"> Se resuelven dos sistemas no lineales por paso</label>
+    <label><input type="radio" name="q6" value="b" onchange="checkQ(6,'b')"> AB-3 actua como corrector</label>
+    <label><input type="radio" name="q6" value="c" onchange="checkQ(6,'c')"> AB-3 predice ~y_{n+1} y AM-3 lo corrige sin iterar (1 sola aplicacion)</label>
+    <label><input type="radio" name="q6" value="d" onchange="checkQ(6,'d')"> Necesita la solucion exacta para corregir</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="7" data-c="b">
+  <h3>7. Tras aplicar predictor-corrector tenemos (x_i, y_i, y'_i). El polinomio interpolador natural es... <span class="badge badge-hard">avanzado</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q7" value="a" onchange="checkQ(7,'a')"> Lagrange (solo usa y_i)</label>
+    <label><input type="radio" name="q7" value="b" onchange="checkQ(7,'b')"> Hermite (usa y_i y y'_i)</label>
+    <label><input type="radio" name="q7" value="c" onchange="checkQ(7,'c')"> Newton diferencias divididas (solo usa y_i)</label>
+    <label><input type="radio" name="q7" value="d" onchange="checkQ(7,'d')"> Spline cubico natural (no usa y'_i)</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<div class="question-card" data-q="8" data-c="d">
+  <h3>8. Arranque del metodo AB-3... <span class="badge badge-hard">avanzado</span></h3>
+  <div class="options">
+    <label><input type="radio" name="q8" value="a" onchange="checkQ(8,'a')"> No requiere arranque (es de 1 paso)</label>
+    <label><input type="radio" name="q8" value="b" onchange="checkQ(8,'b')"> Necesita solo y_0</label>
+    <label><input type="radio" name="q8" value="c" onchange="checkQ(8,'c')"> Necesita y_0 y y_1</label>
+    <label><input type="radio" name="q8" value="d" onchange="checkQ(8,'d')"> Necesita y_0, y_1, y_2 (calculados con un metodo de 1 paso de orden ≥3)</label>
+  </div>
+  <div class="feedback"></div>
+</div>
+
+<h2 style="margin-top:1.5rem">Problemas (con solucion mostrable)</h2>
+
+<div class="problem-card">
+  <h3>P1. Heun a mano <span class="badge badge-easy">facil</span></h3>
+  <p>Aplica un paso del metodo de Heun a \(y'=2x+y,\;y(0)=1\) con \(h=0.1\). Calcula \(y_1\).</p>
+  <button class="btn btn-success" onclick="this.nextElementSibling.classList.toggle('show')">Ver solucion</button>
+  <div class="sol">
+    <p>\(f(x,y)=2x+y\).</p>
+    <p>Predictor: \(\tilde y_1 = y_0 + h\cdot f(x_0,y_0)=1+0.1\cdot(0+1)=1.1\).</p>
+    <p>Corrector: \(y_1 = y_0 + \tfrac{h}{2}(f(0,1)+f(0.1,1.1))=1+0.05(1+(0.2+1.1))=1+0.05\cdot 2.3=1.115\).</p>
+    <p>Solucion exacta: \(y(x)=3e^x-2x-2\), \(y(0.1)\approx 1.11551\). Error \(\approx 5\cdot 10^{-4}\).</p>
+  </div>
+</div>
+
+<div class="problem-card">
+  <h3>P2. AB-2 + arranque Heun <span class="badge badge-med">medio</span></h3>
+  <p>Resuelve \(y'=y,\;y(0)=1\) con AB-2 y \(h=0.1\), dando 3 pasos. Usa Heun para arrancar.</p>
+  <button class="btn btn-success" onclick="this.nextElementSibling.classList.toggle('show')">Ver solucion</button>
+  <div class="sol">
+    <p>\(f(x,y)=y\).</p>
+    <p>Heun en \([0,0.1]\): \(\tilde y_1=1+0.1\cdot 1=1.1\), \(y_1=1+0.05(1+1.1)=1.105\). \(f_1=1.105\).</p>
+    <p>AB-2: \(y_2 = y_1+\tfrac{h}{2}(3f_1-f_0)=1.105+0.05(3\cdot 1.105-1)=1.105+0.05\cdot 2.315=1.22075\). \(f_2=1.22075\).</p>
+    <p>AB-2: \(y_3 = y_2+\tfrac{h}{2}(3f_2-f_1)=1.22075+0.05(3\cdot 1.22075-1.105)=1.22075+0.13456=1.34931\).</p>
+    <p>Valor exacto \(y(0.3)=e^{0.3}\approx 1.34986\). Error \(\approx 5.5\cdot 10^{-4}\).</p>
+  </div>
+</div>
+
+<div class="problem-card">
+  <h3>P3. AM-2 implicito iterativo <span class="badge badge-med">medio</span></h3>
+  <p>Aplica AM-2 al PVI \(y'=-y,\;y(0)=1\) con \(h=0.2\) y arranque \(y_1\) calculado por trapecio implicito. Da un paso (calcula \(y_2\)).</p>
+  <button class="btn btn-success" onclick="this.nextElementSibling.classList.toggle('show')">Ver solucion</button>
+  <div class="sol">
+    <p>Trapecio implicito: \(y_1=y_0+\tfrac{h}{2}(f_0+f_1)\Rightarrow y_1=1-\tfrac{0.2}{2}(1+y_1)\Rightarrow y_1=\tfrac{1-0.1}{1+0.1}=0.81818\). \(f_1=-0.81818\).</p>
+    <p>AM-2: \(y_2=y_1+\tfrac{h}{12}(5f_2+8f_1-f_0)\) con \(f_2=-y_2\). Sustituyendo: \(y_2=0.81818+\tfrac{0.2}{12}(-5y_2-8\cdot 0.81818+1)\). Resolviendo lineal: \(y_2(1+\tfrac{0.2\cdot 5}{12})=0.81818+\tfrac{0.2}{12}(-5.54545)\). \(y_2(1.0833)=0.81818-0.09242=0.72576\). \(y_2=0.66993\).</p>
+    <p>Valor exacto \(y(0.4)=e^{-0.4}\approx 0.67032\). Error \(\approx 4\cdot 10^{-4}\).</p>
+  </div>
+</div>
+
+<div class="problem-card">
+  <h3>P4. PECE completo AB-3 + AM-3 <span class="badge badge-hard">avanzado</span></h3>
+  <p>Realiza el primer paso PECE para \(y'=x+y,\;y(0)=1,\;h=0.1\). El arranque se da: \(y_1=1.11034,\;y_2=1.24281\).</p>
+  <button class="btn btn-success" onclick="this.nextElementSibling.classList.toggle('show')">Ver solucion</button>
+  <div class="sol">
+    <p>\(f_0=f(0,1)=1\), \(f_1=f(0.1,1.11034)=1.21034\), \(f_2=f(0.2,1.24281)=1.44281\).</p>
+    <p><strong>P</strong> (AB-3): \(\tilde y_3=y_2+\tfrac{h}{12}(23f_2-16f_1+5f_0)\)<br>\(=1.24281+\tfrac{0.1}{12}(33.18463-19.36544+5)=1.24281+0.15683=1.39964\).</p>
+    <p><strong>E</strong>: \(\tilde f_3=f(0.3,1.39964)=1.69964\).</p>
+    <p><strong>C</strong> (AM-3): \(y_3=y_2+\tfrac{h}{24}(9\tilde f_3+19f_2-5f_1+f_0)\)<br>\(=1.24281+\tfrac{0.1}{24}(15.29676+27.41339-6.05170+1)=1.24281+0.15691=1.39972\).</p>
+    <p>Exacto \(y(0.3)=-0.3-1+2e^{0.3}\approx 1.39972\). El corrector recupera 4 cifras correctas frente a las 3 del predictor.</p>
+  </div>
+</div>
+
+<div class="problem-card">
+  <h3>P5. Hermite tras un metodo <span class="badge badge-hard">avanzado</span></h3>
+  <p>Aplica Heun a \(y'=y, y(0)=1\) con \(h=0.5\), N=2 pasos. Construye el polinomio Hermite cubico en \([0,0.5]\) usando \((x_0,y_0,y'_0)\) y \((x_1,y_1,y'_1)\). Compara con \(e^x\).</p>
+  <button class="btn btn-success" onclick="this.nextElementSibling.classList.toggle('show')">Ver solucion</button>
+  <div class="sol">
+    <p>Heun \([0,0.5]\): \(\tilde y_1=1+0.5\cdot 1=1.5\); \(y_1=1+0.25(1+1.5)=1.625\). Asi \((x_0,y_0,y'_0)=(0,1,1)\), \((x_1,y_1,y'_1)=(0.5,1.625,1.625)\).</p>
+    <p>Hermite cubico (forma base): \(H(x)=h_{00}(t)y_0+h_{10}(t)h y'_0+h_{01}(t)y_1+h_{11}(t)h y'_1\) con \(t=x/0.5\).</p>
+    <ul>
+      <li>\(h_{00}(t)=2t^3-3t^2+1,\quad h_{10}(t)=t^3-2t^2+t,\quad h_{01}(t)=-2t^3+3t^2,\quad h_{11}(t)=t^3-t^2.\)</li>
+    </ul>
+    <p>En \(x=0.25\) (t=0.5): \(h_{00}=0.5,h_{10}=0.125,h_{01}=0.5,h_{11}=-0.125\). \(H(0.25)=0.5+0.0625+0.8125-0.1016=1.273\). \(e^{0.25}\approx 1.284\). Error \(\approx 0.011\).</p>
+  </div>
+</div>
+
+</div><!-- /test -->
+
+<script>
+const $=id=>document.getElementById(id);
+
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  event.target.classList.add('active');
+  $('tab-'+name).classList.add('active');
+  setTimeout(renderMath,50);
+}
+
+function showTopic(id){
+  document.querySelectorAll('#tab-theory .topic-section').forEach(s=>s.classList.remove('active'));
+  if(id) $(id).classList.add('active');
+  setTimeout(renderMath,50);
+}
+
+function showSolver(id){
+  document.querySelectorAll('#tab-problems .topic-section').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  setTimeout(renderMath,50);
+}
+
+function renderMath(){
+  if(window.renderMathInElement){
+    renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+  }
+}
+
+function parseFunc2(s){try{return math.parse(s).compile();}catch(e){return null;}}
+function eval2(c,x,y){try{return c.evaluate({x:x,y:y});}catch(e){return NaN;}}
+function eval1(c,x){try{return c.evaluate({x:x});}catch(e){return NaN;}}
+
+// ============================
+// CAMPO DE PENDIENTES
+// ============================
+function campoPendientes(){
+  const fc=parseFunc2($('cp-f').value);if(!fc){$('cp-plot').innerHTML='Funcion invalida';return;}
+  const xmin=parseFloat($('cp-xmin').value), xmax=parseFloat($('cp-xmax').value), ymin=parseFloat($('cp-ymin').value), ymax=parseFloat($('cp-ymax').value);
+  const Nx=20, Ny=15;
+  const dx=(xmax-xmin)/Nx, dy=(ymax-ymin)/Ny;
+  const arrows=[];
+  const L=0.4*Math.min(dx,dy);
+  for(let i=0;i<=Nx;i++) for(let j=0;j<=Ny;j++){
+    const xi=xmin+i*dx, yj=ymin+j*dy;
+    const s=eval2(fc,xi,yj);
+    const ang=Math.atan(s);
+    const x1=xi-L*Math.cos(ang), y1=yj-L*Math.sin(ang);
+    const x2=xi+L*Math.cos(ang), y2=yj+L*Math.sin(ang);
+    arrows.push({x:[x1,x2,null],y:[y1,y2,null]});
+  }
+  const xs=arrows.flatMap(a=>a.x), ys=arrows.flatMap(a=>a.y);
+  // trayectoria RK4 desde varias condiciones iniciales
+  const trayec=[];
+  for(const y0 of [ymin+0.3,(ymin+ymax)/2,ymax-0.3]){
+    const xs2=[xmin], ys2=[y0];
+    let y=y0;
+    const h=0.02;
+    const nsteps=Math.round((xmax-xmin)/h);
+    for(let k=0;k<nsteps;k++){
+      const x=xmin+k*h;
+      const k1=eval2(fc,x,y);
+      const k2=eval2(fc,x+h/2,y+h*k1/2);
+      const k3=eval2(fc,x+h/2,y+h*k2/2);
+      const k4=eval2(fc,x+h,y+h*k3);
+      y=y+h*(k1+2*k2+2*k3+k4)/6;
+      if(!isFinite(y)||Math.abs(y)>1e6) break;
+      xs2.push(x+h);ys2.push(y);
+    }
+    trayec.push({x:xs2,y:ys2,mode:'lines',line:{color:'#c0392b',width:2},showlegend:false,hoverinfo:'skip'});
+  }
+  Plotly.newPlot('cp-plot',[
+    {x:xs,y:ys,mode:'lines',line:{color:'#7f8c8d',width:1},showlegend:false,hoverinfo:'skip'},
+    ...trayec
+  ],{margin:{t:20,r:10,l:40,b:30},height:380,xaxis:{title:'x',range:[xmin,xmax]},yaxis:{title:'y',range:[ymin,ymax]}});
+}
+
+// ============================
+// EULER & HEUN
+// ============================
+function euler(fc,x0,y0,h,N){
+  const xs=[x0],ys=[y0];let x=x0,y=y0;
+  for(let i=0;i<N;i++){y=y+h*eval2(fc,x,y);x=x+h;xs.push(x);ys.push(y);}return{xs,ys};
+}
+function heun(fc,x0,y0,h,N){
+  const xs=[x0],ys=[y0];let x=x0,y=y0;
+  for(let i=0;i<N;i++){const k1=eval2(fc,x,y);const yp=y+h*k1;const k2=eval2(fc,x+h,yp);y=y+h*(k1+k2)/2;x=x+h;xs.push(x);ys.push(y);}
+  return{xs,ys};
+}
+function rk4(fc,x0,y0,h,N){
+  const xs=[x0],ys=[y0];let x=x0,y=y0;
+  for(let i=0;i<N;i++){const k1=eval2(fc,x,y);const k2=eval2(fc,x+h/2,y+h*k1/2);const k3=eval2(fc,x+h/2,y+h*k2/2);const k4=eval2(fc,x+h,y+h*k3);y=y+h*(k1+2*k2+2*k3+k4)/6;x=x+h;xs.push(x);ys.push(y);}
+  return{xs,ys};
+}
+
+function runHeun(){
+  const fc=parseFunc2($('he-f').value);if(!fc){$('he-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('he-x0').value), y0=parseFloat($('he-y0').value), h=parseFloat($('he-h').value), N=parseInt($('he-n').value);
+  const r=heun(fc,x0,y0,h,N);
+  let table='<table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td></tr>`;
+  table+='</table>';
+  $('he-result').innerHTML=table;
+  Plotly.newPlot('he-plot',[{x:r.xs,y:r.ys,mode:'lines+markers',name:'Heun',line:{color:'#c0392b'}}],{margin:{t:20,r:10,l:40,b:30},height:300,xaxis:{title:'x'},yaxis:{title:'y'}});
+}
+
+// ============================
+// ADAMS-BASHFORTH
+// ============================
+function ab2(fc,x0,y0,h,N){
+  // arranque: y1 con RK4
+  const r0=rk4(fc,x0,y0,h,1);
+  let x=r0.xs[1], y=r0.ys[1];
+  const xs=[x0,x], ys=[y0,y];
+  let fNm1=eval2(fc,xs[0],ys[0]); // f_0
+  let fN=eval2(fc,xs[1],ys[1]);   // f_1
+  for(let i=1;i<N;i++){
+    y=ys[i]+h/2*(3*fN-fNm1);
+    x=xs[i]+h;
+    xs.push(x);ys.push(y);
+    fNm1=fN;fN=eval2(fc,x,y);
+  }
+  return{xs,ys};
+}
+function ab3(fc,x0,y0,h,N){
+  // arranque: y1,y2 con RK4
+  const r0=rk4(fc,x0,y0,h,2);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  // f_{n-2}, f_{n-1}, f_n
+  let fNm2=eval2(fc,xs[0],ys[0]);
+  let fNm1=eval2(fc,xs[1],ys[1]);
+  let fN=eval2(fc,xs[2],ys[2]);
+  for(let i=2;i<N;i++){
+    const y=ys[i]+h/12*(23*fN-16*fNm1+5*fNm2);
+    const x=xs[i]+h;
+    xs.push(x);ys.push(y);
+    fNm2=fNm1;fNm1=fN;fN=eval2(fc,x,y);
+  }
+  return{xs,ys};
+}
+function runAB2(){
+  const fc=parseFunc2($('ab2-f').value);if(!fc){$('ab2-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('ab2-x0').value), y0=parseFloat($('ab2-y0').value), h=parseFloat($('ab2-h').value), N=parseInt($('ab2-n').value);
+  const r=ab2(fc,x0,y0,h,N);
+  let table='<table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td></tr>`;
+  table+='</table>';
+  $('ab2-result').innerHTML=table;
+  Plotly.newPlot('ab2-plot',[{x:r.xs,y:r.ys,mode:'lines+markers',name:'AB-2',line:{color:'#c0392b'}}],{margin:{t:20,r:10,l:40,b:30},height:300});
+}
+function runAB3(){
+  const fc=parseFunc2($('ab3-f').value);if(!fc){$('ab3-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('ab3-x0').value), y0=parseFloat($('ab3-y0').value), h=parseFloat($('ab3-h').value), N=parseInt($('ab3-n').value);
+  const r=ab3(fc,x0,y0,h,N);
+  let table='<table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td></tr>`;
+  table+='</table>';
+  $('ab3-result').innerHTML=table;
+  Plotly.newPlot('ab3-plot',[{x:r.xs,y:r.ys,mode:'lines+markers',name:'AB-3',line:{color:'#c0392b'}}],{margin:{t:20,r:10,l:40,b:30},height:300});
+}
+
+// ============================
+// ADAMS-MOULTON (iterativo)
+// ============================
+function am2(fc,x0,y0,h,N,tol,itMax){
+  const r0=rk4(fc,x0,y0,h,1);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  let fNm1=eval2(fc,xs[0],ys[0]);
+  let fN=eval2(fc,xs[1],ys[1]);
+  for(let i=1;i<N;i++){
+    const xN1=xs[i]+h;
+    // iteracion punto fijo: y* = y_i + h/12 * (5 f(xN1,y*) + 8 fN - fNm1)
+    let y=ys[i]; // estimacion inicial = y_n
+    for(let k=0;k<itMax;k++){
+      const fN1=eval2(fc,xN1,y);
+      const ynew=ys[i]+h/12*(5*fN1+8*fN-fNm1);
+      if(Math.abs(ynew-y)<tol){y=ynew;break;}
+      y=ynew;
+    }
+    xs.push(xN1);ys.push(y);
+    fNm1=fN;fN=eval2(fc,xN1,y);
+  }
+  return{xs,ys};
+}
+function am3(fc,x0,y0,h,N,tol,itMax){
+  const r0=rk4(fc,x0,y0,h,2);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  let fNm2=eval2(fc,xs[0],ys[0]);
+  let fNm1=eval2(fc,xs[1],ys[1]);
+  let fN=eval2(fc,xs[2],ys[2]);
+  for(let i=2;i<N;i++){
+    const xN1=xs[i]+h;
+    let y=ys[i];
+    for(let k=0;k<itMax;k++){
+      const fN1=eval2(fc,xN1,y);
+      const ynew=ys[i]+h/24*(9*fN1+19*fN-5*fNm1+fNm2);
+      if(Math.abs(ynew-y)<tol){y=ynew;break;}
+      y=ynew;
+    }
+    xs.push(xN1);ys.push(y);
+    fNm2=fNm1;fNm1=fN;fN=eval2(fc,xN1,y);
+  }
+  return{xs,ys};
+}
+function runAM2(){
+  const fc=parseFunc2($('am2-f').value);if(!fc){$('am2-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('am2-x0').value), y0=parseFloat($('am2-y0').value), h=parseFloat($('am2-h').value), N=parseInt($('am2-n').value);
+  const tol=parseFloat($('am2-tol').value)||1e-10, itMax=parseInt($('am2-it').value)||50;
+  const r=am2(fc,x0,y0,h,N,tol,itMax);
+  let table='<table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td></tr>`;
+  table+='</table>';
+  $('am2-result').innerHTML=table;
+  Plotly.newPlot('am2-plot',[{x:r.xs,y:r.ys,mode:'lines+markers',name:'AM-2 implicito',line:{color:'#c0392b'}}],{margin:{t:20,r:10,l:40,b:30},height:300});
+}
+function runAM3(){
+  const fc=parseFunc2($('am3-f').value);if(!fc){$('am3-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('am3-x0').value), y0=parseFloat($('am3-y0').value), h=parseFloat($('am3-h').value), N=parseInt($('am3-n').value);
+  const r=am3(fc,x0,y0,h,N,1e-12,80);
+  let table='<table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td></tr>`;
+  table+='</table>';
+  $('am3-result').innerHTML=table;
+  Plotly.newPlot('am3-plot',[{x:r.xs,y:r.ys,mode:'lines+markers',name:'AM-3 implicito',line:{color:'#c0392b'}}],{margin:{t:20,r:10,l:40,b:30},height:300});
+}
+
+// ============================
+// PREDICTOR-CORRECTOR
+// ============================
+function pcAB3AM3(fc,x0,y0,h,N){
+  const r0=rk4(fc,x0,y0,h,2);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  let fNm2=eval2(fc,xs[0],ys[0]);
+  let fNm1=eval2(fc,xs[1],ys[1]);
+  let fN=eval2(fc,xs[2],ys[2]);
+  for(let i=2;i<N;i++){
+    const xN1=xs[i]+h;
+    // P: AB-3
+    const yP=ys[i]+h/12*(23*fN-16*fNm1+5*fNm2);
+    // E
+    const fP=eval2(fc,xN1,yP);
+    // C: AM-3
+    const yC=ys[i]+h/24*(9*fP+19*fN-5*fNm1+fNm2);
+    xs.push(xN1);ys.push(yC);
+    fNm2=fNm1;fNm1=fN;fN=eval2(fc,xN1,yC);
+  }
+  return{xs,ys};
+}
+function pcAB3AM3AM3(fc,x0,y0,h,N){
+  const r0=rk4(fc,x0,y0,h,2);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  let fNm2=eval2(fc,xs[0],ys[0]);
+  let fNm1=eval2(fc,xs[1],ys[1]);
+  let fN=eval2(fc,xs[2],ys[2]);
+  for(let i=2;i<N;i++){
+    const xN1=xs[i]+h;
+    const yP=ys[i]+h/12*(23*fN-16*fNm1+5*fNm2);
+    let fP=eval2(fc,xN1,yP);
+    let yC=ys[i]+h/24*(9*fP+19*fN-5*fNm1+fNm2);
+    // Segunda correccion
+    fP=eval2(fc,xN1,yC);
+    yC=ys[i]+h/24*(9*fP+19*fN-5*fNm1+fNm2);
+    xs.push(xN1);ys.push(yC);
+    fNm2=fNm1;fNm1=fN;fN=eval2(fc,xN1,yC);
+  }
+  return{xs,ys};
+}
+function pcAB2AM2(fc,x0,y0,h,N){
+  const r0=rk4(fc,x0,y0,h,1);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  let fNm1=eval2(fc,xs[0],ys[0]);
+  let fN=eval2(fc,xs[1],ys[1]);
+  for(let i=1;i<N;i++){
+    const xN1=xs[i]+h;
+    const yP=ys[i]+h/2*(3*fN-fNm1);
+    const fP=eval2(fc,xN1,yP);
+    const yC=ys[i]+h/12*(5*fP+8*fN-fNm1);
+    xs.push(xN1);ys.push(yC);
+    fNm1=fN;fN=eval2(fc,xN1,yC);
+  }
+  return{xs,ys};
+}
+function pcHeunAM2(fc,x0,y0,h,N){
+  // P: Heun (1 paso); luego usa AM-2 con f_{n-1} disponible (necesita arranque Heun para n=0,1)
+  const r0=heun(fc,x0,y0,h,1);
+  const xs=[...r0.xs], ys=[...r0.ys];
+  let fNm1=eval2(fc,xs[0],ys[0]);
+  let fN=eval2(fc,xs[1],ys[1]);
+  for(let i=1;i<N;i++){
+    const xN1=xs[i]+h;
+    // P: Heun
+    const k1=fN;
+    const yE=ys[i]+h*k1;
+    const k2=eval2(fc,xN1,yE);
+    const yP=ys[i]+h*(k1+k2)/2;
+    // E
+    const fP=eval2(fc,xN1,yP);
+    // C: AM-2
+    const yC=ys[i]+h/12*(5*fP+8*fN-fNm1);
+    xs.push(xN1);ys.push(yC);
+    fNm1=fN;fN=eval2(fc,xN1,yC);
+  }
+  return{xs,ys};
+}
+
+function runPC(){
+  const fc=parseFunc2($('pc-f').value);if(!fc){$('pc-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('pc-x0').value), y0=parseFloat($('pc-y0').value), h=parseFloat($('pc-h').value), N=parseInt($('pc-n').value);
+  const comb=$('pc-comb').value;
+  let r;
+  if(comb==='ab2am2') r=pcAB2AM2(fc,x0,y0,h,N);
+  else if(comb==='ab3am3') r=pcAB3AM3(fc,x0,y0,h,N);
+  else if(comb==='ab3am3am3') r=pcAB3AM3AM3(fc,x0,y0,h,N);
+  else if(comb==='heunam2') r=pcHeunAM2(fc,x0,y0,h,N);
+  let table='<table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td></tr>`;
+  table+='</table>';
+  $('pc-result').innerHTML=table;
+  Plotly.newPlot('pc-plot',[{x:r.xs,y:r.ys,mode:'lines+markers',name:'PC',line:{color:'#c0392b'}}],{margin:{t:20,r:10,l:40,b:30},height:300});
+}
+
+// ============================
+// HERMITE INTERPOLACION
+// ============================
+function hermitePiecewise(xs,ys,yps){
+  // devuelve funcion H(x) por tramos cubicos de Hermite
+  return function(x){
+    if(x<=xs[0]) return ys[0];
+    if(x>=xs[xs.length-1]) return ys[ys.length-1];
+    let i=0;while(i<xs.length-1 && xs[i+1]<x) i++;
+    const h=xs[i+1]-xs[i];
+    const t=(x-xs[i])/h;
+    const h00=2*t*t*t-3*t*t+1;
+    const h10=t*t*t-2*t*t+t;
+    const h01=-2*t*t*t+3*t*t;
+    const h11=t*t*t-t*t;
+    return h00*ys[i]+h10*h*yps[i]+h01*ys[i+1]+h11*h*yps[i+1];
+  };
+}
+function hermiteNewtonDDs(xs,ys,yps){
+  // Devuelve los coeficientes de Newton-Hermite via diferencias divididas con nodos repetidos
+  const n=xs.length;
+  const z=[], f=[];
+  for(let i=0;i<n;i++){z.push(xs[i]);z.push(xs[i]);f.push([ys[i],ys[i]]);}
+  const Z=[];for(let i=0;i<n;i++){Z.push(z[2*i]);Z.push(z[2*i+1]);}
+  const dd=Array.from({length:2*n},()=>new Array(2*n).fill(0));
+  for(let i=0;i<n;i++){dd[2*i][0]=ys[i];dd[2*i+1][0]=ys[i];}
+  for(let i=0;i<2*n-1;i++){
+    if(i%2===0){dd[i][1]=yps[i/2];}
+    else{dd[i][1]=(dd[i+1][0]-dd[i][0])/(Z[i+1]-Z[i]);}
+  }
+  for(let j=2;j<2*n;j++) for(let i=0;i<2*n-j;i++){
+    dd[i][j]=(dd[i+1][j-1]-dd[i][j-1])/(Z[i+j]-Z[i]);
+  }
+  return{Z,coefs:dd[0]};
+}
+function runHermite(){
+  const fc=parseFunc2($('he-fx').value);if(!fc){$('he-fresult').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('he-fx0').value), y0=parseFloat($('he-fy0').value), h=parseFloat($('he-fh').value), N=parseInt($('he-fn').value);
+  const met=$('he-fmet').value;
+  let r;
+  if(met==='heun') r=heun(fc,x0,y0,h,N);
+  else if(met==='ab2am2') r=pcAB2AM2(fc,x0,y0,h,N);
+  else if(met==='ab3am3') r=pcAB3AM3(fc,x0,y0,h,N);
+  const yps=r.xs.map((x,i)=>eval2(fc,x,r.ys[i]));
+  const H=hermitePiecewise(r.xs,r.ys,yps);
+  // tabla
+  let table='<table class="dt"><tr><th>i</th><th>x_i</th><th>y_i</th><th>y\'_i</th></tr>';
+  for(let i=0;i<r.xs.length;i++) table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(6)}</td><td>${yps[i].toFixed(6)}</td></tr>`;
+  table+='</table>';
+  $('he-fresult').innerHTML=table;
+  // plot: Hermite vs metodo discreto
+  const xmin=r.xs[0], xmax=r.xs[r.xs.length-1];
+  const xs=[],ysH=[];
+  for(let x=xmin;x<=xmax;x+=(xmax-xmin)/400){xs.push(x);ysH.push(H(x));}
+  Plotly.newPlot('he-fplot',[
+    {x:xs,y:ysH,mode:'lines',name:'Hermite cubico a trozos',line:{color:'#c0392b',width:2}},
+    {x:r.xs,y:r.ys,mode:'markers',name:'(x_i,y_i) PVI',marker:{size:9,color:'#1a5276'}}
+  ],{margin:{t:20,r:10,l:40,b:30},height:320,legend:{orientation:'h'}});
+}
+
+// ============================
+// COMPARADOR
+// ============================
+function comparar(){
+  const fc=parseFunc2($('cm-f').value);if(!fc){$('cm-result').innerHTML='Funcion invalida';return;}
+  const x0=parseFloat($('cm-x0').value), y0=parseFloat($('cm-y0').value), xf=parseFloat($('cm-xf').value), N=parseInt($('cm-n').value);
+  const h=(xf-x0)/N;
+  const r1=heun(fc,x0,y0,h,N);
+  const r2=ab2(fc,x0,y0,h,N);
+  const r3=am2(fc,x0,y0,h,N,1e-10,40);
+  const r4=ab3(fc,x0,y0,h,N);
+  const r5=am3(fc,x0,y0,h,N,1e-10,40);
+  const r6=pcAB3AM3(fc,x0,y0,h,N);
+  const r7=rk4(fc,x0,y0,h,N);
+  const ex=$('cm-ex').value;
+  const traces=[
+    {x:r1.xs,y:r1.ys,mode:'lines+markers',name:'Heun',line:{color:'#e67e22'}},
+    {x:r2.xs,y:r2.ys,mode:'lines+markers',name:'AB-2',line:{color:'#9b59b6'}},
+    {x:r3.xs,y:r3.ys,mode:'lines+markers',name:'AM-2',line:{color:'#3498db'}},
+    {x:r4.xs,y:r4.ys,mode:'lines+markers',name:'AB-3',line:{color:'#16a085'}},
+    {x:r5.xs,y:r5.ys,mode:'lines+markers',name:'AM-3',line:{color:'#27ae60'}},
+    {x:r6.xs,y:r6.ys,mode:'lines+markers',name:'PECE AB-3+AM-3',line:{color:'#c0392b',width:3}},
+    {x:r7.xs,y:r7.ys,mode:'lines+markers',name:'RK4',line:{color:'#7f8c8d',dash:'dot'}}
+  ];
+  let html='<table class="dt"><tr><th>Metodo</th><th>y(xf)</th>';
+  let exVal=null;
+  if(ex){
+    try{const ec=math.parse(ex).compile();exVal=ec.evaluate({x:xf});
+      const xsEx=[],ysEx=[];for(let x=x0;x<=xf;x+=(xf-x0)/400){xsEx.push(x);ysEx.push(ec.evaluate({x:x}));}
+      traces.push({x:xsEx,y:ysEx,mode:'lines',name:'Exacta',line:{color:'#000',width:2,dash:'dash'}});
+      html+='<th>Error</th>';
+    }catch(e){}
+  }
+  html+='</tr>';
+  const ms=[['Heun',r1],['AB-2',r2],['AM-2',r3],['AB-3',r4],['AM-3',r5],['PECE AB3+AM3',r6],['RK4',r7]];
+  for(const [name,r] of ms){
+    const yend=r.ys[r.ys.length-1];
+    html+=`<tr><td>${name}</td><td>${yend.toFixed(8)}</td>`;
+    if(exVal!==null) html+=`<td>${Math.abs(yend-exVal).toExponential(3)}</td>`;
+    html+='</tr>';
+  }
+  html+='</table>';
+  if(exVal!==null) html+=`<p>Exacto en xf=${xf}: <span class="val">${exVal.toFixed(8)}</span></p>`;
+  $('cm-result').innerHTML=html;
+  Plotly.newPlot('cm-plot',traces,{margin:{t:20,r:10,l:40,b:30},height:380,legend:{orientation:'h'}});
+}
+
+// ============================
+// SOLVER PASO A PASO (S1)
+// ============================
+function solverPVI(){
+  const expr=$('s1-f').value, x0=parseFloat($('s1-x0').value), y0=parseFloat($('s1-y0').value), h=parseFloat($('s1-h').value), N=parseInt($('s1-n').value), met=$('s1-met').value;
+  const fc=parseFunc2(expr);if(!fc){$('s1-steps').innerHTML='Funcion invalida';return;}
+  let html='<h5>Datos</h5><div class="step">f(x,y) = '+expr+'<br>x0 = '+x0+', y0 = '+y0+', h = '+h+', N = '+N+', metodo = '+met+'</div>';
+  let r;
+  if(met==='heun'){r=heun(fc,x0,y0,h,N);html+='<h5>Formula</h5><div class="step">'+'~y_{n+1} = y_n + h·f(x_n,y_n);  y_{n+1} = y_n + h/2 (f(x_n,y_n) + f(x_{n+1},~y_{n+1}))'+'</div>';}
+  else if(met==='rk4'){r=rk4(fc,x0,y0,h,N);html+='<h5>Formula</h5><div class="step">RK4 clasico (4 etapas, orden 4)</div>';}
+  else if(met==='ab2'){r=ab2(fc,x0,y0,h,N);html+='<h5>Formula</h5><div class="step">y_{n+1} = y_n + h/2 (3 f_n - f_{n-1}). Arranque con RK4.</div>';}
+  else if(met==='am2'){r=am2(fc,x0,y0,h,N,1e-10,80);html+='<h5>Formula</h5><div class="step">y_{n+1} = y_n + h/12 (5 f_{n+1} + 8 f_n - f_{n-1}). Resolucion por iteracion de punto fijo.</div>';}
+  else if(met==='ab3'){r=ab3(fc,x0,y0,h,N);html+='<h5>Formula</h5><div class="step">y_{n+1} = y_n + h/12 (23 f_n - 16 f_{n-1} + 5 f_{n-2}). Arranque con RK4 (2 pasos).</div>';}
+  else if(met==='am3'){r=am3(fc,x0,y0,h,N,1e-12,80);html+='<h5>Formula</h5><div class="step">y_{n+1} = y_n + h/24 (9 f_{n+1} + 19 f_n - 5 f_{n-1} + f_{n-2}). Iteracion de punto fijo.</div>';}
+  let table='<h5>Tabla</h5><table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th><th>f(x_n,y_n)</th>';
+  const ex=$('s1-ex').value;let ec=null;if(ex){try{ec=math.parse(ex).compile();table+='<th>Exacto</th><th>Error</th>';}catch(e){}}
+  table+='</tr>';
+  for(let i=0;i<r.xs.length;i++){
+    const fi=eval2(fc,r.xs[i],r.ys[i]);
+    table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td><td>${fi.toFixed(6)}</td>`;
+    if(ec){const ye=ec.evaluate({x:r.xs[i]});table+=`<td>${ye.toFixed(8)}</td><td class="err">${Math.abs(r.ys[i]-ye).toExponential(2)}</td>`;}
+    table+='</tr>';
+  }
+  table+='</table>';
+  html+=table;
+  $('s1-steps').innerHTML=html;
+  const traces=[{x:r.xs,y:r.ys,mode:'lines+markers',name:met,line:{color:'#c0392b'}}];
+  if(ec){const xsE=[],ysE=[];for(let x=r.xs[0];x<=r.xs[r.xs.length-1];x+=(r.xs[r.xs.length-1]-r.xs[0])/300){xsE.push(x);ysE.push(ec.evaluate({x:x}));}traces.push({x:xsE,y:ysE,mode:'lines',name:'Exacta',line:{color:'#000',width:2,dash:'dash'}});}
+  Plotly.newPlot('s1-plot',traces,{margin:{t:20,r:10,l:40,b:30},height:320,legend:{orientation:'h'}});
+}
+
+// ============================
+// SOLVER PC PASO A PASO (S2)
+// ============================
+function solverPC(){
+  const expr=$('s2-f').value, x0=parseFloat($('s2-x0').value), y0=parseFloat($('s2-y0').value), h=parseFloat($('s2-h').value), N=parseInt($('s2-n').value), comb=$('s2-comb').value;
+  const fc=parseFunc2(expr);if(!fc){$('s2-steps').innerHTML='Funcion invalida';return;}
+  let html='<h5>Datos</h5><div class="step">f(x,y) = '+expr+'<br>x0='+x0+', y0='+y0+', h='+h+', N='+N+', combinacion = '+comb+'</div>';
+  let r;
+  if(comb==='heunam2') r=pcHeunAM2(fc,x0,y0,h,N);
+  else if(comb==='ab2am2') r=pcAB2AM2(fc,x0,y0,h,N);
+  else if(comb==='ab3am3') r=pcAB3AM3(fc,x0,y0,h,N);
+  else if(comb==='ab3am3am3') r=pcAB3AM3AM3(fc,x0,y0,h,N);
+  // mostrar primer paso PECE detallado
+  if(comb==='ab3am3' || comb==='ab3am3am3'){
+    const r0=rk4(fc,x0,y0,h,2);
+    const fNm2=eval2(fc,r0.xs[0],r0.ys[0]), fNm1=eval2(fc,r0.xs[1],r0.ys[1]), fN=eval2(fc,r0.xs[2],r0.ys[2]);
+    const xN1=r0.xs[2]+h;
+    const yP=r0.ys[2]+h/12*(23*fN-16*fNm1+5*fNm2);
+    const fP=eval2(fc,xN1,yP);
+    let yC=r0.ys[2]+h/24*(9*fP+19*fN-5*fNm1+fNm2);
+    html+='<h5>Primer paso PECE detallado</h5>';
+    html+=`<div class="step"><strong>Arranque con RK4:</strong> y_1 = ${r0.ys[1].toFixed(8)}, y_2 = ${r0.ys[2].toFixed(8)}<br>f_0=${fNm2.toFixed(6)}, f_1=${fNm1.toFixed(6)}, f_2=${fN.toFixed(6)}</div>`;
+    html+=`<div class="step"><strong>P (AB-3):</strong> ~y_3 = ${r0.ys[2].toFixed(6)} + ${h}/12·(23·${fN.toFixed(4)} - 16·${fNm1.toFixed(4)} + 5·${fNm2.toFixed(4)}) = ${yP.toFixed(8)}</div>`;
+    html+=`<div class="step"><strong>E:</strong> ~f_3 = f(${xN1.toFixed(4)}, ${yP.toFixed(6)}) = ${fP.toFixed(8)}</div>`;
+    html+=`<div class="step"><strong>C (AM-3):</strong> y_3 = ${r0.ys[2].toFixed(6)} + ${h}/24·(9·${fP.toFixed(4)} + 19·${fN.toFixed(4)} - 5·${fNm1.toFixed(4)} + ${fNm2.toFixed(4)}) = ${yC.toFixed(8)}</div>`;
+    if(comb==='ab3am3am3'){
+      const fP2=eval2(fc,xN1,yC);
+      const yC2=r0.ys[2]+h/24*(9*fP2+19*fN-5*fNm1+fNm2);
+      html+=`<div class="step"><strong>Segunda correccion (PECECE):</strong> y_3 = ${yC2.toFixed(8)}</div>`;
+    }
+  }
+  let table='<h5>Tabla completa</h5><table class="dt"><tr><th>n</th><th>x_n</th><th>y_n</th><th>f(x_n,y_n)</th>';
+  const ex=$('s2-ex').value;let ec=null;if(ex){try{ec=math.parse(ex).compile();table+='<th>Exacto</th><th>Error</th>';}catch(e){}}
+  table+='</tr>';
+  for(let i=0;i<r.xs.length;i++){
+    const fi=eval2(fc,r.xs[i],r.ys[i]);
+    table+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td><td>${fi.toFixed(6)}</td>`;
+    if(ec){const ye=ec.evaluate({x:r.xs[i]});table+=`<td>${ye.toFixed(8)}</td><td class="err">${Math.abs(r.ys[i]-ye).toExponential(2)}</td>`;}
+    table+='</tr>';
+  }
+  table+='</table>';
+  html+=table;
+  $('s2-steps').innerHTML=html;
+  const traces=[{x:r.xs,y:r.ys,mode:'lines+markers',name:comb,line:{color:'#c0392b'}}];
+  if(ec){const xsE=[],ysE=[];for(let x=r.xs[0];x<=r.xs[r.xs.length-1];x+=(r.xs[r.xs.length-1]-r.xs[0])/300){xsE.push(x);ysE.push(ec.evaluate({x:x}));}traces.push({x:xsE,y:ysE,mode:'lines',name:'Exacta',line:{color:'#000',width:2,dash:'dash'}});}
+  Plotly.newPlot('s2-plot',traces,{margin:{t:20,r:10,l:40,b:30},height:320,legend:{orientation:'h'}});
+}
+
+// ============================
+// SOLVER HERMITE (S3)
+// ============================
+function solverHermite(){
+  const expr=$('s3-f').value, x0=parseFloat($('s3-x0').value), y0=parseFloat($('s3-y0').value), h=parseFloat($('s3-h').value), N=parseInt($('s3-n').value), met=$('s3-met').value;
+  const fc=parseFunc2(expr);if(!fc){$('s3-steps').innerHTML='Funcion invalida';return;}
+  let r;
+  if(met==='heun') r=heun(fc,x0,y0,h,N);
+  else if(met==='rk4') r=rk4(fc,x0,y0,h,N);
+  else if(met==='ab3am3') r=pcAB3AM3(fc,x0,y0,h,N);
+  const yps=r.xs.map((x,i)=>eval2(fc,x,r.ys[i]));
+  const H=hermitePiecewise(r.xs,r.ys,yps);
+  const dd=hermiteNewtonDDs(r.xs,r.ys,yps);
+  let html='<h5>1. Soporte calculado por '+met+'</h5><table class="dt"><tr><th>i</th><th>x_i</th><th>y_i</th><th>y\'_i = f(x_i,y_i)</th></tr>';
+  for(let i=0;i<r.xs.length;i++) html+=`<tr><td>${i}</td><td>${r.xs[i].toFixed(4)}</td><td>${r.ys[i].toFixed(8)}</td><td>${yps[i].toFixed(8)}</td></tr>`;
+  html+='</table>';
+  html+='<h5>2. Diferencias divididas con nodos repetidos (Newton-Hermite)</h5>';
+  html+='<div class="step">Nodos duplicados z = ['+dd.Z.map(x=>x.toFixed(3)).join(', ')+']<br>Coeficientes diferencias divididas: f[z0..zk]='+dd.coefs.map(c=>c.toFixed(6)).join(', ')+'</div>';
+  html+='<h5>3. Polinomio Hermite global de grado '+(2*r.xs.length-1)+'</h5>';
+  let polTxt='H(x) = '+dd.coefs[0].toFixed(6);
+  let prodStr='';
+  for(let k=1;k<dd.coefs.length;k++){
+    prodStr+='(x-'+dd.Z[k-1].toFixed(3)+')';
+    polTxt+=' + '+dd.coefs[k].toFixed(6)+'·'+prodStr;
+  }
+  html+='<div class="step" style="font-family:Courier New,monospace;font-size:.75rem;overflow-x:auto">'+polTxt+'</div>';
+  html+='<h5>4. (Mejor opcion en la practica) Hermite cubico a trozos C¹</h5>';
+  html+='<div class="step">Cada subintervalo [x_i,x_{i+1}] usa: H_i(x) = h00(t)y_i + h10(t)h·y\'_i + h01(t)y_{i+1} + h11(t)h·y\'_{i+1} con t=(x-x_i)/h</div>';
+  const ex=$('s3-ex').value;
+  let ec=null;if(ex){try{ec=math.parse(ex).compile();}catch(e){}}
+  // plot
+  const xs=[],ysH=[],ysE=[];
+  for(let x=r.xs[0];x<=r.xs[r.xs.length-1];x+=(r.xs[r.xs.length-1]-r.xs[0])/400){xs.push(x);ysH.push(H(x));if(ec) ysE.push(ec.evaluate({x:x}));}
+  const traces=[
+    {x:xs,y:ysH,mode:'lines',name:'Hermite cubico a trozos',line:{color:'#c0392b',width:2}},
+    {x:r.xs,y:r.ys,mode:'markers',name:'Soporte (PVI)',marker:{size:9,color:'#1a5276'}}
+  ];
+  if(ec){traces.push({x:xs,y:ysE,mode:'lines',name:'Exacta',line:{color:'#000',width:2,dash:'dash'}});
+    // calcula error max
+    let emax=0;for(let i=0;i<xs.length;i++) emax=Math.max(emax,Math.abs(ysH[i]-ysE[i]));
+    html+=`<h5>5. Error frente a exacta</h5><div class="step">Max |H(x) - y(x)| en [x0,xN] ≈ <span class="val">${emax.toExponential(3)}</span></div>`;
+  }
+  $('s3-steps').innerHTML=html;
+  Plotly.newPlot('s3-plot',traces,{margin:{t:20,r:10,l:40,b:30},height:340,legend:{orientation:'h'}});
+}
+
+// ============================
+// TEST
+// ============================
+const correctAns={};
+function checkQ(n,a){
+  const card=document.querySelector(`[data-q="${n}"]`);
+  const c=card.dataset.c;
+  const fb=card.querySelector('.feedback');
+  if(a===c){fb.className='feedback correct';fb.textContent='✓ Correcto';correctAns[n]=true;}
+  else{fb.className='feedback incorrect';fb.textContent='✗ Incorrecto. La opcion correcta es '+c.toUpperCase();correctAns[n]=false;}
+  let ok=0,tot=0;Object.values(correctAns).forEach(v=>{tot++;if(v)ok++;});
+  $('t-score').textContent=ok+' / '+tot;
+}
+function resetTest(){
+  document.querySelectorAll('.feedback').forEach(f=>{f.className='feedback';f.textContent='';});
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  for(const k in correctAns) delete correctAns[k];
+  $('t-score').textContent='0 / 0';
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  renderMath();
+  campoPendientes();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloque 4 - Metodos Matematicos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='15' fill='%231a5276'/><text x='50' y='72' font-size='50' text-anchor='middle' fill='white' font-family='serif'>B4</text></svg>">
+<style>
+:root{--pri:#1a5276;--pri-l:#2980b9;--bg:#f5f7fa;--card:#fff;--txt:#2c3e50;--sh:0 4px 15px rgba(0,0,0,.1);--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Ctext x='30' y='50' font-size='28' fill='%231a5276' font-family='serif'%3E%E2%88%AB f(x)dx%3C/text%3E%3Ctext x='400' y='90' font-size='24' fill='%231a5276' font-family='serif'%3Ey'=f(x,y)%3C/text%3E%3Ctext x='150' y='140' font-size='30' fill='%231a5276' font-family='serif'%3Ef'(x)%3C/text%3E%3Ctext x='500' y='160' font-size='22' fill='%231a5276' font-family='serif'%3Ey_(n+1)=y_n+h%C2%B7f(x_n,y_n)%3C/text%3E%3Ctext x='50' y='220' font-size='26' fill='%231a5276' font-family='serif'%3ERunge-Kutta%3C/text%3E%3Ctext x='350' y='260' font-size='20' fill='%231a5276' font-family='serif'%3ESimpson%3C/text%3E%3Ctext x='100' y='320' font-size='24' fill='%231a5276' font-family='serif'%3ETrapecio%3C/text%3E%3Ctext x='500' y='340' font-size='28' fill='%231a5276' font-family='serif'%3EAB - AM%3C/text%3E%3Ctext x='250' y='400' font-size='22' fill='%231a5276' font-family='serif'%3EPredictor-Corrector%3C/text%3E%3Ctext x='600' y='420' font-size='26' fill='%231a5276' font-family='serif'%3EHermite%3C/text%3E%3Ctext x='80' y='480' font-size='20' fill='%231a5276' font-family='serif'%3EEA %E2%89%A4 (b-a)%C2%B3/12 %C2%B7 |f''|%3C/text%3E%3Ctext x='450' y='520' font-size='24' fill='%231a5276' font-family='serif'%3EEuler mejorado%3C/text%3E%3Ctext x='200' y='560' font-size='28' fill='%231a5276' font-family='serif'%3Ey(x_0)=y_0%3C/text%3E%3C/svg%3E");background-size:cover}
+.header{text-align:center;padding:2rem;margin-bottom:1.5rem}
+.header h1{font-size:2.2rem;color:var(--pri);margin-bottom:.5rem}
+.header p{font-size:1.1rem;color:#7f8c8d}
+.header a{color:var(--pri-l);text-decoration:none;font-size:.9rem;display:inline-block;margin-top:.5rem}
+.header a:hover{text-decoration:underline}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:850px;width:90%;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);padding:2rem;box-shadow:var(--sh);text-decoration:none;color:var(--txt);transition:transform .3s,box-shadow .3s;border-top:5px solid var(--pri)}
+.card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+.card .icon{font-size:2.6rem;margin-bottom:1rem;display:block;color:var(--pri)}
+.card h2{font-size:1.3rem;color:var(--pri);margin-bottom:.5rem}
+.card p{font-size:.95rem;color:#7f8c8d;line-height:1.5}
+.card .topics{margin-top:.8rem;font-size:.85rem;color:#95a5a6}
+.card .topics span{display:inline-block;background:#eaf2f8;color:var(--pri);padding:.2rem .5rem;border-radius:4px;margin:.2rem .2rem 0 0;font-size:.75rem}
+.card.s1{border-top-color:#16a085}
+.card.s2{border-top-color:#c0392b}
+.footer{margin-top:3rem;text-align:center;padding:1rem;font-size:.85rem;color:#95a5a6}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.header h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Bloque 4</h1>
+  <p>Derivacion, Integracion Numerica y Ecuaciones Diferenciales Ordinarias</p>
+  <a href="../index.html">&larr; Volver al indice general</a>
+</div>
+
+<div class="cards">
+  <a href="Tema 5/index.html" class="card s1">
+    <span class="icon">&#8747; f'(x)</span>
+    <h2>Tema 5: Derivacion e Integracion Numerica</h2>
+    <p>Calculo aproximado de derivadas e integrales: formulas interpolatorias, dos/tres/cinco puntos, formulas de Newton-Cotes (rectangulo, punto medio, trapecio, Simpson) y sus formulas compuestas con acotacion de error.</p>
+    <div class="topics">
+      <span>Diferencias finitas</span>
+      <span>2-3-5 puntos</span>
+      <span>Newton-Cotes</span>
+      <span>Trapecio</span>
+      <span>Simpson</span>
+      <span>Compuestas</span>
+      <span>Errores</span>
+    </div>
+  </a>
+  <a href="Tema 6/index.html" class="card s2">
+    <span class="icon">y' = f(x,y)</span>
+    <h2>Tema 6: Ecuaciones Diferenciales Ordinarias</h2>
+    <p>Problemas de valor inicial: metodos de 1 paso (Euler mejorado / Heun, Runge-Kutta), multipaso explicitos (Adams-Bashforth) e implicitos (Adams-Moulton), esquemas predictor-corrector y reconstruccion del soporte mediante interpolacion de Hermite.</p>
+    <div class="topics">
+      <span>EDO PVI</span>
+      <span>Heun / RK4</span>
+      <span>AB-2 / AB-3</span>
+      <span>AM-2 / AM-3</span>
+      <span>Predictor-Corrector</span>
+      <span>Hermite</span>
+    </div>
+  </a>
+</div>
+
+<div class="footer">
+  Bloque 4 &mdash; Teoria interactiva, solver paso a paso y test de autoevaluacion
+</div>
+
+</body>
+</html>
