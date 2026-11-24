@@ -1,0 +1,8 @@
+/* Correcciones de legibilidad (impeccable detect), 2026-11-24. Solo color y tamaño de letra.
+   Para deshacerlas: quitar el <link> a este fichero en el HTML. */
+a.card.b1 > p { color: #697575 !important; }
+a.card.b2 > p { color: #697575 !important; }
+a.card.b3 > p { color: #697575 !important; }
+a.card.b4 > p { color: #697575 !important; }
+div.footer { color: #5f7071 !important; }
+div.header > p { color: #646f70 !important; }
